@@ -1,10 +1,10 @@
 # RGAP: R Package for Production Function Output Gap Estimation
 
-RGAP provides tools for modeling and estimating the bivariate unobserved component models involved in the Cobb-Douglas production function methodology to estimate output gap.
+RGAP provides tools for modeling and estimating the bivariate unobserved component models involved in the Cobb-Douglas production function methodology to estimate the output gap.
 
 [KOF Working Paper](https://kof.ethz.ch/publikationen/kof-working-papers.html)
 
-If you use RGAP in your paper, please cite it properly, see citation("RGAP") in R, or above link to the paper.
+If you use RGAP in your paper, please cite it properly, see `citation("RGAP")` in R, or above link to the paper.
 
 ## Details
 
@@ -23,8 +23,10 @@ The output gap indicates the percentage difference between the actual output of 
 
 ## Install the package
 Since the package is not on CRAN just yet, you can install it using the **install_github** function from the **devtools** package.
-  library(devtools)
-  install_github('sinast3000/RGAP')
+``` 
+library(devtools)
+install_github('sinast3000/RGAP')
+```
 
 ***
 
