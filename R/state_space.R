@@ -685,7 +685,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   dfPar <- dfParBase[index[[nameE2]], ]
   print(dfPar[order(rownames(dfPar)), ], digits = digits, quote = FALSE, right = TRUE, row.names = TRUE)
   if (bayes) {
-    print(unlist(x$fit[c("signal-to-noise")]), digits = 4)
+    print(unlist(x$fit[c("MRMSE","signal-to-noise")]), digits = 4)
   } else {
     cat(paste0("  RMSE: ", format(x$fit$RMSE, digits = digits), "\n"))
     cat(paste0("  R2: ", format(x$fit$R2, digits = digits), "\n"))
@@ -802,7 +802,7 @@ inference <- function(parOptim, hessian, loc) {
 
 # -------------------------------------------------------------------------------------------
 
-#' Computes figures reagrding the model fit of the maximum likelihood estimation.
+#' Computes figures regarding the model fit of the maximum likelihood estimation.
 #'
 #' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
 #' @param nPar A scalar specifying the number of estimated parameters.

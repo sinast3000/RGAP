@@ -258,7 +258,10 @@
   nameCoef <- firstLetterUp(FUN)
   info[["signal-to-noise"]] <- sum(dfRes[loc$varName[loc$equation == "trend" & loc$sysMatrix == "Q"], nameCoef], na.rm = TRUE) / dfRes["cSigma", nameCoef]
   info$R2 <- 1 - sum((out$model$y[, "pcInd"] - tslRes$pcIndFitted)^2, na.rm = TRUE) / sum((out$model$y[, "pcInd"] - mean(out$model$y[, "pcInd"], na.rm = TRUE))^2, na.rm = TRUE)
-
+  info$MRMSE <- mean(apply(apply(mcmc$fitted[, 2, , drop = TRUE], 
+                                 2, function(x) x - out$model$y[, 2]), 
+                           2, function(x) sqrt(mean(x^2, na.rm = TRUE))))
+  
   # ----- fitted bayesian nawru object
   NAWRUfit <- list(
     model = model,

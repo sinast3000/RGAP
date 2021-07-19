@@ -256,7 +256,10 @@
   nameCoef <- firstLetterUp(FUN)
   info[["signal-to-noise"]] <- sum(dfRes[loc$varName[loc$equation == "trend" & loc$sysMatrix == "Q"], nameCoef], na.rm = TRUE) / dfRes["cSigma", nameCoef]
   info$R2 <- 1 - sum((tslRes$cubsFitted - out$model$y[, 2])^2, na.rm = TRUE) / sum((out$model$y[, 2] - mean(out$model$y[, 2], na.rm = TRUE))^2, na.rm = TRUE) # 1 - sum((residuals(out)[,"cubs"])^2, na.rm = TRUE) / sum( (out$model$y[,"cubs"] - mean(out$model$y[,"cubs"], na.rm = TRUE) )^2, na.rm = TRUE)
-
+  info$MRMSE <- mean(apply(apply(mcmc$fitted[, 2, , drop = TRUE], 
+                                 2, function(x) x - out$model$y[, 2]), 
+                           2, function(x) sqrt(mean(x^2, na.rm = TRUE))))
+  
   # ----- fitted bayesian tfp object
 
   TFPfit <- list(
