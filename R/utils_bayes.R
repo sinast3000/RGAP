@@ -53,7 +53,6 @@
   kbase <- length(beta) - 1
   pc <- length(phiC)
   k <- max(pc - 1, kbase) # add extra equations such that all variances can be retrieved
-  q <- max(p, k)
 
   # covariance of cycle process
   covC <- .covAR(k = k + 1, phi = phiC, sigma = sigmaC)
@@ -63,7 +62,8 @@
     p <- length(phiC)
     phi <- rep(0, p)
   }
-
+  q <- max(p, k)
+  
   # set up matrix for Yule Walker equations for cov(c, cubs)
   Phi1tilde <- matrix(0, k + 1, p + k + 1)
   Phi2tilde <- matrix(0, q, pc + q)
