@@ -820,7 +820,7 @@ inference <- function(parOptim, hessian, loc) {
   info$HQC <- 2 * nPar * log(log(nTime)) - 2 * out$logLik
   info$RMSE <- sqrt(mean(residuals^2, na.rm = TRUE)) # sqrt(mean((residuals(out)[,"cubs"])^2, na.rm = TRUE)) # sqrt(mean(out$v[,2]^2))
   info$R2 <- 1 - sum((residuals)^2, na.rm = TRUE) / sum((out$model$y[, 2] - mean(out$model$y[, 2], na.rm = TRUE))^2, na.rm = TRUE) # 1 - sum((residuals(out)[,"cubs"])^2, na.rm = TRUE) / sum( (out$model$y[,"cubs"] - mean(out$model$y[,"cubs"], na.rm = TRUE) )^2, na.rm = TRUE)
-  info$LjungBox <- stats::Box.test(residuals, lag = 4, type = "Ljung-Box") # stats::Box.test(residuals(out)[,"cubs"], lag = 4, type = "Ljung-Box")
+  info$LjungBox <- stats::Box.test(residuals, lag = min(10, length(residuals) / 5), type = "Ljung-Box") # see https://robjhyndman.com/hyndsight/ljung-box-test/
 
   info
 }
