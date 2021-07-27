@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------------
 
-#' Computes confidence interval of Gamma distributed variable with given mean and standard
-#' deviation.
+#' Computes confidence interval of Inverse Gamma distributed variable with given mean and 
+#' standard deviation.
 #'
 #' @param mu A \code{k x 1} vector of means.
 #' @param sd A \code{k x 1} vector of standard deviations.
@@ -12,8 +12,8 @@
 #'
 #' @importFrom stats qgamma
 #' @keywords internal
-.intervalGamma <- function(mu, sd, qlower = 0.025, qupper = 1 - qlower) {
-  # convert to shae and scale parameters alpha and beta
+.intervalIGamma <- function(mu, sd, qlower = 0.025, qupper = 1 - qlower) {
+  # convert to shape and scale parameters alpha and beta
   alpha <- 2 + mu^2 / sd^2
   beta <- mu * (alpha - 1)
   # compute confidence interval
