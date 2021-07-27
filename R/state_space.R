@@ -776,25 +776,36 @@ inference <- function(parOptim, hessian, loc) {
   # not invertible
   if (all(is.na(CV))) {
     ind <- !(loc$boundaries | apply(hessian == 0, 2, all))
-    CV <- solve(fisherInfo[ind, ind])
-    # invertible
+    CV <- tryCatch(
+      {
+        solve(fisherInfo[ind, ind])
+      },
+      error = function(cont) {
+        message("The fisher information matrix is not invertible.")
+        return(matrix(NA))
+      }
+    )
+  # invertible
   } else {
     ind <- !(loc$boundaries | apply(hessian == 0, 2, all))
     CV <- CV[ind, ind]
   }
-  # compute covariance for constrained parameters
-  Covar <- computeCovar(par = parOptim[ind], loc = loc[ind, ], CV = CV)
-  # check diagonal values
-  if (any(diag(Covar) < 0)) {
-    ind[ind] <- ind[ind] & diag(Covar) > 0
-    Covar <- Covar[diag(Covar) > 0, diag(Covar) > 0]
+  
+  if (!all(is.na(CV))) {
+    # compute covariance for constrained parameters
+    Covar <- computeCovar(par = parOptim[ind], loc = loc[ind, ], CV = CV)
+    # check diagonal values
+    if (any(diag(Covar) < 0)) {
+      ind[ind] <- ind[ind] & diag(Covar) > 0
+      Covar <- Covar[diag(Covar) > 0, diag(Covar) > 0]
+    }
+  
+    # compute standard error, t statistic and p values
+    dfRes[loc$varName[ind], "se"] <- sqrt(diag(Covar))[loc$varName[ind]]
+    dfRes[loc$varName[ind], "tstat"] <- dfRes[loc$varName[ind], "estim"] / dfRes[loc$varName[ind], "se"]
+    dfRes[loc$varName[ind], "pvalue"] <- 2 * (1 - pnorm(abs(dfRes[loc$varName[ind], "tstat"])))
   }
-
-  # compute standard error, t statistic and p values
-  dfRes[loc$varName[ind], "se"] <- sqrt(diag(Covar))[loc$varName[ind]]
-  dfRes[loc$varName[ind], "tstat"] <- dfRes[loc$varName[ind], "estim"] / dfRes[loc$varName[ind], "se"]
-  dfRes[loc$varName[ind], "pvalue"] <- 2 * (1 - pnorm(abs(dfRes[loc$varName[ind], "tstat"])))
-
+  
   colnames(dfRes) <- c("Coefficient", "Standard Error", "t-statistic", "p-value")
   dfRes
 }
