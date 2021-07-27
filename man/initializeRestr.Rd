@@ -4,7 +4,7 @@
 \alias{initializeRestr}
 \title{Initialization of parameter restrictions}
 \usage{
-initializeRestr(model, type = "basic", lambda = NULL)
+initializeRestr(model, type = "basic", lambda = NULL, q = 0.1)
 }
 \arguments{
 \item{model}{An object of class \code{NAWRUmodel}, \code{TFPmodel}, or \code{KuttnerModel}.}
@@ -13,6 +13,9 @@ initializeRestr(model, type = "basic", lambda = NULL)
 \code{"hp"}, see details. The default is \code{type = "basic"}.}
 
 \item{lambda}{The smoothing constant for the HP-filter if \code{type = "hp"}.}
+
+\item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
+default is \code{q = 0.1}.}
 }
 \value{
 A list of three matrices containing the parameter restrictions for the cycle,
@@ -23,4 +26,13 @@ A list of three matrices containing the parameter restrictions for the cycle,
 \description{
 Initializes parameter restrictions for objects of class \code{NAWRUmodel},
 \code{TFPmodel}, or \code{KuttnerModel}.
+}
+\details{
+For \code{type = "hp"}, the HP filter is applied to the appropriately differences 
+  first observation series to obtain its trend and cycle. Subsequently, the specified trend 
+  and cycle models are fitted to obtain its innovation variance. Moreover, the second 
+  observation series, according to its specification is fitted to obtain its innovation 
+  variance. Lastly, the obtained innovations variances are used to get lower and upper 
+  bounds. To that end, the \code{q} and \code{1-q} quantiles of the inverse gamma 
+  distribution are used, with mean and standard deviation set to the estimated variances.
 }

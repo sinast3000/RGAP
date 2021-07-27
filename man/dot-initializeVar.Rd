@@ -9,7 +9,8 @@
   type = NULL,
   lambda = NULL,
   prior = FALSE,
-  errorARMA = c(0, 0)
+  errorARMA = c(0, 0),
+  q = 0.1
 )
 }
 \arguments{
@@ -23,6 +24,9 @@
 \item{prior}{A logical indicating whether prior parameters should be returned.}
 
 \item{errorARMA}{The ARMA order of the second equation error process.}
+
+\item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
+default is \code{q = 0.1}.}
 }
 \description{
 Initializes variance restrictions.

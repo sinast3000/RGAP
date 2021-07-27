@@ -9,10 +9,10 @@
 #' @param type The variance restriction type. Possible options are \code{"basic"},
 #'   \code{"hp"}, see details. The default is \code{type = "basic"}.
 #' @param lambda The smoothing constant for the HP-filter if \code{type = "hp"}.
-#' @param q Quantile for the Inverse Gamma distribution (only used if \code{type = "hp}). The 
+#' @param q Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
 #'   default is \code{q = 0.1}.
 #'
-#' @details For \code{type = "hp}, the HP filter is applied to the appropriately differences 
+#' @details For \code{type = "hp"}, the HP filter is applied to the appropriately differences 
 #'   first observation series to obtain its trend and cycle. Subsequently, the specified trend 
 #'   and cycle models are fitted to obtain its innovation variance. Moreover, the second 
 #'   observation series, according to its specification is fitted to obtain its innovation 
