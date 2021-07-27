@@ -9,6 +9,16 @@
 #' @param type The variance restriction type. Possible options are \code{"basic"},
 #'   \code{"hp"}, see details. The default is \code{type = "basic"}.
 #' @param lambda The smoothing constant for the HP-filter if \code{type = "hp"}.
+#' @param q Quantile for the Inverse Gamma distribution (only used if \code{type = "hp}). The 
+#'   default is \code{q = 0.1}.
+#'
+#' @details For \code{type = "hp}, the HP filter is applied to the appropriately differences 
+#'   first observation series to obtain its trend and cycle. Subsequently, the specified trend 
+#'   and cycle models are fitted to obtain its innovation variance. Moreover, the second 
+#'   observation series, according to its specification is fitted to obtain its innovation 
+#'   variance. Lastly, the obtained innovations variances are used to get lower and upper 
+#'   bounds. To that end, the \code{q} and \code{1-q} quantiles of the inverse gamma 
+#'   distribution are used, with mean and standard deviation set to the estimated variances.
 #'
 #' @return A list of three matrices containing the parameter restrictions for the cycle,
 #'   trend, and the second observation equation. Each matrix contains the lower and upper
@@ -16,7 +26,7 @@
 #'   restriction is present.
 #'
 #' @export
-initializeRestr <- function(model, type = "basic", lambda = NULL) {
+initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.1) {
 
   # model attributes
   class <- class(model)
@@ -44,7 +54,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL) {
   })
 
   # variance restrictions
-  varRestr <- .initializeVar(model = model, type = type, lambda = lambda, errorARMA = errorARMA)
+  varRestr <- .initializeVar(model = model, type = type, lambda = lambda, errorARMA = errorARMA, q = q)
   trendNames <- model$loc$varName[grepl("trend", model$loc$variableRow) & model$loc$sysMatrix == "Q"]
   restr$cycle[c("upperBound", "lowerBound"), "cSigma"] <- varRestr[, "cSigma"]
   restr$trend[c("upperBound", "lowerBound"), trendNames] <- varRestr[, 2:(dim(varRestr)[2] - 1)]
@@ -71,7 +81,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL) {
 #'
 #' @importFrom stats optim arima as.formula lm
 #' @keywords internal
-.initializeVar <- function(model, type = NULL, lambda = NULL, prior = FALSE, errorARMA = c(0, 0)) {
+.initializeVar <- function(model, type = NULL, lambda = NULL, prior = FALSE, errorARMA = c(0, 0), q = 0.1) {
 
   # model attributes
   class <- class(model)
@@ -161,9 +171,9 @@ initializeRestr <- function(model, type = "basic", lambda = NULL) {
     # computes quantiles of gamma distribution with mean and standard deviation
     # set to the previously computed variances
     beta <- 1
-    varRestrE2 <- rev(.intervalGamma(varE2, beta * sqrt(varE2), qlower = 0.1))
-    varRestrTrend <- rev(.intervalGamma(varTrend, beta * sqrt(varTrend), qlower = 0.1))
-    varRestrCycle <- rev(.intervalGamma(varCycle, beta * sqrt(varCycle), qlower = 0.1))
+    varRestrE2 <- rev(.intervalIGamma(varE2, beta * sqrt(varE2), qlower = q))
+    varRestrTrend <- rev(.intervalIGamma(varTrend, beta * sqrt(varTrend), qlower = q))
+    varRestrCycle <- rev(.intervalIGamma(varCycle, beta * sqrt(varCycle), qlower = q))
   }
 
   # for prior, use estimate for mean and standard deviation
