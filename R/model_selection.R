@@ -218,7 +218,7 @@ auto.gapProd <- function(tsl,
     nawru <- list()
     nawru$model <- res$model[index]
     nawru$fit <- res$fit[index]
-    nawru$info <- crit$info
+    nawru$info <- info
     
     if (method == "bayesian") {
       
@@ -226,13 +226,12 @@ auto.gapProd <- function(tsl,
       info <- crit$infoBayes
       info$drop <- (info$R2 < 0)
       info <- info[order(info$drop, info[[grep(criterion, c("MRMSE", "R2"), value = TRUE)]])]
-      info
-      
+
       # order and save results
       index <-  as.numeric(rownames(info))
       nawru$modelBayes <- res$model[index]
       nawru$fitBayes <- res$fitBayes[index]
-      nawru$infoBayes <- crit$info
+      nawru$infoBayes <- info
     }
     
     result$nawru <- nawru
