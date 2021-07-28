@@ -13,7 +13,10 @@
 doc/France
 doc/Italy
 doc/Netherlands
-doc/all_mle
+doc/all_mle_hp
+doc/all_mle_basic
+doc/all_mle_model_selection_hp
+doc/all_mle_model_selection_basic
 doc/EC_gap
 
 # Output files from R CMD build
