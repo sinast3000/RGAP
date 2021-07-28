@@ -47,28 +47,28 @@
     
     cycle
              Coefficient Standard Error t-statistic  p-value
-      cPhi1     1.511900       1.56e-01       9.686 0.00e+00
-      cPhi2    -0.571461       1.92e+00      -0.297 7.66e-01
-      cSigma    0.000139       1.93e-05       7.195 6.23e-13
+      cPhi1     1.512436       1.56e-01       9.671 0.00e+00
+      cPhi2    -0.571865       1.93e+00      -0.296 7.67e-01
+      cSigma    0.000139       1.71e-05       8.160 4.44e-16
     
     trend
               Coefficient Standard Error t-statistic  p-value
-      tSigma     5.75e-05       5.11e-05        1.12 2.61e-01
-      tdConst    1.99e-02       2.92e-03        6.83 8.55e-12
+      tSigma     5.63e-05       5.08e-05        1.11 2.67e-01
+      tdConst    1.99e-02       2.93e-03        6.80 1.03e-11
     
     inflation equation
                     Coefficient Standard Error t-statistic  p-value
-      inflC1             -0.107         0.7716      -0.138 0.890049
-      inflConst          -0.134         0.0993      -1.351 0.176731
-      inflErrGamma1      -0.219         0.2478      -0.884 0.376952
-      inflErrGamma2      -0.292         0.1438      -2.033 0.042017
-      inflErrGamma3      -0.490         0.2366      -2.071 0.038324
-      inflGdpGL1          6.707         4.6484       1.443 0.149090
-      inflSigma           0.378         0.1026       3.681 0.000232
-      RMSE: 0.638
+      inflC1             -0.105         0.7723      -0.136 0.891552
+      inflConst          -0.144         0.0986      -1.459 0.144622
+      inflErrGamma1      -0.220         0.2431      -0.907 0.364592
+      inflErrGamma2      -0.292         0.1444      -2.023 0.043054
+      inflErrGamma3      -0.488         0.2316      -2.107 0.035143
+      inflGdpGL1          7.179         4.6153       1.556 0.119825
+      inflSigma           0.378         0.1028       3.677 0.000236
+      RMSE: 0.637
       R2: 0.385
-      Box-Ljung test: X-squared = 2.53, df = 4, p-value = 0.64
+      Box-Ljung test: X-squared = 2.55, df = 6, p-value = 0.862
     
              loglik             AIC             BIC             HQC signal-to-noise 
-            50.8208        -77.6415        -60.8272        -72.2625          0.4146 
+            50.8338        -77.6676        -60.8532        -72.2885          0.4045 
 
