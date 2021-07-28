@@ -2,7 +2,7 @@
 % Please edit documentation in R/state_space.R
 \name{.SSmodelfit}
 \alias{.SSmodelfit}
-\title{Computes figures reagrding the model fit of the maximum likelihood estimation.}
+\title{Computes figures regarding the model fit of the maximum likelihood estimation.}
 \usage{
 .SSmodelfit(out, nPar)
 }
@@ -12,6 +12,6 @@
 \item{nPar}{A scalar specifying the number of estimated parameters.}
 }
 \description{
-Computes figures reagrding the model fit of the maximum likelihood estimation.
+Computes figures regarding the model fit of the maximum likelihood estimation.
 }
 \keyword{internal}
