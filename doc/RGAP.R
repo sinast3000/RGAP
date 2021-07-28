@@ -215,7 +215,9 @@ plot(gapHPfilter, path = file.path(path, country), prefix = "hp")
 ####### Example: Multiple countries -----------------------------------
 library(reshape2)
 data("gap")
-dir.create(file.path(path, "all_mle"), recursive = TRUE)
+type <- "hp"
+path_sub <- paste0("all_mle_", type)
+dir.create(file.path(path, path_sub), recursive = TRUE)
 ## --------------------------------------------------------------------
 countries <- c("Belgium", "Denmark", "Germany", "Ireland", "Greece",
                "Spain", "France", "Italy", "Luxembourg", "Netherlands",
@@ -233,22 +235,22 @@ for (k in countries) {
   exoType[2, , "lag"] <- 1
   model[[k]]$nawru <- NAWRUmodel(tsl = tsl[[k]], trend = "RW2", cycle = "AR2",
                                  type = "TKP", cycleLag = 0, exoType = exoType)
-  parRestr[[k]]$nawru <- initializeRestr(model = model[[k]]$nawru, type = "hp")
+  parRestr[[k]]$nawru <- initializeRestr(model = model[[k]]$nawru, type = type)
   fit[[k]]$nawru <- fitNAWRU(model = model[[k]]$nawru, parRestr = parRestr[[k]]$nawru)
-  plot(fit[[k]]$nawru, path = file.path(path,"all_mle"), prefix = gsub(" ","_", k))
+  plot(fit[[k]]$nawru, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
   # TFP trend
   model[[k]]$tfp <- TFPmodel(tsl = tsl[[k]], trend = "DT", cycle = "RAR2",
                              cycleLag = 0, cubsErrorAR = 0)
-  parRestr[[k]]$tfp <- initializeRestr(model = model[[k]]$tfp, type = "hp")
+  parRestr[[k]]$tfp <- initializeRestr(model = model[[k]]$tfp, type = type)
   fit[[k]]$tfp <- fitTFP(model = model[[k]]$tfp, parRestr = parRestr[[k]]$tfp)
-  plot(fit[[k]]$tfp, path = file.path(path,"all_mle"), prefix = gsub(" ","_", k))
+  plot(fit[[k]]$tfp, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
   # gap
   fit[[k]]$gap <- gapProd(tsl = tsl[[k]], NAWRUfit = fit[[k]]$nawru,
                           TFPfit = fit[[k]]$tfp, lambda = 100, alpha = 0.65)
-  plot(fit[[k]]$gap, path = file.path(path,"all_mle"), prefix = gsub(" ","_", k))
+  plot(fit[[k]]$gap, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
 }
 ## ---- save ---------------------------------------------------------
-save(tsl, model, parRestr, fit, file = file.path(path, "all_mle", "results.RData"))
+save(tsl, model, parRestr, fit, file = file.path(path, path_sub, "results.RData"))
 ## ---- plot ---------------------------------------------------------
 {
   tsl_plot <- lapply(lapply(lapply(fit, "[[", "gap"), "[[", "tsl"), "[[", "gap")
@@ -291,7 +293,78 @@ save(tsl, model, parRestr, fit, file = file.path(path, "all_mle", "results.RData
           legend.spacing.y = unit(0, "pt")) +
     guides(col = guide_legend(ncol = 3, byrow = TRUE))
   p0
-  ggsave(filename = file.path(path, "all_mle", "gap_comparison_countries.png"), plot = p0, width = 7, height = 3)
+  ggsave(filename = file.path(path, path_sub, "gap_comparison_countries.png"), plot = p0, width = 7, height = 3)
+}
+
+
+
+####### Example: Multiple countries model selection -------------------
+library(reshape2)
+data("gap")
+type <- "hp"
+path_sub <- paste0("all_mle_model_selection_", type)
+dir.create(file.path(path, path_sub), recursive = TRUE)
+## --------------------------------------------------------------------
+# exclude Poland, Spain, Ireland, Austria
+countries <- c("Belgium", "Denmark", "Finland", "France", 
+               "Germany", "Greece", "Italy", "Luxembourg", 
+               "Netherlands", "Portugal", "Sweden", "United Kingdom")
+tsl <- fit <- list()
+for (k in countries) {
+  # data
+  tsl[[k]] <- amecoData2input(gap[[k]])
+  # gap
+  fit[[k]] <- auto.gapProd(tsl = tsl[[k]], type = type, fast = TRUE, nModels = 5)
+
+  plot(fit[[k]]$nawru$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+  plot(fit[[k]]$tfp$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+  plot(fit[[k]]$gap, path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+}
+## ---- save ---------------------------------------------------------
+save(tsl, fit, file = file.path(path, path_sub, "results.RData"))
+## ---- plot ---------------------------------------------------------
+{
+  tsl_plot <- lapply(lapply(lapply(fit, "[[", "gap"), "[[", "tsl"), "[[", "gap")
+  
+  # settings
+  set <- list()
+  set$title <- "Output gap (in %)"
+  set$legend <- names(tsl_plot)
+  set$titleFontsize <- 10
+  set$labelFontsize <- 8
+  set$legendFontsize <- 8
+  set$color <-  rep(c("darkolivegreen4", "darkorange2", "deepskyblue3", "darkred", "darkgrey", "black"), each = 2)
+  set$linetype <- rep(c(1,2),6)
+  set$freqYear <- 1 + floor(length(tsl[[1]])/frequency(tsl[[1]])/15)
+  # data
+  date <- zoo::as.Date(time(tsl_plot[[1]]))
+  tsm <- do.call(cbind, tsl_plot)
+  df <- data.frame(date = zoo::as.Date(time(tsm)), tsm)
+  df_melt <- melt(df, id.vars = "date")
+  df_melt$variable <- as.factor(gsub("\\.", " ", as.character(df_melt$variable )))
+  # plot
+  p0 <- ggplot(df_melt, aes(x = date, y = value, color = variable, linetype = variable)) + geom_line() +
+    theme_classic() + coord_cartesian(xlim = c(date[1], date[length(date)]), expand = FALSE)  +
+    theme(plot.title = element_text(size = set$titleFontsize),
+          axis.title = element_text(size = set$labelFontsize),
+          panel.grid.major.y = element_line(linetype = "solid")) +
+    scale_color_manual(name = NULL, values = set$color[1:length(countries)]) +
+    scale_linetype_manual(name = NULL, values = set$linetype) +
+    scale_x_date(date_labels = "%Y", date_minor_breaks = "1 year",
+                 date_breaks = paste0(set$freqYear, " year")) +
+    labs(title = set$title, x = "year", y = "") +
+    theme(legend.position = c(0, 0.01),
+          legend.justification = c(-0.1, 0),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.text=element_text(size = set$legendFontsize),
+          legend.key.size = unit(0.75, 'lines'),
+          legend.title = element_blank(),
+          legend.background = element_rect(fill = "transparent"),
+          legend.spacing.x = unit(0, "pt"),
+          legend.spacing.y = unit(0, "pt")) +
+    guides(col = guide_legend(ncol = 4, byrow = TRUE))
+  p0
+  ggsave(filename = file.path(path, path_sub, "gap_comparison_countries.png"), plot = p0, width = 7, height = 3)
 }
 
 
@@ -307,6 +380,9 @@ exoType[1, , "lag"] <- 0
 model <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                     type = "TKP", cycleLag = 0, exoType = exoType)
 parRestr <- initializeRestr(model = model, type = "hp")
+parRestr$pcInd[,"pcddws"] <- c(-10, 10)
+parRestr$pcInd[,"pcConst"] <- c(-0.1, 0.1)
+parRestr$pcInd[,"pcC0"] <- c(-10, 0)
 fit <- fitNAWRU(model = model, parRestr = parRestr)
 plot(fit)
 write.csv(do.call(cbind,model$tsl), file.path(path, "EC_gap", "data_gap_ec.csv"))
