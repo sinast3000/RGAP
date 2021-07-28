@@ -298,14 +298,13 @@ auto.gapProd <- function(tsl,
                   | info$R2 < 0 
                   | info$LjungBox < 0.1)
     info <- info[order(info$drop, info[[criterion]]),]
-    info
-    
+
     # order and save results
     index <-  as.numeric(rownames(info))
     tfp <- list()
     tfp$model <- res$model[index]
     tfp$fit <- res$fit[index]
-    tfp$info <- crit$info
+    tfp$info <- info
     
     if (method == "bayesian") {
       
@@ -313,13 +312,12 @@ auto.gapProd <- function(tsl,
       info <- crit$infoBayes
       info$drop <- (info$R2 < 0)
       info <- info[order(info$drop, info[[grep(criterion, c("MRMSE", "R2"), value = TRUE)]])]
-      info
-      
+
       # order and save results
       index <-  as.numeric(rownames(info))
       tfp$modelBayes <- res$model[index]
       tfp$fitBayes <- res$fitBayes[index]
-      tfp$infoBayes <- crit$info
+      tfp$infoBayes <- info
     }
     
     result$tfp <- tfp
