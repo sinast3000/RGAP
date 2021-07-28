@@ -635,7 +635,7 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
     
     tmp <- trendVolaMeasures(tsOriginal = E1trans(fit[[k]]$model$tsl[[E1name]]), 
                              tsTrend = fit[[k]]$tsl[[E1Trendname]], 
-                             growth = FALSE)
+                             growth = growth)
     tmp <- as.data.frame(tmp)
     df <- rbind(df, tmp)
   }
@@ -659,7 +659,7 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
       
       tmp <- trendVolaMeasures(tsOriginal = fitBayes[[k]]$model$tsl[[E1name]], 
                                tsTrend = fitBayes[[k]]$tsl[[E1Trendname]], 
-                               growth = TRUE)
+                               growth = growth)
       tmp <- as.data.frame(tmp)
       df <- rbind(df, tmp)
     }
