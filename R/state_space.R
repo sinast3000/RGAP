@@ -981,7 +981,17 @@ trendAnchor <- function(fit, anchor = NULL, h = NULL, returnFit = FALSE) {
   for (tt in ((nTime - 1):(1))) { # (out$d))) {
 
     ### De Jong& Mackinnon (1988)
-    AA[locConstInv, locConstInv, tt] <- out$Ptt[locConstInv, locConstInv, tt] %*% t(out$model$T[locConstInv, locConstInv, 1]) %*% solve(out$P[locConstInv, locConstInv, tt + 1] + PinfTmp[locConstInv, locConstInv, tt + 1])
+    Pinv <- tryCatch(
+      {
+        solve(out$P[locConstInv, locConstInv, tt + 1] + PinfTmp[locConstInv, locConstInv, tt + 1])
+      },
+      error = function(cont) {
+        warning("Error covariance matrix of predicted states is singular. The anchored trend could not be computed.")
+        return(NA)
+      }
+    )
+    if (all(is.na(Pinv))) { return(NA) }
+    AA[locConstInv, locConstInv, tt] <- out$Ptt[locConstInv, locConstInv, tt] %*% t(out$model$T[locConstInv, locConstInv, 1]) %*% Pinv
     covTmp[, , tt] <- AA[, , tt] %*% covTmp[, , tt + 1]
 
     weight[tt] <- (t(s) %*% covTmp[, , tt] %*% t(Tpower[, , h]) %*% s) / (t(s) %*% varTmp[, , h] %*% s)
