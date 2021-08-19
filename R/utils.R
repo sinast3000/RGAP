@@ -17,13 +17,18 @@
   alpha <- 2 + mu^2 / sd^2
   beta <- mu * (alpha - 1)
   # compute confidence interval
-  matrix(c(
+  int <- matrix(c(
     1 / qgamma(1 - qlower, shape = alpha, rate = beta),
     1 / qgamma(1 - qupper, shape = alpha, rate = beta)
   ),
   2, length(mu),
   byrow = TRUE
   )
+  if (int[1] > mu | int[2] < mu) {
+    warning("Variance constraint initialization: The supplied mean does not belong to the chosen interval of the Inverse Gamma distribution. \n")
+  }
+    
+  return(int)
 }
 
 # ---------------------------------------------------------------------------------------------------
