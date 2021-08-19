@@ -92,6 +92,7 @@ gapProd <- function(tsl, NAWRUfit, TFPfit, alpha = 0.65, start = NULL, end = NUL
   )
   class(gap) <- "gap"
   attr(gap, "type") <- "prod"
+  attr(gap, "alpha") <- alpha
   gap
 }
 
@@ -277,8 +278,8 @@ plot.gap <- function(x, contribution = FALSE, path = NULL, combine = TRUE,
   if (contribution) {
     lfTrend <- x$tsl$lTrend / x$tsl$ahoursTrend
     lf <- x$tsl$l / x$tsl$ahours
-    alpha <- x$call$alpha
-
+    alpha <- attr(x, "alpha")
+    
     tsl1 <- na.trim(do.call(cbind, list(
       "average hours worked" = 100 * diff(x$tsl$ahoursTrend^alpha) / stats::lag(x$tsl$ahoursTrend, -1)^alpha,
       "working population" = 100 * diff(lfTrend^alpha) / stats::lag(lfTrend, -1)^alpha,
