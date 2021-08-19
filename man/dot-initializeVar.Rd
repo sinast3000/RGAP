@@ -10,7 +10,7 @@
   lambda = NULL,
   prior = FALSE,
   errorARMA = c(0, 0),
-  q = 0.1
+  q = 0.05
 )
 }
 \arguments{
@@ -26,7 +26,7 @@
 \item{errorARMA}{The ARMA order of the second equation error process.}
 
 \item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
-default is \code{q = 0.1}.}
+default is \code{q = 0.05}.}
 }
 \description{
 Initializes variance restrictions.
