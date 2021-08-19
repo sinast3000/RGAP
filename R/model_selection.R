@@ -85,7 +85,26 @@
 #'     
 #' @return A list containing three components: \code{gap} (the best model of class \code{"gap"}), 
 #' \code{tfp} (a nested list of TFP models, fitted objects and model fit criteria), \code{nawru} 
-#' (a nested list of NAWRU models, fitted objects and model fit criteria).
+#' (a nested list of NAWRU models, fitted objects and model fit criteria). The lists \code{nawru}
+#' and \code{tfp} contain a list of models, a list of fitted objects and a dataframe \code{info},
+#' which contains
+#'   \item{loglik}{log-likelihood function at optimum}
+#'   \item{AIC}{Akaike information criterion}
+#'   \item{BIC}{Bayesian information criterion}
+#'   \item{HQC}{Hannan-Quinn information criterion}
+#'   \item{RMSE}{Root mean squared error}
+#'   \item{R2}{Coefficient of determination (R squared)}
+#'   \item{signal-to-noise}{Signal-to-noise ratio}
+#'   \item{LjungBox}{p-value of Ljung-Box test for autocorrelation (H0 = no autocorrelation)}
+#'   \item{convergence}{0 indicates convergence of the optimization}
+#'   \item{rrange}{relative range of trend series w.r.t original series}
+#'   \item{neg}{1 indicates that negative values are present in the trend series}
+#'   \item{rev}{relative excess volatility w.r.t original series (stationary series)}
+#'   \item{rsd}{relative standard deviation w.r.t original series (stationary series)}
+#'   \item{cor}{correlation between trend and original series (stationary series)}
+#'   \item{msdtg}{mean standardized deviation (stationary trend)}
+#'   \item{magtg}{mean absolute growth of trend (stationaty trend)}
+#'   \item{drop}{1 indicates the model should be dropped}
 #' 
 #' @export
 auto.gapProd <- function(tsl, 
@@ -203,14 +222,15 @@ auto.gapProd <- function(tsl,
     crit <- helper_fit_comparison(fit = res$fit, 
                                   E1name = "ur", 
                                   E1Trendname = "nawru",
-                                  growth = FALSE, 
                                   fitBayes = res$fitBayes)
+
     
     # eliminate models
-    info <- crit$info
-    info$drop <- (info$convergence != 0 
-                  | info$R2 < 0 
-                  | info$LjungBox < 0.1)
+    info <- cbind(helper_model_comparison(models = res$model), crit$info)
+    info$drop <- 1 * (info$convergence != 0 
+                      | info$neg == 1
+                      | info$R2 < 0 
+                      | info$LjungBox < 0.1)
     info <- info[order(info$drop, info[[criterion]]),]
   
     # order and save results
@@ -223,10 +243,13 @@ auto.gapProd <- function(tsl,
     if (method == "bayesian") {
       
       # eliminate models
-      info <- crit$infoBayes
-      info$drop <- (info$R2 < 0)
-      info <- info[order(info$drop, info[[grep(criterion, c("MRMSE", "R2"), value = TRUE)]])]
-
+      info <- cbind(helper_model_comparison(models = res$model), crit$infoBayes)
+      info$drop <- 1 * (info$R2 < 0                   
+                        | info$neg == 2)
+      criterion_bayes <- grep(criterion, c("MRMSE", "R2"), value = TRUE)
+      if (length(criterion_bayes) == 0) { criterion_bayes <- "MRMSE" }
+      info <- info[order(info$drop, info[[criterion_bayes]]),]
+      
       # order and save results
       index <-  as.numeric(rownames(info))
       nawru$modelBayes <- res$model[index]
@@ -288,14 +311,14 @@ auto.gapProd <- function(tsl,
                                   E1name = "logtfp", 
                                   E1Trendname = "tfpTrend",
                                   E1trans = exp,
-                                  growth = TRUE, 
                                   fitBayes = res$fitBayes)
     
     # eliminate models
-    info <- crit$info
-    info$drop <- (info$convergence != 0 
-                  | info$R2 < 0 
-                  | info$LjungBox < 0.1)
+    info <- cbind(helper_model_comparison(models = res$model), crit$info)
+    info$drop <- 1 * (info$convergence != 0 
+                      | info$neg == 1
+                      | info$R2 < 0 
+                      | info$LjungBox < 0.1)
     info <- info[order(info$drop, info[[criterion]]),]
 
     # order and save results
@@ -308,10 +331,13 @@ auto.gapProd <- function(tsl,
     if (method == "bayesian") {
       
       # eliminate models
-      info <- crit$infoBayes
-      info$drop <- (info$R2 < 0)
-      info <- info[order(info$drop, info[[grep(criterion, c("MRMSE", "R2"), value = TRUE)]])]
-
+      info <- cbind(helper_model_comparison(models = res$model), crit$infoBayes)
+      info$drop <- 1 * (info$R2 < 0 
+                        | info$neg == 1)
+      criterion_bayes <- grep(criterion, c("MRMSE", "R2"), value = TRUE)
+      if (length(criterion_bayes) == 0) { criterion_bayes <- "MRMSE" }
+      info <- info[order(info$drop, info[[criterion_bayes]]),]
+      
       # order and save results
       index <-  as.numeric(rownames(info))
       tfp$modelBayes <- res$model[index]
@@ -402,6 +428,7 @@ autoNAWRUmodel <- function(tsl, poss, nModels = 10) {
     modell[[k]]$type <- rep(poss$type, each = nModels)[index][k]
   }
   # assign trend, cycle
+  nModels <- length(modell)
   modell <- rep(modell, length(cycle))
   for (k in 1:length(cycle)) {
     for (j in 1:nModels) {
@@ -460,6 +487,7 @@ autoTFPmodel <- function(tsl, poss, nModels = 10) {
   bic <- unlist(lapply(modell, "[[", "BIC"))
   
   # assign trend and cycle
+  nModels <- length(modell)
   modell <- rep(modell, length(cycle))
   for (k in 1:length(cycle)) {
     for (j in 1:nModels) {
@@ -608,12 +636,11 @@ helper_model_fit <- function(FUNmodel, FUNfit, tsl, comb, poss, method, type, q,
 #' @param E1Trendname Name of trend of first observation equation.
 #' @param E1trans Transformation function for the first observation equation..
 #' @param fitBayes Fitted Bayesian object.
-#' @inheritParams trendVolaMeasures
 #'
 #' @return A data frame with information criteria, other goodness-of-fit measures, 
 #'   convergence status, trend volatility measures.
 #' @keywords internal
-helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, growth, fitBayes) {
+helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, fitBayes) {
   n_poss <- length(fit)
   
   
@@ -632,9 +659,13 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
   df <- data.frame()
   for (k in 1:n_poss) {
     
+    nDiff <- switch(attr(fit[[k]]$model, "trend"),
+                    "RW1" = 1,
+                    "RW2" = 2, 
+                    "DT" = 1)
     tmp <- trendVolaMeasures(tsOriginal = E1trans(fit[[k]]$model$tsl[[E1name]]), 
                              tsTrend = fit[[k]]$tsl[[E1Trendname]], 
-                             growth = growth)
+                             nDiff = nDiff)
     tmp <- as.data.frame(tmp)
     df <- rbind(df, tmp)
   }
@@ -644,6 +675,9 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
   info <- NULL
   if (length(fitBayes)!=0) {
     
+    nFit <- length(fitBayes)
+    # index_na <- c(1:length(fitBayes))[unlist(lapply(fitBayes, function(x) all(is.na(x))))]
+    index_na_invers <- c(1:length(fitBayes))[unlist(lapply(fitBayes, function(x) !all(is.na(x))))]
     fitBayes <- fitBayes[unlist(lapply(fitBayes, function(x) !all(is.na(x))))]
     # fit criteria
     crit <- names(fitBayes[[1]]$fit)
@@ -656,13 +690,22 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
     df <- data.frame()
     for (k in 1:length(fitBayes)) {
       
+      nDiff <- switch(attr(fitBayes[[k]]$model, "trend"),
+                      "RW1" = 1,
+                      "RW2" = 2, 
+                      "DT" = 1)
       tmp <- trendVolaMeasures(tsOriginal = fitBayes[[k]]$model$tsl[[E1name]], 
-                               tsTrend = fitBayes[[k]]$tsl[[E1Trendname]], 
-                               growth = growth)
+                               tsTrend = fitBayes[[k]]$tsl[[E1Trendname]],
+                               nDiff = nDiff)
       tmp <- as.data.frame(tmp)
       df <- rbind(df, tmp)
     }
     info <- cbind(info, df)
+    # add NA rows for error runs.
+    info_na <- data.frame(matrix(NA, nFit, ncol(info)))
+    info_na[index_na_invers, ] <- info
+    colnames(info_na) <- colnames(info)
+    info <- info_na
     
   }
   
@@ -671,6 +714,37 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
   return(res)
 }
 
+# -------------------------------------------------------------------------------------------
+
+#' model comparison helper function
+#'
+#' @description Gets model attributes
+#'
+#' @param models A list of models.
+#'
+#' @return A data frame with model attributes
+#' @keywords internal
+helper_model_comparison <- function(models) {
+  
+  model_info <- lapply(models, function(x) {
+    att <- attributes(x)
+    xclass <- att$class
+    E2name <- ifelse(xclass == "NAWRUmodel", "phillips curve", "cubs")
+    df <- data.frame(cycle = att$cycle,
+                     trend = att$trend,
+                     E2cycleLag = paste0(att[[E2name]]$cycleLag, collapse = ","),
+                     E2exoVariables = paste0(att[[E2name]]$exoVariables, collapse = ", "),
+                     E2errorAR = att[[E2name]]$errorARMA[1],
+                     E2errorMA = att[[E2name]]$errorARMA[2])
+    
+    if (xclass == "NAWRUmodel") {
+      df$E2type <- att[[E2name]]$type
+    }
+    df
+  })
+  do.call(rbind, model_info)
+  
+}
 
 
 # -------------------------------------------------------------------------------------------
@@ -681,21 +755,24 @@ helper_fit_comparison <- function(fit, E1name, E1Trendname, E1trans = identity, 
 #'
 #' @param tsOriginal The original time series.
 #' @param tsTrend The trend time series.
-#' @param growth Boolean indicating whether the volatility measures should be computed for 
-#'   the growth rate of the given time series.
+#' @param nDiff Integer indicating the order of differencing applied to the input series.
 #'
 #' @return A list containing the different measures.
 #' @importFrom stats cor
 #' @keywords internal
-trendVolaMeasures <- function(tsOriginal, tsTrend, growth = FALSE) {
-  
-  if (growth) {
-    tsOriginal <- growth(tsOriginal)
-    tsTrend <- growth(tsTrend)
-  }
+trendVolaMeasures <- function(tsOriginal, tsTrend, nDiff) {
+
   result <- list()
+
+  # negative values
+  result$neg <- 1 * any(tsTrend  < 0)
+  # relative range
+  result$rrange <- (max(tsTrend) - min(tsTrend)) / (max(tsOriginal) - min(tsOriginal))
   
-  # result$range <- (max(tsFilter) - min(tsFilter)) / (max(tsOriginal) - min(tsOriginal))
+  # transform to stationary series  
+  tsOriginal <- diff(tsOriginal, differences = nDiff)
+  tsTrend <- diff(tsTrend, differences = nDiff)
+  
   
   # rev: relative excess volatility (result close of above 1 -> excess vola)
   result$rev <- (max(tsTrend) - min(tsTrend)) / (max(tsOriginal) - min(tsOriginal))
@@ -704,13 +781,12 @@ trendVolaMeasures <- function(tsOriginal, tsTrend, growth = FALSE) {
   result$rsd <- sqrt(var(tsTrend, na.rm = TRUE)) / sqrt(var(tsOriginal, na.rm = TRUE))
   
   # corr: correlation
-  result$corr <- cor(tsTrend,tsOriginal)
+  result$corr <- cor(tsTrend, tsOriginal)
   
-  # normalized mean absolute deviation of trend growth (the smaller the smoother the trend)
-  result$msgtg <-  mean(abs(tsTrend - mean(tsTrend))) / abs(mean(tsTrend))
-  result$msgtg <-  mean(abs(tsTrend - mean(tsTrend))) / mean(abs(tsTrend))
+  # normalized mean absolute deviation of trend growth (diff) (the smaller the smoother the trend)
+  result$msdtg <-  mean(abs(tsTrend - mean(tsTrend))) / mean(abs(tsTrend))
   
-  # magtg: mean absolute growth of trend growth
+  # magtg: mean absolute growth of trend growth (diff)
   result$magtg <- mean(abs(growth(tsTrend)))
   
   result
@@ -843,10 +919,12 @@ obs2Optim <- function(x1, x2, xexo = NULL, errorARmax = 2, errorMAmax = 2, maxCy
   # xexo pre selection
   tmp <- NULL
   bic <- NULL
+  par_max <- length(x2) - 2 - 1
+  exo_lag_max <- min(ifelse(freq == 1, 2, 8), par_max)
   if (!is.null(xexo)) {
     count <- 0
     for (k in 1:length(xexo)) {
-      for (p1 in 0:2) { # lag
+      for (p1 in 0:exo_lag_max) { # lag
         for (p2 in 1:2) { # diff
           count <- count + 1
           xregExo <- cbind(xreg_base, window(diff(stats::lag(xexo[[k]], -p1), differences = p2), start = start(x2), end = end(x2)))
@@ -855,7 +933,7 @@ obs2Optim <- function(x1, x2, xexo = NULL, errorARmax = 2, errorMAmax = 2, maxCy
         }
       }
     }
-    tmp <- cbind(bic, expand.grid(lapply(list( 1:2, 0:2, 1:length(xexo)), function(x) 1:length(x))))
+    tmp <- cbind(bic, expand.grid(lapply(list( 1:2, 0:exo_lag_max, 1:length(xexo)), function(x) 1:length(x))))
     tmp <- tmp[tmp[,1] < bic_base, ]
     tmp <- tmp[order(tmp[, 1]), ][1:min(maxExo, nrow(tmp)), 2:4]
     names(tmp) <- c("diff", "lag", "var")
@@ -878,6 +956,7 @@ obs2Optim <- function(x1, x2, xexo = NULL, errorARmax = 2, errorMAmax = 2, maxCy
   }
   
   # ARMA errors
+  par_cycle_max <- floor(length(x2) * 3 / 4) - nrow(tmp) - errorARmax - errorMAmax - maxAR
   poss <- list(cycle = 0:(length(cycle)-1),
                xregAR = 0,
                AR = 0:errorARmax, 
@@ -910,11 +989,21 @@ obs2Optim <- function(x1, x2, xexo = NULL, errorARmax = 2, errorMAmax = 2, maxCy
     # out of sample performance
     n_par <- ncol(xreg) + comb$AR[p] + comb$MA[p] + 1
     index <- 1:max(floor(length(x2) * 3 / 4), n_par + 1)
-    mod <- arima(x2[index], order = c(comb$AR[p], 0, comb$MA[p]), xreg = as.matrix(xreg)[index,], method="ML")
-    pred <- predict(mod, newxreg = as.matrix(xreg)[-index,])
-    mae_in <- 100 / length(index) * sum( abs( mod$residuals ), na.rm = TRUE ) 
-    mae_out <- 100 / length(pred$pred) * sum( abs( x2[-index] - pred$pred ), na.rm = TRUE ) 
-    mae_ratio[p] <- mae_out / mae_in
+    mae_ratio[p] <- tryCatch(
+      {
+        mod <- arima(x2[index], order = c(comb$AR[p], 0, comb$MA[p]), xreg = as.matrix(xreg)[index,], method="ML")
+        pred <- predict(mod, newxreg = as.matrix(xreg)[-index,])
+        mae_in <- 100 / length(index) * sum( abs( mod$residuals ), na.rm = TRUE ) 
+        mae_out <- 100 / length(pred$pred) * sum( abs( x2[-index] - pred$pred ), na.rm = TRUE ) 
+        mae_out / mae_in
+      },
+      error=function(cond) {
+        return(Inf)
+      },
+      warning=function(cond) {
+        return(Inf)
+      }
+    )    
     
   }
   if (sum(ljungp < 0.1) < nrow(comb)) { bic[ljungp < 0.1] <- Inf }

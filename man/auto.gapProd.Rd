@@ -54,7 +54,26 @@ finds the most suitable NAWRU or TFP model, respectively. The default is
 \value{
 A list containing three components: \code{gap} (the best model of class \code{"gap"}), 
 \code{tfp} (a nested list of TFP models, fitted objects and model fit criteria), \code{nawru} 
-(a nested list of NAWRU models, fitted objects and model fit criteria).
+(a nested list of NAWRU models, fitted objects and model fit criteria). The lists \code{nawru}
+and \code{tfp} contain a list of models, a list of fitted objects and a dataframe \code{info},
+which contains
+  \item{loglik}{log-likelihood function at optimum}
+  \item{AIC}{Akaike information criterion}
+  \item{BIC}{Bayesian information criterion}
+  \item{HQC}{Hannan-Quinn information criterion}
+  \item{RMSE}{Root mean squared error}
+  \item{R2}{Coefficient of determination (R squared)}
+  \item{signal-to-noise}{Signal-to-noise ratio}
+  \item{LjungBox}{p-value of Ljung-Box test for autocorrelation (H0 = no autocorrelation)}
+  \item{convergence}{0 indicates convergence of the optimization}
+  \item{rrange}{relative range of trend series w.r.t original series}
+  \item{neg}{1 indicates that negative values are present in the trend series}
+  \item{rev}{relative excess volatility w.r.t original series (stationary series)}
+  \item{rsd}{relative standard deviation w.r.t original series (stationary series)}
+  \item{cor}{correlation between trend and original series (stationary series)}
+  \item{msdtg}{mean standardized deviation (stationary trend)}
+  \item{magtg}{mean absolute growth of trend (stationaty trend)}
+  \item{drop}{1 indicates the model should be dropped}
 }
 \description{
 Finds the most suitable model for the NAWRU and the TFP trend according to 

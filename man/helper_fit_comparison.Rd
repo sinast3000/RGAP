@@ -4,14 +4,7 @@
 \alias{helper_fit_comparison}
 \title{model selection fit comparison helper function}
 \usage{
-helper_fit_comparison(
-  fit,
-  E1name,
-  E1Trendname,
-  E1trans = identity,
-  growth,
-  fitBayes
-)
+helper_fit_comparison(fit, E1name, E1Trendname, E1trans = identity, fitBayes)
 }
 \arguments{
 \item{fit}{Fitted object.}
@@ -21,9 +14,6 @@ helper_fit_comparison(
 \item{E1Trendname}{Name of trend of first observation equation.}
 
 \item{E1trans}{Transformation function for the first observation equation..}
-
-\item{growth}{Boolean indicating whether the volatility measures should be computed for 
-the growth rate of the given time series.}
 
 \item{fitBayes}{Fitted Bayesian object.}
 }

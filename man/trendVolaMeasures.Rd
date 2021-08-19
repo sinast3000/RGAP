@@ -4,15 +4,14 @@
 \alias{trendVolaMeasures}
 \title{Trend volatility measures}
 \usage{
-trendVolaMeasures(tsOriginal, tsTrend, growth = FALSE)
+trendVolaMeasures(tsOriginal, tsTrend, nDiff)
 }
 \arguments{
 \item{tsOriginal}{The original time series.}
 
 \item{tsTrend}{The trend time series.}
 
-\item{growth}{Boolean indicating whether the volatility measures should be computed for 
-the growth rate of the given time series.}
+\item{nDiff}{Integer indicating the order of differencing applied to the input series.}
 }
 \value{
 A list containing the different measures.
