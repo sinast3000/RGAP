@@ -10,7 +10,7 @@
 #'   \code{"hp"}, see details. The default is \code{type = "basic"}.
 #' @param lambda The smoothing constant for the HP-filter if \code{type = "hp"}.
 #' @param q Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
-#'   default is \code{q = 0.05}.
+#'   default is \code{q = 0.01}.
 #'
 #' @details For \code{type = "hp"}, the HP filter is applied to the appropriately differences 
 #'   first observation series to obtain its trend and cycle. Subsequently, the specified trend 
@@ -26,7 +26,7 @@
 #'   restriction is present.
 #'
 #' @export
-initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.05) {
+initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 
   # model attributes
   class <- class(model)

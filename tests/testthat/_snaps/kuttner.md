@@ -46,29 +46,29 @@
     	Maximum likelihood estimation results
     
     cycle
-             Coefficient Standard Error t-statistic  p-value
-      cPhi1     1.512436       1.56e-01       9.671 0.00e+00
-      cPhi2    -0.571865       1.93e+00      -0.296 7.67e-01
-      cSigma    0.000139       1.71e-05       8.160 4.44e-16
+             Coefficient Standard Error t-statistic p-value
+      cPhi1     1.443973       1.41e-01      10.219 0.00000
+      cPhi2    -0.521264       1.23e+00      -0.424 0.67172
+      cSigma    0.000198       5.81e-05       3.397 0.00068
     
     trend
               Coefficient Standard Error t-statistic  p-value
-      tSigma     5.63e-05       5.08e-05        1.11 2.67e-01
-      tdConst    1.99e-02       2.93e-03        6.80 1.03e-11
+      tSigma     1.81e-05       9.55e-06        1.90 5.79e-02
+      tdConst    1.98e-02       2.63e-03        7.55 4.29e-14
     
     inflation equation
                     Coefficient Standard Error t-statistic  p-value
-      inflC1             -0.105         0.7723      -0.136 0.891552
-      inflConst          -0.144         0.0986      -1.459 0.144622
-      inflErrGamma1      -0.220         0.2431      -0.907 0.364592
-      inflErrGamma2      -0.292         0.1444      -2.023 0.043054
-      inflErrGamma3      -0.488         0.2316      -2.107 0.035143
-      inflGdpGL1          7.179         4.6153       1.556 0.119825
-      inflSigma           0.378         0.1028       3.677 0.000236
-      RMSE: 0.637
-      R2: 0.385
-      Box-Ljung test: X-squared = 2.55, df = 6, p-value = 0.862
+      inflC1            -0.0973          0.803      -0.121 0.903533
+      inflConst         -0.1234          0.100      -1.228 0.219464
+      inflErrGamma1     -0.2143          0.253      -0.848 0.396673
+      inflErrGamma2     -0.2959          0.143      -2.074 0.038065
+      inflErrGamma3     -0.4938          0.244      -2.027 0.042707
+      inflGdpGL1         6.1713          4.693       1.315 0.188498
+      inflSigma          0.3749          0.102       3.687 0.000227
+      RMSE: 0.638
+      R2: 0.384
+      Box-Ljung test: X-squared = 2.71, df = 6, p-value = 0.844
     
              loglik             AIC             BIC             HQC signal-to-noise 
-            50.8338        -77.6676        -60.8532        -72.2885          0.4045 
+           51.06918       -78.13836       -61.32400       -72.75930         0.09163 
 

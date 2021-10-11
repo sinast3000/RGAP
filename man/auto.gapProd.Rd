@@ -7,7 +7,7 @@
 auto.gapProd(
   tsl,
   type = "hp",
-  q = 0.1,
+  q = 0.01,
   method = "MLE",
   criterion = "BIC",
   fast = TRUE,
@@ -27,10 +27,12 @@ auto.gapProd(
 \code{"hp"}, see \code{initializeRestr}. The default is \code{type = "hp"}.}
 
 \item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}), 
-see \code{initializeRestr}. The default is \code{q = 0.1}.}
+see \code{initializeRestr}. The default is \code{q = 0.01}.}
 
 \item{method}{The estimation method. Options are maximum likelihood estimation \code{"MLE"}
-and bayesian estimation \code{"bayesian"}. The default is \code{method = "MLE"}.}
+and bayesian estimation \code{"bayesian"}. If \code{method = c("MLE", "bayesian")} the 
+NAWRU is fitted by MLE and the TFP trend by Bayesian methods. The default is 
+\code{method = "MLE"}.}
 
 \item{criterion}{Model selection criterion. Options are the Bayesian information criterion 
 \code{"BIC"} and the root mean squared error \code{"RMSE"}, both computed for the second 

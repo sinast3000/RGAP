@@ -10,9 +10,11 @@
 #' @param type The variance restriction type. Possible options are \code{"basic"},
 #'   \code{"hp"}, see \code{initializeRestr}. The default is \code{type = "hp"}.
 #' @param q Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}), 
-#'   see \code{initializeRestr}. The default is \code{q = 0.1}.
+#'   see \code{initializeRestr}. The default is \code{q = 0.01}.
 #' @param method The estimation method. Options are maximum likelihood estimation \code{"MLE"}
-#'   and bayesian estimation \code{"bayesian"}. The default is \code{method = "MLE"}.
+#'   and bayesian estimation \code{"bayesian"}. If \code{method = c("MLE", "bayesian")} the 
+#'   NAWRU is fitted by MLE and the TFP trend by Bayesian methods. The default is 
+#'   \code{method = "MLE"}.
 #' @param criterion Model selection criterion. Options are the Bayesian information criterion 
 #'   \code{"BIC"} and the root mean squared error \code{"RMSE"}, both computed for the second 
 #'   observation equation. The default is \code{criterion = "BIC"}. For Bayesian estimation 
@@ -109,7 +111,7 @@
 #' @export
 auto.gapProd <- function(tsl, 
                          type = "hp",
-                         q = 0.1,
+                         q = 0.01,
                          method = "MLE",
                          criterion = "BIC",
                          fast = TRUE,
@@ -150,6 +152,9 @@ auto.gapProd <- function(tsl,
   nawruPoss <- c(nawruPoss, nawruPossBase[!(names(nawruPossBase) %in% names(nawruPoss))])
   tfpPoss <- c(tfpPoss, tfpPossBase[!(names(tfpPossBase) %in% names(tfpPoss))])
   
+  if (length(method) == 1) {
+    method <- rep(method, 2)
+  }
   
   result <- list()
   
@@ -213,7 +218,7 @@ auto.gapProd <- function(tsl,
                             tsl = tsl,
                             comb = comb, 
                             poss = nawruPoss, 
-                            method = method, 
+                            method = method[1], 
                             type = type,
                             q = q,
                             modelName = "NAWRU")
@@ -240,7 +245,7 @@ auto.gapProd <- function(tsl,
     nawru$fit <- res$fit[index]
     nawru$info <- info
     
-    if (method == "bayesian") {
+    if (method[1] == "bayesian") {
       
       # eliminate models
       info <- cbind(helper_model_comparison(models = res$model), crit$infoBayes)
@@ -301,7 +306,7 @@ auto.gapProd <- function(tsl,
                             tsl = tsl,
                             comb = comb, 
                             poss = tfpPoss, 
-                            method = method, 
+                            method = method[2], 
                             type = type,
                             q = q,
                             modelName = "TFP")
@@ -328,7 +333,7 @@ auto.gapProd <- function(tsl,
     tfp$fit <- res$fit[index]
     tfp$info <- info
     
-    if (method == "bayesian") {
+    if (method[2] == "bayesian") {
       
       # eliminate models
       info <- cbind(helper_model_comparison(models = res$model), crit$infoBayes)
@@ -354,7 +359,17 @@ auto.gapProd <- function(tsl,
   if (auto == "gap") {
     
     if (nrow(tfp$info) >= 1 & nrow(nawru$info) >= 1) {
-      bestgap <- gapProd(tsl = tsl, NAWRUfit = nawru$fit[[1]], TFPfit = tfp$fit[[1]])
+      if (method[1] == "MLE") {
+        nawrufit <- nawru$fit[[1]]
+      } else {
+        nawrufit <- nawru$fitBayes[[1]]
+      }
+      if (method[2] == "MLE") {
+        tfpfit <- tfp$fit[[1]]
+      } else {
+        tfpfit <- tfp$fitBayes[[1]]
+      }
+      bestgap <- gapProd(tsl = tsl, NAWRUfit = nawrufit, TFPfit = tfpfit)
     } else {
       warning("No valid model left.")
       bestgap <- NULL

@@ -26,7 +26,7 @@
 \item{errorARMA}{The ARMA order of the second equation error process.}
 
 \item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
-default is \code{q = 0.05}.}
+default is \code{q = 0.01}.}
 }
 \description{
 Initializes variance restrictions.

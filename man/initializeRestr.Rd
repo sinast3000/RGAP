@@ -4,7 +4,7 @@
 \alias{initializeRestr}
 \title{Initialization of parameter restrictions}
 \usage{
-initializeRestr(model, type = "basic", lambda = NULL, q = 0.05)
+initializeRestr(model, type = "basic", lambda = NULL, q = 0.01)
 }
 \arguments{
 \item{model}{An object of class \code{NAWRUmodel}, \code{TFPmodel}, or \code{KuttnerModel}.}
@@ -15,7 +15,7 @@ initializeRestr(model, type = "basic", lambda = NULL, q = 0.05)
 \item{lambda}{The smoothing constant for the HP-filter if \code{type = "hp"}.}
 
 \item{q}{Quantile for the Inverse Gamma distribution (only used if \code{type = "hp"}). The 
-default is \code{q = 0.05}.}
+default is \code{q = 0.01}.}
 }
 \value{
 A list of three matrices containing the parameter restrictions for the cycle,

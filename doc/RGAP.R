@@ -156,7 +156,7 @@ tsList <- as.list(gap[["Netherlands"]][,c("cpih","gdp")])
 tsList$infl <- diff(tsList$cpih)
 model <- KuttnerModel(tsl = tsList, trend = "RW2",
                       cycleLag = 1, cycle = "AR2")
-parRestr <- initializeRestr(model = model, type = "hp")
+parRestr <- initializeRestr(model = model, type = "hp", q = 0.1)
 gapKuttner <- fitKuttner(model, parRestr)
 # ---
 plot(gapKuttner, path = file.path(path, country), prefix = "kuttner")
@@ -314,7 +314,7 @@ for (k in countries) {
   # data
   tsl[[k]] <- amecoData2input(gap[[k]])
   # gap
-  fit[[k]] <- auto.gapProd(tsl = tsl[[k]], type = type, fast = TRUE, nModels = 5)
+  fit[[k]] <- auto.gapProd(tsl = tsl[[k]], type = type, fast = TRUE, nModels = 5, q = 0.1)
 
   plot(fit[[k]]$nawru$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
   plot(fit[[k]]$tfp$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
