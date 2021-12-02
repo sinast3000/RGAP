@@ -166,8 +166,16 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
       datal <- c(datal, model$tsl[3:(2 + nExo)])
     }
     datal <- na.trim(do.call(cbind, datal))
-    varE2 <- arima(x = datal[, 1], order = c(errorARMA[1], 0, errorARMA[2]), xreg = datal[, -1])$sigma2
-
+    varE2 <- tryCatch(
+      {
+        arima(x = datal[, 1], order = c(errorARMA[1], 0, errorARMA[2]), xreg = datal[, -1])$sigma2
+      },
+      error = function(cont) {
+        stop("The selected exogenous variables likely are linearly dependent. Consider to respecify.")
+      }
+    )
+    
+    
     # computes quantiles of gamma distribution with mean and standard deviation
     # set to the previously computed variances
     beta <- 1
