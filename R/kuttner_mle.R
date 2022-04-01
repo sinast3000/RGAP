@@ -177,15 +177,18 @@ fitKuttner <- function(model, parRestr = initializeRestr(model), signalToNoise =
 
   # save filtered and smoothed time series and residuals
   tslRes <- .SSresults(out = out)
-  tslRes$potential <- exp(tslRes$stateSmoothed[, "trend"])
-  tslRes$potentialGrowth <- growth(exp(tslRes$stateSmoothed[, "trend"]))
-  tslRes$gap <- 100 * tslRes$stateSmoothed[, "cycle"]
+  tslRes <- .KuttnerResults(tsl = tslRes, out)
 
-  # delta method for standard errors of tfp trend and growth
-  tslRes[[c("potentialGrowthSE")]] <- .deltaMethodState(out = out, nameState = "trend")$diffStateSE
-  tslRes[[c("potentialSE")]] <- .deltaMethodState(out = out, nameState = "trend")$expStateSE
-  tslRes[[c("gapSE")]] <- 100 * .deltaMethodState(out = out, nameState = "cycle")$StateSE
-
+  # tslRes$potential <- exp(tslRes$stateSmoothed[, "trend"])
+  # tslRes$potentialGrowth <- growth(exp(tslRes$stateSmoothed[, "trend"]))
+  # tslRes$gap <- 100 * tslRes$stateSmoothed[, "cycle"]
+  # 
+  # # delta method for standard errors of tfp trend and growth
+  # tslRes[[c("potentialGrowthSE")]] <- .deltaMethodState(out = out, nameState = "trend")$diffStateSE
+  # tslRes[[c("potentialSE")]] <- .deltaMethodState(out = out, nameState = "trend")$expStateSE
+  # # tslRes[[c("gapSE")]] <- 100 * .deltaMethodState(out = out, nameState = "cycle")$StateSE # not sure why this should be true
+  # tslRes[[c("gapSE")]] <- tslRes$stateSmoothedSE[,"cycle"]*100
+  # 
   # ----- inference
   dfRes <- inference(parOptim = fit$optim.out$par, hessian = fit$optim.out$hessian, loc = loc)
 
@@ -220,4 +223,23 @@ fitKuttner <- function(model, parRestr = initializeRestr(model), signalToNoise =
 
   print(KuttnerFit)
   return(KuttnerFit)
+}
+
+
+.KuttnerResults <- function(tsl, out) {
+  tsl <- within(tsl, {
+    potential <- exp(stateSmoothed[, "trend"])
+    potentialGrowth <- growth(exp(stateSmoothed[, "trend"]))
+    gap <- 100 * stateSmoothed[, "cycle"]
+    gdp <- exp(obs[, 1])
+    gdpGrowth <- growth(exp(obs[, 1]))
+  
+  # delta method for standard errors of tfp trend and growth
+    potentialGrowthSE <- .deltaMethodState(out = out, nameState = "trend")$diffStateSE
+    potentialSE <- .deltaMethodState(out = out, nameState = "trend")$expStateSE
+  # tsl[[c("gapSE")]] <- 100 * .deltaMethodState(out = out, nameState = "cycle")$StateSE # not sure why this should be true
+    gapSE <- stateSmoothedSE[,"cycle"]*100
+  
+  })
+  tsl
 }
