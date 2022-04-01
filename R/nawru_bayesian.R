@@ -103,7 +103,7 @@
   # ----- Gibbs procedure
 
   # initialization
-  state <- array(0, dim = c(Tt, k, R / thin))
+  state <- state_f <- array(0, dim = c(Tt, k, R / thin))
   obsFitted <- array(0, dim = c(Tt, 2, R / thin))
   param <- array(0, c(R / thin, nPar))
   accept <- rep(0, R / thin)
@@ -133,7 +133,8 @@
       smoothing = c("state", "signal", "disturbance")
     )
     stateSmoothed <- coef(out)
-
+    stateFiltered <- out$att
+    
     # ----- Step 2 ----- trend
     Ytrend <- stateSmoothed[, "trend"]
     if (trend == "DT") {
@@ -188,6 +189,7 @@
     if (r %% thin == 0) {
       count <- count + 1
       state[, , count] <- stateSmoothed
+      state_f[, , count] <- stateFiltered
       param[count, ] <- pars
       accept[count] <- aProb
       obsFitted[, , count] <- out$m
@@ -205,37 +207,45 @@
   # get rid of burn in phase
   mcmc <- list(
     states = state,
+    states_f = state_f,
     parameters = param,
     fitted = obsFitted
   )
   state <- state[, , (burnin / thin + 1):(R / thin)]
+  state_f <- state_f[, , (burnin / thin + 1):(R / thin)]
   obsFitted <- obsFitted[, , (burnin / thin + 1):(R / thin)]
   param <- param[(burnin / thin + 1):(R / thin), ]
   accept <- accept[(burnin / thin + 1):(R / thin)]
-  colnames(state) <- colnames(stateSmoothed)
+  colnames(state) <- colnames(state_f) <- colnames(stateSmoothed)
 
   # ----- estimated parameters
   paramEstim <- apply(param, 2, FUN)
   dfRes <- mcmcSummary(x = param, HPDIprob = HPDIprob)
-
+  SSModel <- .updateSSSystem(
+    pars = paramEstim, SSModel = SSModel, loc = loc, cycle = cycle,
+    trend = trend, errorARMA = errorARMA, bayes = TRUE
+  )
+  
   # ----- estimated states
-  tslRes <- list()
+  tslRes <- .SSresultsBayesian(model = model$SSModel, HPDIprob = HPDIprob, FUN = FUN,
+                               state = state, state_f = state_f, obsFitted = obsFitted)
+  
+  # tslRes <- list()
   start <- start(stateSmoothed)
   freq <- frequency(stateSmoothed)
-  # smoothed states
-  tslRes$stateSmoothedSummary <- do.call(cbind, lapply(
-    setdiff(colnames(state), "const"),
-    function(x) {
-      ts(mcmcSummary(x = t(state[, x, ]), HPDIprob = HPDIprob),
-        start = start, frequency = freq
-      )
-    }
-  ))
-  colnames(tslRes$stateSmoothedSummary) <- paste0(
-    rep(setdiff(colnames(state), "const"), each = 8),
-    paste0(".", colnames(tslRes$stateSmoothedSummary)[1:8])
-  )
-  tslRes$stateSmoothed <- ts(apply(state, c(1, 2), FUN), start = start, frequency = freq)
+  # # smoothed states
+  # tslRes$stateSmoothedSummary <- lapply(setdiff(colnames(state), "const"), function(x) {
+  #   ts(mcmcSummary(x = t(state[, x, ]), HPDIprob = HPDIprob),
+  #      start = start, frequency = freq
+  #   )
+  # })
+  # names(tslRes$stateSmoothedSummary) <- setdiff(colnames(state), "const")
+  # tslRes$stateSmoothedSummary <- do.call(cbind, tslRes$stateSmoothedSummary)
+  # # colnames(tslRes$stateSmoothedSummary) <- paste0(
+  # #   rep(setdiff(colnames(state), "const"), each = 8),
+  # #   paste0(".", colnames(tslRes$stateSmoothedSummary)[1:8])
+  # # )  
+  # tslRes$stateSmoothed <- ts(apply(state, c(1, 2), FUN), start = start, frequency = freq)
   # nawru
   tsTmp <- state[, "trend", ]
   tslRes$nawruSummary <- ts(mcmcSummary(x = t(tsTmp), HPDIprob = HPDIprob), start = start, frequency = freq)
@@ -249,7 +259,18 @@
   .printGeweke(tsl = tslRes$stateSmoothedSummary, df = dfRes, alpha = 0.05)
 
   # ----- output
-
+  
+  # KFS out and fit output
+  SSMout <- within(list(), {
+    model <- model$SSModel
+    dims <-  list(n = dim(state)[1])
+    att <- ts(apply(state_f, c(1, 2), FUN), start = start, frequency = freq)
+    alphahat <- tslRes$stateSmoothed
+    V <- array(apply(state, 3, var), c(rep(dim(state)[2], 2),dim(state)[3]))
+    Ptt <- array(apply(state, 3, var), c(rep(dim(state)[2], 2),dim(state)[3]))
+  })
+  SSMfit <- list(model = SSModel)  
+  
   # order parameters
   dfRes <- dfRes[order(rownames(dfRes)), ]
 
@@ -266,6 +287,8 @@
   NAWRUfit <- list(
     model = model,
     tsl = tslRes,
+    SSMfit = SSMfit,
+    SSMout = SSMout,
     parameters = dfRes,
     parametersSampled = mcmc$param,
     statesSampled = mcmc$state,
