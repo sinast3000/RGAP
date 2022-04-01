@@ -377,121 +377,180 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
       path <- NULL
     }
   }
-
-  # ----- SSModel plots
-
+  
+  # check whether prediction is present
+  prediction <- "prediction" %in% names(attributes(x))
+  
   # confidence bounds
   tvalue <- -qnorm((alpha) / 2)
-  tslBounds <- list(
-    ub = (x$tsl$potential + x$tsl$potentialSE * tvalue),
-    lb = (x$tsl$potential - x$tsl$potentialSE * tvalue)
-  )
-  boundName <- paste0(100 * (1 - alpha), "% confidence interval")
-  tslBounds2 <- list(
-    ub = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
-    lb = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)
-  )
+  boundName <- paste0(100 * (1 - alpha), "% CI")
+  
+  
+  if (!prediction) {
+  
+  
+    # ----- SSModel plots
+  
+    # residuals
+    res <- x$tsl$obsResidualsRecursive[, "dinfl"]
+  
+    # --- data
+    # potential growth
+    tsl1 <- list(
+      trend = x$tsl$potential,
+      orig = exp(x$tsl$obs[, 1]),
+      lb = (x$tsl$potential - x$tsl$potentialSE * tvalue),
+      ub = (x$tsl$potential + x$tsl$potentialSE * tvalue)
+    )
+    if (!is.null(x$tsl$trendAnchored)) {
+      tsl1 <- c(tsl1, list(anchor = exp(x$tsl$trendAnchored)))
+    }
+    tsl1 <- do.call(cbind, tsl1)
+  
+    # cubs equation
+    tsl2 <- do.call(cbind, list(
+      fitted = x$tsl$obsFitted[, 2],
+      E2 = x$tsl$obs[, 2],
+      lb = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue),
+      ub = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue)
+    ))
+  
+    # combine lists
+    tsl <- list(tsl1, tsl2)
+  
+    # --- legends and titles and print names
+    legend <- list(
+      c("potential", "gdp", "anchored potential"),
+      c("fitted", "change in inflations")
+    )
+    title <- list(
+      "Potential output",
+      "Inflation",
+      "Inflation residuals"
+    )
+    namesPrint <- paste(prefix, c("potential_growth", "inflation"), sep = "_")
+  
+    # plot
+    plotSSresults(
+      tsl = tsl, legend = legend, title = title,
+      boundName = boundName, res = res, namesPrint = namesPrint,
+      bounds = bounds, combine = combine, path = path, device = device,
+      width = width, height = height
+    )
+  
+    # ----- gap plots
+  
+    # --- data
+    # potential and gdp growth
+    tsl1 <- list(
+      potential = 100 * x$tsl$potentialGrowth,
+      gdp = 100 * growth(window(exp(x$model$tsl$loggdp), start = start(x$tsl$potential))),
+      lb = 100 * (x$tsl$potentialGrowth - x$tsl$potentialGrowthSE * tvalue),
+      ub = 100 * (x$tsl$potentialGrowth + x$tsl$potentialGrowthSE * tvalue)
+    )
+    tsl1 <- do.call(cbind, tsl1)
+  
+    # gap
+    tsl2 <- do.call(cbind, list(
+      gap = x$tsl$gap,
+      lb = (x$tsl$gap - x$tsl$gapSE * tvalue),
+      ub = (x$tsl$gap + x$tsl$gapSE * tvalue)
+    ))
+  
+    # combine lists
+    tsl <- list(tsl1, tsl2)
+  
+    # --- legends and titles and print names
+    legend <- list(
+      c("potential", "gdp"),
+      c("output gap")
+    )
+    title <- list(
+      "GDP growth in %",
+      "Output gap in %"
+    )
+    namesPrint <- paste(prefix, c("potential_growth", "gap"), sep = "_")
+  
+    # plot
+    plotGap(
+      tsl = tsl, legend = legend, title = title, boundName = boundName,
+      contribution = FALSE, res = res, namesPrint = namesPrint,
+      bounds = bounds, combine = combine, path = path, device = device,
+      width = width, height = height
+    )
+    
+  } else { # plot predictions
+    
+    # confidence bounds
+    tvalue <- -qnorm((alpha) / 2)
+    boundName <- paste0(100 * (1 - alpha), "% CI")
 
-  # residuals
-  res <- x$tsl$obsResidualsRecursive[, "dinfl"]
-
-  # --- data
-  # potential growth
-  tsl1 <- list(
-    trend = x$tsl$potential,
-    orig = exp(x$model$tsl$loggdp),
-    lb = tslBounds$lb,
-    ub = tslBounds$ub
-  )
-  if (!is.null(x$tsl$trendAnchored)) {
-    tsl1 <- c(tsl1, list(anchor = exp(x$tsl$trendAnchored)))
+    # residuals
+    res <- NULL
+    
+    # --- data
+    # potential 
+    tsl1 <- do.call(cbind, list(
+      trend = x$tsl$potential,
+      orig = x$tsl$gdp,
+      lb = (x$tsl$potential - x$tsl$potentialSE * tvalue),
+      ub = (x$tsl$potential + x$tsl$potentialSE * tvalue),
+      lb2 = (x$tsl$gdp - x$tsl$gdpSE * tvalue),
+      ub2 = (x$tsl$gdp + x$tsl$gdpSE * tvalue)
+    ))
+    
+    # tsl1 <- do.call(cbind, tsl1)
+    
+    # cubs equation
+    tsl2 <- do.call(cbind, list(
+      E2 = x$tsl$obs[, 2],
+      lb = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
+      ub = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue)
+    ))
+    
+    # cycle
+    tsl3 <- do.call(cbind, list(
+      cycle = 100 * x$tsl$stateSmoothed[, "cycle"],
+      lb = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+      ub = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue))
+    ))
+    
+    # potential growth
+    tsl4 <- NULL
+    tsl4 <- do.call(cbind, list(
+      trend = 100 * x$tsl$potentialGrowth,
+      orig = 100 * x$tsl$gdpGrowth,
+      lb = 100 * (x$tsl$potentialGrowth - x$tsl$potentialGrowthSE * tvalue),
+      ub = 100 * (x$tsl$potentialGrowth + x$tsl$potentialGrowthSE * tvalue),
+      lb2 = 100 * (x$tsl$gdpGrowth - x$tsl$gdpGrowthSE * tvalue),
+      ub2 = 100 * (x$tsl$gdpGrowth + x$tsl$gdpGrowthSE * tvalue)
+    ))
+    
+    # combine lists
+    tsl <- list(tsl1, tsl2, tsl3, tsl4)
+    
+    # --- legends and titles and print names
+    legend <- list(
+      c("potential", "gdp", rep(paste0(boundName, " (gdp)"), 2)),
+      c("change in inflation", rep(paste0(boundName, ""), 2)),
+      c("output gap"),
+      c("potential growth", "gdp growth", rep(paste0(boundName, " (gdp growth)"), 2))
+    )
+    title <- list(
+      "Potential output",
+      "Inflation",
+      "Output gap",
+      "Potential output growth"
+    )
+    namesPrint <- paste(prefix, c("potential", "inflation", "gap"), sep = "_")
+    
+    # plot
+    plotSSprediction(
+      tsl = tsl, legend = legend, title = title,
+      boundName = boundName, res = NULL, namesPrint = namesPrint,
+      bounds = bounds, combine = combine, path = path, device = device,
+      width = width, height = height
+    )
+    
   }
-  tsl1 <- do.call(cbind, tsl1)
-
-  # cubs equation
-  tsl2 <- do.call(cbind, list(
-    "fitted" = x$tsl$obsFitted[, 2],
-    "E2" = x$model$tsl$dinfl,
-    "lb" = tslBounds2$lb,
-    "ub" = tslBounds2$ub
-  ))
-
-  # combine lists
-  tsl <- list(tsl1, tsl2)
-
-  # --- legends and titles and print names
-  legend <- list(
-    c("potential", "gdp", "anchored potential"),
-    c("fitted", "change in inflations")
-  )
-  title <- list(
-    "Potential output",
-    "Inflation",
-    "Inflation residuals"
-  )
-  namesPrint <- paste(prefix, c("potential_growth", "inflation"), sep = "_")
-
-  # plot
-  plotSSresults(
-    tsl = tsl, legend = legend, title = title,
-    boundName = boundName, res = res, namesPrint = namesPrint,
-    bounds = bounds, combine = combine, path = path, device = device,
-    width = width, height = height
-  )
-
-
-  # ----- gap plots
-
-  # confidence bounds
-  tvalue <- -qnorm((alpha) / 2)
-  tslBounds <- list(
-    ub = (x$tsl$potentialGrowth + x$tsl$potentialGrowthSE * tvalue),
-    lb = (x$tsl$potentialGrowth - x$tsl$potentialGrowthSE * tvalue)
-  )
-  boundName <- paste0(100 * (1 - alpha), "% confidence interval")
-  tslBounds2 <- list(
-    ub = (x$tsl$gap + x$tsl$gapSE * tvalue),
-    lb = (x$tsl$gap - x$tsl$gapSE * tvalue)
-  )
-
-
-  # --- data
-  # potential and gdp growth
-  tsl1 <- list(
-    potential = 100 * x$tsl$potentialGrowth,
-    gdp = 100 * growth(window(exp(x$model$tsl$loggdp), start = start(x$tsl$potential))),
-    lb = 100 * tslBounds$lb,
-    ub = 100 * tslBounds$ub
-  )
-
-  tsl1 <- do.call(cbind, tsl1)
-
-  # gap
-  tsl2 <- do.call(cbind, list(
-    gap = x$tsl$gap,
-    lb = tslBounds2$lb,
-    ub = tslBounds2$ub
-  ))
-
-  # combine lists
-  tsl <- list(tsl1, tsl2)
-
-  # --- legends and titles and print names
-  legend <- list(
-    c("potential", "gdp"),
-    c("output gap")
-  )
-  title <- list(
-    "GDP growth in %",
-    "Output gap in %"
-  )
-  namesPrint <- paste(prefix, c("potential_growth", "gap"), sep = "_")
-
-  # plot
-  plotGap(
-    tsl = tsl, legend = legend, title = title, boundName = boundName,
-    contribution = FALSE, res = res, namesPrint = namesPrint,
-    bounds = bounds, combine = combine, path = path, device = device,
-    width = width, height = height
-  )
 }

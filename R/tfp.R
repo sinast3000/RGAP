@@ -593,74 +593,198 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
   }
   method <- attr(x, "method")
 
-  # ----- MLE
-  if (method == "MLE") {
-    if (posterior == TRUE) {
-      warning("Posterior plots not applicable for MLE.")
+  # check whether prediction is present
+  prediction <- "prediction" %in% names(attributes(x))
+  
+  if (posterior == FALSE) {
+
+    if (!prediction) {
+      
+      # ----- estimation
+      
+      if (method == "MLE") {
+        # confidence bounds
+        tvalue <- -qnorm((alpha) / 2)
+        boundName <- paste0(100 * (1 - alpha), "% CI")
+        tslBounds <- list(
+          ub = (x$tsl$tfpTrendGrowth + x$tsl$tfpTrendGrowthSE * tvalue),
+          lb = (x$tsl$tfpTrendGrowth - x$tsl$tfpTrendGrowthSE * tvalue),
+          ub2 = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
+          lb2 = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)
+        )
+
+        # residuals
+        res <- x$tsl$obsResidualsRecursive[, "cubs"]
+        
+      } else { # Bayesian
+        # confidence bounds
+        HPDI <- attr(x, "HPDIprob")
+        boundName <- paste0(100 * HPDI, "% HPDCI")
+        tslBounds <- list(
+          ub = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub2 = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb2 = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")]
+        )
+
+        # residuals
+        res <- NULL
+      }
+
+      # --- data
+      # tfp trend
+      tsl1 <- list(
+        trend = 100 * x$tsl$tfpTrendGrowth,
+        orig = 100 * growth(exp(x$model$tsl$logtfp)),
+        lb = 100 * tslBounds$lb,
+        ub = 100 * tslBounds$ub
+      )
+      if (!is.null(x$tsl$tfpTrendAnchored)) {
+        tsl1 <- c(tsl1, list(anchor = 100 * growth(x$tsl$tfpTrendAnchored)))
+      }
+      tsl1 <- do.call(cbind, tsl1)
+  
+      # cubs equation
+      tsl2 <- do.call(cbind, list(
+        fitted = x$tsl$obsFitted[, 2],
+        E2 = x$model$tsl$cubs,
+        lb = tslBounds$lb2,
+        ub = tslBounds$ub2
+      ))
+  
+      # combine lists
+      tsl <- list(tsl1, tsl2)
+  
+      # --- legends and titles and print names
+      legend <- list(
+        c("trend tfp growth", "tfp growth", "anchored trend tfp growth"),
+        c("fitted", "cubs")
+      )
+      title <- list(
+        "Total factor productivity growth in %",
+        "CUBS",
+        "CUBS residuals"
+      )
+      namesPrint <- paste(prefix, c("tfp_growth", "cubs"), sep = "_")
+  
+      # plot
+      plotSSresults(
+        tsl = tsl, legend = legend, title = title,
+        boundName = boundName, res = res, namesPrint = namesPrint,
+        bounds = bounds, combine = combine, path = path, device = device,
+        width = width, height = height
+      )
+      
+    } else {
+      
+      # ----- prediction
+      
+      if (method == "MLE") {
+        # confidence bounds
+        tvalue <- -qnorm((alpha) / 2)
+        boundName <- paste0(100 * (1 - alpha), "% CI")
+        tslBounds <- list(
+          lb = (x$tsl$tfpTrend - x$tsl$tfpTrendSE * tvalue),
+          ub = (x$tsl$tfpTrend + x$tsl$tfpTrendSE * tvalue),
+          lb1 = (x$tsl$tfp - x$tsl$tfpSE * tvalue),
+          ub1 = (x$tsl$tfp + x$tsl$tfpSE * tvalue),
+          lb2 = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
+          ub2 = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue),
+          lb3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+          ub3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+          lb4 = 100 * (x$tsl$tfpTrendGrowth - x$tsl$tfpTrendGrowthSE * tvalue),
+          ub4 = 100 * (x$tsl$tfpTrendGrowth + x$tsl$tfpTrendGrowthSE * tvalue),
+          lb41 = 100 * (x$tsl$tfpGrowth - x$tsl$tfpGrowthSE * tvalue),
+          ub41 = 100 * (x$tsl$tfpGrowth + x$tsl$tfpGrowthSE * tvalue)
+        )
+        
+      } else { # Bayesian
+        
+        # confidence bounds
+        HPDI <- attr(x, "HPDIprob")
+        boundName <- paste0(100 * HPDI, "% HPDCI")
+        tslBounds <- list(
+          ub = x$tsl$tfpTrendSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb = x$tsl$tfpTrendSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub1 = x$tsl$tfpSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb1 = x$tsl$tfpSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub2 = x$tsl$obsSummary[, paste0("cubs.", 100 * HPDI, "% HPDI-UB")],
+          lb2 = x$tsl$obsSummary[, paste0("cubs.", 100 * HPDI, "% HPDI-LB")],
+          ub3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
+          lb3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")],
+          ub4 = 100 * x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb4 = 100 * x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub41 = 100 * x$tsl$tfpGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb41 = 100 * x$tsl$tfpGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")]
+          )
+        
+      }
+      
+      # tfp
+      tsl1 <- do.call(cbind, list(
+        trend = x$tsl$tfpTrend,
+        orig = exp(x$tsl$obs[, 1]),
+        lb = tslBounds$lb,
+        ub = tslBounds$ub,
+        lb2 = tslBounds$lb1,
+        ub2 = tslBounds$ub1
+      ))
+
+      # cubs
+      tsl2 <- do.call(cbind, list(
+        E2 = x$tsl$obs[, 2],
+        lb = tslBounds$lb2,
+        ub = tslBounds$ub2
+      ))
+      
+      # cycle
+      tsl3 <- do.call(cbind, list(
+        cycle = 100 * x$tsl$stateSmoothed[, "cycle"],
+        lb = tslBounds$lb3,
+        ub = tslBounds$ub3
+      ))
+      
+      # tfp growth
+      tsl4 <- do.call(cbind, list(
+        trend = 100 * x$tsl$tfpTrendGrowth,
+        orig = 100 * x$tsl$tfpGrowth,
+        lb = tslBounds$lb4,
+        ub = tslBounds$ub4,
+        lb2 = tslBounds$lb41,
+        ub2 = tslBounds$ub41
+      ))
+      
+      # combine lists
+      tsl <- list(tsl1, tsl2, tsl3, tsl4)
+      
+      # --- legends and titles and print names
+      legend <- list(
+        c("trend tfp", "tfp", rep(paste0(boundName, " (tfp)"), 2)),
+        c("cubs", rep(paste0(boundName, ""), 2)),
+        c("tfp gap"),
+        c("trend tfp growth", "tfp growth", rep(paste0(boundName, " (tfp growth)"), 2))
+      )
+      title <- list(
+        "Total factor productivity",
+        "CUBS",
+        "Total factor productivity gap",
+        "Total factor productivity growth in %"
+      )
+      namesPrint <- paste(prefix, c("tfp", "cubs", "tfp_gap", "tfp_growth"), sep = "_")
+      
+      # plot
+      plotSSprediction(
+        tsl = tsl, legend = legend, title = title,
+        boundName = boundName, res = NULL, namesPrint = namesPrint,
+        bounds = bounds, combine = combine, path = path, device = device,
+        width = width, height = height
+      )
+      
     }
 
-    # confidence bounds
-    tvalue <- -qnorm((alpha) / 2)
-    tslBounds <- list(
-      ub = (x$tsl$tfpTrendGrowth + x$tsl$tfpTrendGrowthSE * tvalue),
-      lb = (x$tsl$tfpTrendGrowth - x$tsl$tfpTrendGrowthSE * tvalue)
-    )
-    boundName <- paste0(100 * (1 - alpha), "% confidence interval")
-    tslBounds2 <- list(
-      ub = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
-      lb = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)
-    )
+  # ----- bayesian estimation
+  } else if (posterior == TRUE & method != "MLE") {
 
-    # residuals
-    res <- x$tsl$obsResidualsRecursive[, "cubs"]
-
-    # --- data
-    # tfp trend
-    tsl1 <- list(
-      trend = 100 * x$tsl$tfpTrendGrowth,
-      orig = 100 * growth(exp(x$model$tsl$logtfp)),
-      lb = 100 * tslBounds$lb,
-      ub = 100 * tslBounds$ub
-    )
-    if (!is.null(x$tsl$tfpTrendAnchored)) {
-      tsl1 <- c(tsl1, list(anchor = 100 * growth(x$tsl$tfpTrendAnchored)))
-    }
-    tsl1 <- do.call(cbind, tsl1)
-
-    # cubs equation
-    tsl2 <- do.call(cbind, list(
-      fitted = x$tsl$obsFitted[, 2],
-      E2 = x$model$tsl$cubs,
-      lb = tslBounds2$lb,
-      ub = tslBounds2$ub
-    ))
-
-    # combine lists
-    tsl <- list(tsl1, tsl2)
-
-    # --- legends and titles and print names
-    legend <- list(
-      c("trend tfp growth", "tfp growth", "anchored trend tfp growth"),
-      c("fitted", "cubs")
-    )
-    title <- list(
-      "Total factor productivity growth in %",
-      "CUBS",
-      "CUBS residuals"
-    )
-    namesPrint <- paste(prefix, c("tfp_growth", "cubs"), sep = "_")
-
-    # plot
-    plotSSresults(
-      tsl = tsl, legend = legend, title = title,
-      boundName = boundName, res = res, namesPrint = namesPrint,
-      bounds = bounds, combine = combine, path = path, device = device,
-      width = width, height = height
-    )
-
-    # ----- bayesian estimation
-  } else {
-    if (posterior) {
       R <- attr(x, "R")
       burnin <- attr(x, "burnin")
       thin <- attr(x, "thin")
@@ -704,60 +828,5 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
           ))
         )
       }
-    } else {
-
-      # confidence bounds
-      HPDI <- attr(x, "HPDIprob")
-      tslBounds <- list(
-        ub = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
-        lb = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")]
-      )
-      boundName <- paste0(100 * HPDI, "% HPDC interval")
-      tslBounds2 <- list(
-        ub = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-UB")],
-        lb = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")]
-      )
-
-
-      # --- data
-      # tfp trend
-      tsl1 <- do.call(cbind, list(
-        trend = 100 * x$tsl$tfpTrendGrowth,
-        orig = 100 * growth(exp(x$model$tsl$logtfp)),
-        lb = 100 * tslBounds$lb,
-        ub = 100 * tslBounds$ub
-      ))
-
-      # cubs equation
-      tsl2 <- do.call(cbind, list(
-        fitted = x$tsl$cubsFitted,
-        E2 = x$model$tsl$cubs,
-        lb = tslBounds2$lb,
-        ub = tslBounds2$ub
-      ))
-
-      # combine lists
-      tsl <- list(tsl1, tsl2)
-
-      # --- legends and titles and print names
-      legend <- list(
-        c("trend tfp growth", "tfp growth"),
-        c("fitted (posterior mean)", "cubs")
-      )
-      title <- list(
-        "Total factor productivity growth in %",
-        "CUBS",
-        "CUBS residuals"
-      )
-      namesPrint <- paste(prefix, c("tfp_growth", "cubs"), sep = "_")
-
-      # plot
-      plotSSresults(
-        tsl = tsl, legend = legend, title = title,
-        boundName = boundName, res = NULL, namesPrint = namesPrint,
-        bounds = bounds, combine = combine, path = path, device = device,
-        width = width, height = height
-      )
-    }
   }
 }

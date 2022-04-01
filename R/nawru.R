@@ -638,143 +638,50 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
     }
   }
   method <- attr(x, "method")
-
-  # ----- MLE
-  if (method == "MLE") {
-    if (posterior == TRUE) {
-      warning("Posterior plots not applicable for MLE.")
-    }
-
-    # confidence bounds
-    tvalue <- -qnorm((alpha) / 2)
-    tslBounds <- list(
-      ub = (x$tsl$nawru + x$tsl$nawruSE * tvalue),
-      lb = (x$tsl$nawru - x$tsl$nawruSE * tvalue)
-    )
-    boundName <- paste0(100 * (1 - alpha), "% confidence interval")
-    tslBounds2 <- list(
-      ub = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
-      lb = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)
-    )
-
-    # 2nd equation
-    tsE2fitted <- x$tsl$obsFitted[, 2]
-
-    # residuals
-    res <- x$tsl$obsResidualsRecursive[, "pcInd"]
-
-    # --- data
-    # nawru
-    tsl1 <- list(
-      trend = x$tsl$nawru,
-      orig = x$model$tsl$ur,
-      lb = tslBounds$lb,
-      ub = tslBounds$ub
-    )
-    if (!is.null(x$tsl$nawruAnchored)) {
-      tsl1 <- c(tsl1, list(anchor = x$tsl$nawruAnchored))
-    }
-    tsl1 <- do.call(cbind, tsl1)
-
-    # phillips curve
-    tsl2 <- do.call(cbind, list(
-      fitted = x$tsl$obsFitted[, 2],
-      E2 = x$model$tsl$pcInd,
-      lb = tslBounds2$lb,
-      ub = tslBounds2$ub
-    ))
-
-    # combine lists
-    tsl <- list(tsl1, tsl2)
-
-    # --- legends and titles and print names
-    legend <- list(
-      c("nawru", "unemployment rate", "anchored nawru"),
-      c("fitted", "Phillips curve indicator")
-    )
-    title <- list(
-      "Unemployment rate in %",
-      "Phillips curve",
-      "Phillips curve residuals"
-    )
-    namesPrint <- paste(prefix, c("nawru", "phillips_curve"), sep = "_")
-
-    # plot
-    plotSSresults(
-      tsl = tsl, legend = legend, title = title,
-      boundName = boundName, res = res, namesPrint = namesPrint,
-      bounds = bounds, combine = combine, path = path, device = device,
-      width = width, height = height
-    )
-
-    # ----- bayesian estimation
-  } else {
-    if (posterior) {
-      R <- attr(x, "R")
-      burnin <- attr(x, "burnin")
-      thin <- attr(x, "thin")
-      HPDIprob <- attr(x, "HPDIprob")
-      FUN <- attr(x, "FUN")
-      loc <- x$model$loc
-      param <- x$parametersSampled
-      parNames <- colnames(param)
-      cycle <- attr(x$model, "cycle")
-      prior <- x$prior
-
-      # convert prior mean and standard deviation to actual parameters
-      # gamma and beta needs to be adjusted
-      distrPar <- .priorMSd2Parameter(
-        prior = cbind(prior$cycle, prior$trend, prior[[3]])[1:2, ],
-        restr = cbind(prior$cycle, prior$trend, prior[[3]])[3:4, ],
-        namesInvGammaDistr = loc$varName[loc$distribution == "invgamma"],
-        namesNormalDistr = loc$varName[loc$distribution == "normal"],
-        namesBetaDistr = loc$varName[loc$distribution == "beta"]
-      )
-
-      for (jj in parNames) {
-        distr <- loc$distribution[loc$varName == jj]
-
-        inputl <- list(
-          draws = param[, jj], burnin = burnin / thin, parName = gsub("E2", "pc", jj),
-          lb = distrPar[3, jj], ub = distrPar[4, jj]
+  
+  # check whether prediction is present
+  prediction <- "prediction" %in% names(attributes(x))
+  
+  if (posterior == FALSE) {
+    
+    if (!prediction) {
+      
+      # ----- estimation
+      
+      if (method == "MLE") {
+        # confidence bounds
+        tvalue <- -qnorm((alpha) / 2)
+        boundName <- paste0(100 * (1 - alpha), "% CI")
+        tslBounds <- list(
+          ub = (x$tsl$nawru + x$tsl$nawruSE * tvalue),
+          lb = (x$tsl$nawru - x$tsl$nawruSE * tvalue),
+          ub2 = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
+          lb2 = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)        )
+        
+        # residuals
+        res <- x$tsl$obsResidualsRecursive[, "pcInd"]
+        
+      } else { # Bayesian
+        # confidence bounds
+        HPDI <- attr(x, "HPDIprob")
+        boundName <- paste0(100 * HPDI, "% HPDCI")
+        tslBounds <- list(
+          ub = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub2 = x$tsl$pcIndFittedSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb2 = x$tsl$pcIndFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")]
         )
-        switch(distr,
-          "invgamma" = do.call(plot_gibbs_output, args = c(path, inputl,
-            prefix = prefix, shape = distrPar[2, jj] / 2,
-            scale = distrPar[1, jj] / 2, device = device,
-            width = width, height = height
-          )),
-          "beta" = do.call(plot_gibbs_output, args = c(path, inputl,
-            prefix = prefix, shape1 = distrPar[1, jj],
-            shape2 = distrPar[2, jj], device = device,
-            width = width, height = height
-          )),
-          "normal" = do.call(plot_gibbs_output, args = c(path, inputl,
-            prefix = prefix, mu = distrPar[1, jj],
-            prec = 1 / distrPar[2, jj], device = device,
-            width = width, height = height
-          ))
-        )
+        
+        # residuals
+        res <- NULL
       }
-    } else {
-
-      # confidence bounds
-      HPDI <- attr(x, "HPDIprob")
-      tslBounds <- list(
-        ub = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-UB")],
-        lb = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-LB")]
-      )
-      boundName <- paste0(100 * HPDI, "% HPDC interval")
-      tslBounds2 <- list(
-        ub = x$tsl$pcIndFittedSummary[, paste0(100 * HPDI, "% HPDI-UB")],
-        lb = x$tsl$pcIndFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")]
-      )
-
+  
       # --- data
       # nawru
       tsl1 <- list(
         trend = x$tsl$nawru,
-        orig = x$model$tsl$ur,
+        # orig = x$model$tsl$ur,
+        orig = x$tsl$obs[, 1],
         lb = tslBounds$lb,
         ub = tslBounds$ub
       )
@@ -782,36 +689,172 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
         tsl1 <- c(tsl1, list(anchor = x$tsl$nawruAnchored))
       }
       tsl1 <- do.call(cbind, tsl1)
-
+  
       # phillips curve
       tsl2 <- do.call(cbind, list(
-        fitted = x$tsl$pcIndFitted,
-        E2 = x$model$tsl$pcInd,
-        lb = tslBounds2$lb,
-        ub = tslBounds2$ub
+        fitted = x$tsl$obsFitted[, 2],
+        # E2 = x$model$tsl$pcInd,
+        E2 = x$tsl$obs[, 2],
+        lb = tslBounds$lb2,
+        ub = tslBounds$ub2
       ))
-
+  
       # combine lists
       tsl <- list(tsl1, tsl2)
-
+  
       # --- legends and titles and print names
       legend <- list(
         c("nawru", "unemployment rate", "anchored nawru"),
-        c("fitted (posterior mean)", "Phillips curve indicator")
+        c("fitted", "Phillips curve indicator")
       )
       title <- list(
         "Unemployment rate in %",
-        "Phillip's curve"
+        "Phillips curve",
+        "Phillips curve residuals"
       )
       namesPrint <- paste(prefix, c("nawru", "phillips_curve"), sep = "_")
-
+  
       # plot
       plotSSresults(
+        tsl = tsl, legend = legend, title = title,
+        boundName = boundName, res = res, namesPrint = namesPrint,
+        bounds = bounds, combine = combine, path = path, device = device,
+        width = width, height = height
+      )
+    } else {
+      
+      # ----- prediction
+      
+      if (method == "MLE") {
+        # confidence bounds
+        tvalue <- -qnorm((alpha) / 2)
+        boundName <- paste0(100 * (1 - alpha), "% CI")
+        tslBounds <- list(
+          lb = (x$tsl$nawru - x$tsl$nawruSE * tvalue),
+          ub = (x$tsl$nawru + x$tsl$nawruSE * tvalue),
+          lb1 = (x$tsl$obs[, 1] - x$tsl$obsSE[, 1] * tvalue),
+          ub1 = (x$tsl$obs[, 1] + x$tsl$obsSE[, 1] * tvalue),
+          lb2 = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
+          ub2 = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue),
+          lb3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+          ub3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue))        )
+        
+      } else { # Bayesian
+        
+        # confidence bounds
+        HPDI <- attr(x, "HPDIprob")
+        boundName <- paste0(100 * HPDI, "% HPDCI")
+        tslBounds <- list(
+          ub = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb = x$tsl$nawruSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub1 = x$tsl$obsSummary[, paste0("ur.", 100 * HPDI, "% HPDI-UB")],
+          lb1 = x$tsl$obsSummary[, paste0("ur.", 100 * HPDI, "% HPDI-LB")],
+          ub2 = x$tsl$obsSummary[, paste0("pcInd.", 100 * HPDI, "% HPDI-UB")],
+          lb2 = x$tsl$obsSummary[, paste0("pcInd.", 100 * HPDI, "% HPDI-LB")],
+          ub3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
+          lb3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")]       )
+        
+      }
+      
+      # nawru
+      tsl1 <- list(
+        trend = x$tsl$nawru,
+        orig = x$tsl$obs[, 1],
+        lb = tslBounds$lb,
+        ub = tslBounds$ub,
+        lb2 = tslBounds$lb1,
+        ub2 = tslBounds$ub1
+      )
+      tsl1 <- do.call(cbind, tsl1)
+      
+      # phillips curve
+      tsl2 <- do.call(cbind, list(
+        E2 = x$tsl$obs[, 2],
+        lb = tslBounds$lb2,
+        ub = tslBounds$ub2
+      ))
+      
+      # cycle
+      tsl3 <- do.call(cbind, list(
+        cycle = 100 * x$tsl$stateSmoothed[, "cycle"],
+        lb = tslBounds$lb3,
+        ub = tslBounds$ub3
+      ))
+      
+      # combine lists
+      tsl <- list(tsl1, tsl2, tsl3)
+      
+      # --- legends and titles and print names
+      legend <- list(
+        c("nawru", "unemployment rate", rep(paste0(boundName, " (ur)"), 2)),
+        c("Phillips curve indicator", rep(paste0(boundName, ""), 2)),
+        c("unemployment gap")
+      )
+      title <- list(
+        "Unemployment rate in %",
+        "Phillips curve",
+        "Unemployment gap"
+      )
+      namesPrint <- paste(prefix, c("nawru", "phillips_curve", "u_gap"), sep = "_")
+      
+      # plot
+      plotSSprediction(
         tsl = tsl, legend = legend, title = title,
         boundName = boundName, res = NULL, namesPrint = namesPrint,
         bounds = bounds, combine = combine, path = path, device = device,
         width = width, height = height
       )
+      
     }
-  }
+
+    # ----- bayesian estimation
+  } else if (posterior == TRUE & method != "MLE") {
+    
+    R <- attr(x, "R")
+    burnin <- attr(x, "burnin")
+    thin <- attr(x, "thin")
+    HPDIprob <- attr(x, "HPDIprob")
+    FUN <- attr(x, "FUN")
+    loc <- x$model$loc
+    param <- x$parametersSampled
+    parNames <- colnames(param)
+    cycle <- attr(x$model, "cycle")
+    prior <- x$prior
+
+    # convert prior mean and standard deviation to actual parameters
+    # gamma and beta needs to be adjusted
+    distrPar <- .priorMSd2Parameter(
+      prior = cbind(prior$cycle, prior$trend, prior[[3]])[1:2, ],
+      restr = cbind(prior$cycle, prior$trend, prior[[3]])[3:4, ],
+      namesInvGammaDistr = loc$varName[loc$distribution == "invgamma"],
+      namesNormalDistr = loc$varName[loc$distribution == "normal"],
+      namesBetaDistr = loc$varName[loc$distribution == "beta"]
+    )
+
+    for (jj in parNames) {
+      distr <- loc$distribution[loc$varName == jj]
+
+      inputl <- list(
+        draws = param[, jj], burnin = burnin / thin, parName = gsub("E2", "pc", jj),
+        lb = distrPar[3, jj], ub = distrPar[4, jj]
+      )
+      switch(distr,
+        "invgamma" = do.call(plot_gibbs_output, args = c(path, inputl,
+          prefix = prefix, shape = distrPar[2, jj] / 2,
+          scale = distrPar[1, jj] / 2, device = device,
+          width = width, height = height
+        )),
+        "beta" = do.call(plot_gibbs_output, args = c(path, inputl,
+          prefix = prefix, shape1 = distrPar[1, jj],
+          shape2 = distrPar[2, jj], device = device,
+          width = width, height = height
+        )),
+        "normal" = do.call(plot_gibbs_output, args = c(path, inputl,
+          prefix = prefix, mu = distrPar[1, jj],
+          prec = 1 / distrPar[2, jj], device = device,
+          width = width, height = height
+        ))
+      )
+    }
+  } 
 }
