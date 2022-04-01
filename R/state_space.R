@@ -716,6 +716,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   freq <- frequency(out$model$y)
 
   tsl <- list()
+  tsl$obs <- out$model$y
   tsl$obsFitted <- out$m
   tsl$obsFittedSE <- ts(t(sqrt(apply(out$P_mu, 3, diag))), start = start, frequency = freq)
   tsl$stateSmoothed <- coef(out)
@@ -735,6 +736,55 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   tsl$obsResidualsRecursive <- ts(t(vstd), start = start, frequency = freq)
   colnames(tsl$obsResidualsRecursive) <- namesObs[1:dim(v)[2]]
 
+  tsl
+}
+
+# -------------------------------------------------------------------------------------------
+
+#' Computes additional results of the Kalman filter and smoother for Bayesian output.
+#'
+#' @param model The return object of the function \code{fitSSM} from the package \code{KFAS}.
+#' @param state_s An array with the smoothed state.
+#' @param state_f An array with the filtered state.
+#' @param obsFitted An array with the fitted observables.
+#' @inheritParams fitTFP
+#' @importFrom KFAS mvInnovations
+#' @importFrom stats coef ts start frequency
+#' @keywords internal
+.SSresultsBayesian <- function(model, HPDIprob, state, state_f, obsFitted, FUN) {
+  start <- start(model$y)
+  freq <- frequency(model$y)
+  tsl <- list()
+  
+  # smoothed states
+  tsl$stateSmoothedSummary <- lapply(setdiff(colnames(state), "const"), function(x) {
+    ts(mcmcSummary(x = t(state[, x, ]), HPDIprob = HPDIprob),
+       start = start, frequency = freq
+    )
+  })
+  names(tsl$stateSmoothedSummary) <- setdiff(colnames(state), "const")
+  tsl$stateSmoothedSummary <- do.call(cbind, tsl$stateSmoothedSummary)
+  # filtered states
+  tsl$stateFilteredSummary <- lapply(setdiff(colnames(state_f), "const"), function(x) {
+    ts(mcmcSummary(x = t(state_f[, x, ]), HPDIprob = HPDIprob),
+       start = start, frequency = freq
+    )
+  })
+  names(tsl$stateFilteredSummary) <- setdiff(colnames(state), "const")
+  tsl$stateFilteredSummary <- do.call(cbind, tsl$stateFilteredSummary)
+  # fitted obs
+  tsl$obsFittedSummary <- lapply(colnames(obsFitted), function(x) {
+    ts(mcmcSummary(x = t(obsFitted[, x, ]), HPDIprob = HPDIprob),
+       start = start, frequency = freq
+    )
+  })
+  names(tsl$obsFittedSummary) <- colnames(obsFitted)
+  tsl$obsFittedSummary <- do.call(cbind, tsl$obsFittedSummary)
+  
+  tsl$stateSmoothed <- ts(apply(state, c(1, 2), FUN), start = start, frequency = freq)
+  tsl$stateFiltered <- ts(apply(state_f, c(1, 2), FUN), start = start, frequency = freq)
+  tsl$obsFitted <- ts(apply(obsFitted, c(1, 2), FUN), start = start, frequency = freq)
+  tsl$obs <- model$y
   tsl
 }
 
@@ -845,7 +895,7 @@ inference <- function(parOptim, hessian, loc) {
 .deltaMethodState <- function(out, nameState) {
   tsl <- list()
   nTime <- out$dims$n
-  tsStateSmoothed <- coef(out)
+  tsStateSmoothed <- out$alphahat
 
   start <- start(out$model$y)
   freq <- frequency(out$model$y)
@@ -854,7 +904,7 @@ inference <- function(parOptim, hessian, loc) {
 
   # function g = identity
   Dg <- matrix(0, nTime, nTime)
-  diag(Dg) <- tsStateSmoothed[, nameState]
+  diag(Dg) <- 1#tsStateSmoothed[, nameState]
   # variance of trend
   varState <- diag(out$V[indexState, indexState, 1:nTime])
   tsl$StateSE <- ts(sqrt(diag(t(Dg) %*% varState %*% Dg)), start = start, frequency = freq)
@@ -875,6 +925,57 @@ inference <- function(parOptim, hessian, loc) {
   varState <- diag(out$V[indexState, indexState, 1:nTime])
   tsl$diffStateSE <- ts(sqrt(diag(Dg %*% varState %*% t(Dg))), start = start + c(0, 1), frequency = freq)
 
+  return(tsl)
+}
+
+# -------------------------------------------------------------------------------------------
+
+#' Computes standard errors of the observation equation using the delta method (for forecast).
+#'
+#' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
+#' @param nameObs The name of the observation equation as character.
+#' @keywords internal
+.deltaMethodObs <- function(out, y, nameObs) {
+  tsl <- list()
+  nTime <- out$dims$n
+  nData <- sum(is.na(apply(out$V_y, 3, sum)))
+  nForecast <-  nTime - nData
+  V <- out$V_y[, ,(nTime - nForecast + 1):nTime]
+  tsObs <- coef(out)
+  tsObs <- y[, nameObs]
+  
+  start <- start(y) + c(0, nData)
+  freq <- frequency(y)
+  
+  indexObs <- (colnames(y) %in% nameObs)
+  
+  # function g = identity
+  Dg <- matrix(0, nForecast, nForecast)
+  diag(Dg) <- 1 #tsObs[, nameObs]
+  # variance of trend
+  varObs <- diag(V[indexObs, indexObs, ])
+  tsl$ObsSE <- ts(sqrt(diag(t(Dg) %*% varObs %*% Dg)), start = start, frequency = freq)
+  
+  # function g = exponential
+  Dg <- matrix(0, nForecast, nForecast)
+  diag(Dg) <- exp(y[(nTime - nForecast + 1):nTime, nameObs])
+  # variance of trend
+  varObs <- diag(V[indexObs, indexObs, ])
+  tsl$expObsSE <- ts(sqrt(diag(t(Dg) %*% varObs %*% Dg)), start = start, frequency = freq)
+  
+  # function g = difference
+  Dg <- matrix(0, nForecast, nForecast)
+  diag(Dg) <- -1
+  diag(Dg[-nrow(Dg), -1]) <- 1
+  Dg <- Dg[1:(nrow(Dg) - 1), ]
+  # variance of trend
+  varObs <- diag(V[indexObs, indexObs, ])
+  tsl$diffObsSE <- ts(sqrt(diag(Dg %*% varObs %*% t(Dg))), start = start + c(0, 1), frequency = freq)
+  
+  tsl <- lapply(tsl, function(x) {
+    window(x, start = start(y), extend = TRUE)
+  })
+  
   return(tsl)
 }
 
