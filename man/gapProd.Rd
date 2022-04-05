@@ -59,7 +59,8 @@ The list of time series \code{tsl} needs to have the following components:
 
 The trend of the list components \code{parts, ahours and lfnd} (if available)
   is computed using the Hodrick-Prescott filter with the smoothing constant
-  \code{lambda} .
+  \code{lambda}, unless the supplied time series list \code{tsl} contains their trend 
+  (for instance, denoted by \code{partsTrend}).
 }
 \examples{
 # compute the output gap given the previously obtain nawru and trend tfp
