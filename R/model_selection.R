@@ -1007,7 +1007,7 @@ obs2Optim <- function(x1, x2, xexo = NULL, errorARmax = 2, errorMAmax = 2, maxCy
     mae_ratio[p] <- tryCatch(
       {
         mod <- arima(x2[index], order = c(comb$AR[p], 0, comb$MA[p]), xreg = as.matrix(xreg)[index,], method="ML")
-        pred <- predict(mod, newxreg = as.matrix(xreg)[-index,])
+        pred <- stats::predict(mod, newxreg = as.matrix(xreg)[-index,])
         mae_in <- 100 / length(index) * sum( abs( mod$residuals ), na.rm = TRUE ) 
         mae_out <- 100 / length(pred$pred) * sum( abs( x2[-index] - pred$pred ), na.rm = TRUE ) 
         mae_out / mae_in
