@@ -61,6 +61,18 @@ tsList <- amecoData2input(gap[["France"]], alpha = 0.65)
 exoType <- initializeExo(varNames = "ws")
 exoType[1, , "difference"] <- 2
 exoType[1, , "lag"] <- 0
+
+
+# exoType <- initializeExo(varNames = c("tot", "prod", "ws"), 3)
+# exoType[1, , "difference"] <- c(2, 1, 0)
+# exoType[2, , "difference"] <- c(2, 1, 0)
+# # exoType[3, , "difference"] <- c(NA, 2, 1)
+# exoType[4, , "difference"] <- c(NA, 2, NA)
+# exoType[1, , "lag"] <- c(0, 0, 0)
+# exoType[2, , "lag"] <- c(1, 1, 1)
+# # exoType[3, , "lag"] <- c(NA, 0, 2)
+# exoType[4, , "lag"] <- c(NA, 1, NA)
+
 model <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                     type = "TKP", cycleLag = 0, exoType = exoType)
 # ---
@@ -82,20 +94,23 @@ plot(fit, path = file.path(path, country) , prefix = "mle_anchor")
 plot(fit, path = file.path(path, country) , prefix = "mle_wide7_anchor", width = 7)
 
 
+
+# test <- predict(fit = fit, n.ahead = 10, exogenous = "mean")
+# plot(test)
+
 ####### Example: TFP model estimation ---------------------------------
 country <- "Italy"
 dir.create(file.path(path, country), recursive = TRUE)
 # --- data, model, MLE ------------------------------------------------
 data("gap")
 tsList <- amecoData2input(gap[["Italy"]], alpha = 0.65)
-model <- TFPmodel(tsl = tsList, trend = "RW2", cycle = "RAR2",
+model <- TFPmodel(tsl = tsList, trend = "DT", cycle = "RAR2",
                   cycleLag = 0, cubsErrorARMA = c(0, 0))
 parRestr <- initializeRestr(model = model, type = "hp")
 fit <- fitTFP(model = model, parRestr = parRestr)
 plot(fit)
 # ---
 plot(fit, path = file.path(path, country), prefix = "mle")
-plot(fit, path = file.path(path, country), prefix = "mle_wide7", width = 7)
 # --- Bayesian --------------------------------------------------------
 prior <- initializePrior(model = model)
 prior
@@ -107,7 +122,16 @@ plot(fitBayes, posterior = TRUE)
 # ---
 plot(fitBayes, posterior = TRUE, path = file.path(path, country), prefix = "bayes")
 plot(fitBayes, posterior = FALSE, path = file.path(path, country), prefix = "bayes")
+# --- Prediction ------------------------------------------------------
+fitPred <- predict(fit = fit, n.ahead = 10)
+plot(fitPred, alpha = 0.1)
+# ---
+plot(fitPred, alpha = 0.1, combine = FALSE, path = file.path(path, country), 
+     prefix = "prediction_wide5", width = 5)
 
+
+# testB <- predict(fit = fitBayes, n.ahead = 10, exogenous = "mean")
+# plot(testB)
 
 ####### Example: Estimating the output gap ----------------------------
 country <- "Netherlands"
@@ -164,6 +188,11 @@ plot(gapKuttner, path = file.path(path, country), prefix = "kuttner")
 gapHPfilter <- gapHP(tsList$gdp, lambda = 10)
 # ---
 plot(gapHPfilter, path = file.path(path, country), prefix = "hp")
+# 
+# plot(gapKuttner)
+# test <- predict(fit = gapKuttner, n.ahead = 10, exogenous = "mean")
+# plot(test, alpha = 0.05)
+
 # --- plot gap comparison ---------------------------------------------
 {
   tsl_plot <- list("Kuttner" = gapKuttner$tsl$gap, "HP" = gapHPfilter$gap, "EC" = fit$gap$tsl$gap)
@@ -197,20 +226,25 @@ plot(gapHPfilter, path = file.path(path, country), prefix = "hp")
     scale_x_date(date_labels = "%Y", date_minor_breaks = "1 year",
                  date_breaks = paste0(set$freqYear, " year")) +
     labs(title = set$title, x = "year", y = "") +
-    theme(legend.position = c(1, 0.01),
-          legend.justification = c(1, 0),
-          legend.margin = margin(0, 0, 0, 0),
-          legend.text=element_text(size = set$legendFontsize),
-          legend.key.size = unit(0.75, 'lines'),
-          legend.title = element_blank(),
-          legend.background = element_rect(fill = "transparent"),
-          legend.spacing.x = unit(0, "pt"),
-          legend.spacing.y = unit(0, "pt")) +
-    guides(col = guide_legend(ncol = 2, byrow = TRUE))
+    theme(
+      legend.position="bottom",
+      legend.box = "horizontal",
+      legend.box.margin=margin(-15,0,0,0),
+      legend.justification="left",
+      legend.text = element_text(size = set$legendFontsize),
+      legend.key.size = unit(0.75, "lines"),
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "transparent"),
+      legend.spacing.y = unit(0, "pt"),
+      plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
+    ) +
+    guides(color = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           linetype = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           fill = guide_legend(order=2, ncol = 6)) 
+  
   p0
   ggsave(filename = file.path(path, country, "gap_comparison.png"), plot = p0, width = 7, height = 3)
 }
-
 
 ####### Example: Multiple countries -----------------------------------
 library(reshape2)
@@ -282,16 +316,22 @@ save(tsl, model, parRestr, fit, file = file.path(path, path_sub, "results.RData"
     scale_x_date(date_labels = "%Y", date_minor_breaks = "1 year",
                  date_breaks = paste0(set$freqYear, " year")) +
     labs(title = set$title, x = "year", y = "") +
-    theme(legend.position = c(0, 0.01),
-          legend.justification = c(-0.1, 0),
-          legend.margin = margin(0, 0, 0, 0),
-          legend.text=element_text(size = set$legendFontsize),
-          legend.key.size = unit(0.75, 'lines'),
-          legend.title = element_blank(),
-          legend.background = element_rect(fill = "transparent"),
-          legend.spacing.x = unit(0, "pt"),
-          legend.spacing.y = unit(0, "pt")) +
-    guides(col = guide_legend(ncol = 3, byrow = TRUE))
+    theme(
+      legend.position="bottom",
+      legend.box = "horizontal",
+      legend.box.margin=margin(-15,0,0,0),
+      legend.justification="left",
+      legend.text = element_text(size = set$legendFontsize),
+      legend.key.size = unit(0.75, "lines"),
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "transparent"),
+      legend.spacing.y = unit(0, "pt"),
+      plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
+    ) +
+    guides(color = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           linetype = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           fill = guide_legend(order=2, ncol = 6)) 
+  
   p0
   ggsave(filename = file.path(path, path_sub, "gap_comparison_countries.png"), plot = p0, width = 7, height = 3)
 }
@@ -353,16 +393,21 @@ save(tsl, fit, file = file.path(path, path_sub, "results.RData"))
     scale_x_date(date_labels = "%Y", date_minor_breaks = "1 year",
                  date_breaks = paste0(set$freqYear, " year")) +
     labs(title = set$title, x = "year", y = "") +
-    theme(legend.position = c(0, 0.01),
-          legend.justification = c(-0.1, 0),
-          legend.margin = margin(0, 0, 0, 0),
-          legend.text=element_text(size = set$legendFontsize),
-          legend.key.size = unit(0.75, 'lines'),
-          legend.title = element_blank(),
-          legend.background = element_rect(fill = "transparent"),
-          legend.spacing.x = unit(0, "pt"),
-          legend.spacing.y = unit(0, "pt")) +
-    guides(col = guide_legend(ncol = 4, byrow = TRUE))
+    theme(
+      legend.position="bottom",
+      legend.box = "horizontal",
+      legend.box.margin=margin(-15,0,0,0),
+      legend.justification="left",
+      legend.text = element_text(size = set$legendFontsize),
+      legend.key.size = unit(0.75, "lines"),
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "transparent"),
+      legend.spacing.y = unit(0, "pt"),
+      plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
+    ) +
+    guides(color = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           linetype = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           fill = guide_legend(order=2, ncol = 6)) 
   p0
   ggsave(filename = file.path(path, path_sub, "gap_comparison_countries.png"), plot = p0, width = 7, height = 3)
 }
@@ -421,16 +466,21 @@ nawruEC <- ts(resEC$nawru, start = start(model$tsl$ur))
     scale_x_date(date_labels = "%Y", date_minor_breaks = "1 year",
                  date_breaks = paste0(set$freqYear, " year")) +
     labs(title = set$title, x = "year", y = "") +
-    theme(legend.position = c(1, 0.01),
-          legend.justification = c(1, 0),
-          legend.margin = margin(0, 0, 0, 0),
-          legend.text=element_text(size = set$legendFontsize),
-          legend.key.size = unit(0.75, 'lines'),
-          legend.title = element_blank(),
-          legend.background = element_rect(fill = "transparent"),
-          legend.spacing.x = unit(0, "pt"),
-          legend.spacing.y = unit(0, "pt")) +
-    guides(col = guide_legend(ncol = 2, byrow = TRUE))
+    theme(
+      legend.position="bottom",
+      legend.box = "horizontal",
+      legend.box.margin=margin(-15,0,0,0),
+      legend.justification="left",
+      legend.text = element_text(size = set$legendFontsize),
+      legend.key.size = unit(0.75, "lines"),
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "transparent"),
+      legend.spacing.y = unit(0, "pt"),
+      plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
+    ) +
+    guides(color = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           linetype = guide_legend(order=1, ncol = 6, byrow = TRUE),
+           fill = guide_legend(order=2, ncol = 6)) 
   p0
   ggsave(filename = file.path(path, "EC_gap", "rgap_ecgap_comparison.png"), plot = p0, width = 7, height = 3)
 }
