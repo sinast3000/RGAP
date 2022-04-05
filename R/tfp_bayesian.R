@@ -220,28 +220,10 @@
   )
   
   # ----- estimated states
-  # tslRes <- list()
   tslRes <- .SSresultsBayesian(model = model$SSModel, HPDIprob = HPDIprob, FUN = FUN,
                                state = state, state_f = state_f, obsFitted = obsFitted)
-  
-  
-  
   start <- start(stateSmoothed)
   freq <- frequency(stateSmoothed)
-  # # smoothed states
-  # tslRes$stateSmoothedSummary <- lapply(setdiff(colnames(state), "const"), function(x) {
-  #     ts(mcmcSummary(x = t(state[, x, ]), HPDIprob = HPDIprob),
-  #       start = start, frequency = freq
-  #     )
-  # })
-  # names(tslRes$stateSmoothedSummary) <- setdiff(colnames(state), "const")
-  # tslRes$stateSmoothedSummary <- do.call(cbind, tslRes$stateSmoothedSummary)
-  # # colnames(tslRes$stateSmoothedSummary) <- paste0(
-  # #   rep(setdiff(colnames(state), "const"), each = 8),
-  # #   paste0(".", colnames(tslRes$stateSmoothedSummary)[1:8])
-  # # )  
-  # tslRes$stateSmoothed <- ts(apply(state, c(1, 2), FUN), start = start, frequency = freq)
-
   # tfp trend
   tsTmp <- exp(state[, "trend", ])
   tslRes$tfpTrendSummary <- ts(mcmcSummary(x = t(tsTmp), HPDIprob = HPDIprob), start = start, frequency = freq)
