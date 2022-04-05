@@ -705,10 +705,12 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
 #' Computes additional results of the Kalman filter and smoother.
 #'
 #' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
+#' @param model An object of class \code{NAWRUmodel}, \code{TFPmodel}, or \code{KuttnerModel}.
+#' @param prediction Logical indicating whether \code{out} includes predictions.
 #' @importFrom KFAS mvInnovations
 #' @importFrom stats coef ts start frequency
 #' @keywords internal
-.SSresults <- function(out) {
+.SSresults <- function(out, model, prediction = FALSE) {
   namesObs <- colnames(out$model$y)
   namesState <- colnames(out$model$T)
 
@@ -735,6 +737,41 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   vstd <- sapply(1:dim(FF)[3], function(x) B[, , x] %*% v[x, ])
   tsl$obsResidualsRecursive <- ts(t(vstd), start = start, frequency = freq)
   colnames(tsl$obsResidualsRecursive) <- namesObs[1:dim(v)[2]]
+  
+  # model specific series
+  if (inherits(model, "NAWRUmodel")) {
+    
+    tsl$nawru <- with(tsl, stateSmoothed[, "trend"])
+    tsl$nawruSE <- with(tsl, stateSmoothedSE[, "trend"])
+
+  } else if (inherits(model, "TFPmodel")) {
+    
+    tsl$tfpTrend <- with(tsl, exp(stateSmoothed[, "trend"]))
+    tsl$tfpTrendGrowth <- with(tsl, growth(tfpTrend))
+    tsl$tfp <- with(tsl, exp(obs[, 1]))
+    tsl$tfpGrowth <- with(tsl, growth(tfp))
+
+    tsl[c("tfpTrendSE", "tfpTrendGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend")[c("expStateSE", "diffStateSE")]
+    if (prediction) {
+      tsl[c("tfpSE", "tfpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "logtfp", model = model)[c("expObsSE", "diffObsSE")]
+    }
+    
+  } else if (inherits(model, "KuttnerModel")) {
+    
+    tsl$potential <- with(tsl, exp(stateSmoothed[, "trend"]))
+    tsl$potentialGrowth <- with(tsl, growth(potential))
+    tsl$gap <- with(tsl, stateSmoothed[, "cycle"] * 100)
+    tsl$gdp <- with(tsl, exp(obs[, 1]))
+    tsl$gdpGrowth <- with(tsl, growth(gdp))
+
+    tsl[c("potentialSE", "potentialGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend")[c("expStateSE", "diffStateSE")]
+    tsl[[c("gapSE")]] <- 100 * .deltaMethodState(out = out, nameState = "cycle")$StateSE
+    if (prediction) {
+      tsl[c("gdpSE", "gdpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "loggdp", model = model)[c("expObsSE", "diffObsSE")]
+    }
+
+  }
+  
 
   tsl
 }
@@ -934,14 +971,15 @@ inference <- function(parOptim, hessian, loc) {
 #'
 #' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
 #' @param nameObs The name of the observation equation as character.
+#' @inheritParams .SSresults
 #' @keywords internal
-.deltaMethodObs <- function(out, y, nameObs) {
+.deltaMethodObs <- function(out, nameObs, model) {
   tsl <- list()
   nTime <- out$dims$n
-  nData <- sum(is.na(apply(out$V_y, 3, sum)))
+  nData <- attr(model$SSModel, "n")
   nForecast <-  nTime - nData
-  V <- out$V_y[, ,(nTime - nForecast + 1):nTime]
-  tsObs <- coef(out)
+  V <- out$V_mu[, ,(nTime - nForecast + 1):nTime]
+  y <- out$model$y
   tsObs <- y[, nameObs]
   
   start <- start(y) + c(0, nData)
