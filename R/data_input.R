@@ -342,50 +342,43 @@ amecoData2input <- function(tslAmeco, alpha = 0.65) {
     tsl$cubs <- tslTmp$cubs
   }
 
-  
-  tsl <- within(tsl, {
-    
+  tsl$tfp <- with(tsl, (gdp * 1000) / (l^alpha * (k * 1000)^(1 - alpha)))
 
-    # tfp
-    # tfp <- (gdp / 1000) / (l^alpha * (k / 1000)^(1 - alpha))
-    tfp <- (gdp * 1000) / (l^alpha * (k * 1000)^(1 - alpha))
-  
-    ## ----- labor trend estimation
-  
-    # lfnd (labor force non domestic)
-    lfnd <- et - etd
-  
-    # parts
-    parts <- etd / (popw * (1 - ur / 100))
-  
-    # ahours
-    ahours <- l / et * 1000 # (unit l: millions, unit et: thousand)
-  
-    ## ----- nawru estimation
-  
-    # prod
-    prod <- gdp / et
-  
-    # gdpdefl
-    gdpdefl <- ngdp / gdp * 100
-  
-    # tot
-    tot <- pconsp / gdpdefl
-  
-    # ws
-    ws <- wtotal / ngdp
-  
-    # infl: wage inflation
-    winfl <- diff(log(wtotal / eet))
-  
-    # nulc
-    # nulc <- (wtotal / eet) / (gdp / et)
-  
-    # rulc
-    rulc <- nulc / pconsp
+  ## ----- labor trend estimation
 
-  })
+  # lfnd (labor force non domestic)
+  tsl$lfnd <- with(tsl, et - etd)
   
+  # parts
+  tsl$parts <- with(tsl, etd / (popw * (1 - ur / 100)))
+  
+  # ahours (unit l: millions, unit et: thousand)
+  tsl$ahours <- with(tsl, l / et * 1000)
+  
+  ## ----- nawru estimation
+
+  # prod
+  tsl$prod <- with(tsl, gdp / et)
+  
+  # gdpdefl
+  tsl$gdpdefl <- with(tsl, ngdp / gdp * 100)
+  
+  # tot
+  tsl$tot <- with(tsl, pconsp / gdpdefl)
+  
+  # ws
+  tsl$ws <- with(tsl, wtotal / ngdp)
+  
+  # infl: wage inflation
+  tsl$winfl <- with(tsl, diff(log(wtotal / eet)))
+  
+  # nulc
+  # tsl$nulc <- with(tsl, (wtotal / eet) / (gdp / et))
+
+  # rulc
+  tsl$rulc <- with(tsl, nulc / pconsp)
+  
+
   # return list
   return(tsl)
 }
