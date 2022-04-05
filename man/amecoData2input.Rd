@@ -22,8 +22,8 @@ A list of time series containing the same components as the input list \code{tsl
   \item{parts}{Participation rate}
   \item{ahours}{Average hours worked (unit: hours)}
   \item{prod}{Labor productivity (unit: real output in millions per person)}
-  \item{tot}{Terms of trade}
-  \item{ws}{wage share (unit: compensation per unit of nominal output)}
+  \item{tot}{Terms of trade (pconcp / gdpdefl)}
+  \item{ws}{Wage share (unit: compensation per unit of nominal output)}
   \item{winfl}{Wage inflation}
   \item{rulc}{Real unit labor costs}
 }
@@ -39,13 +39,13 @@ The list of time series \code{tslAmeco} needs to have the following components:
   \item{etd}{Employment, persons: total economy (National accounts) (unit: 1000 persons, code: NETN)}
   \item{et}{Employment, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NETD)}
   \item{eet}{Employees, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NWTD)}
-  \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency 2010 = 100, code: PCPH)}
-  \item{ngdp}{Gross domestic product at current prices (unit: Mrd National currency, code: UVGD)}
-  \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
+  \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency reference year = 100, code: PCPH)}
+  \item{ngdp}{Gross domestic product at current prices (unit: bn National currency, code: UVGD)}
+  \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD)}
   \item{l}{Total annual hours worked: total economy (unit: millions, code: NLHT)}
-  \item{wtotal}{Compensation of employees: total economy (unit: Mrd National currency, code: UWCD)}
-  \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency 2010 = 100, code: PLCD)}
-  \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
+  \item{wtotal}{Compensation of employees: total economy (unit: bn National currency, code: UWCD)}
+  \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency reference year = 100, code: PLCD)}
+  \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND)}
 }
 }
 \examples{

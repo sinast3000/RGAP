@@ -31,7 +31,7 @@ Initializes parameter restrictions for objects of class \code{NAWRUmodel},
 For \code{type = "hp"}, the HP filter is applied to the appropriately differences 
   first observation series to obtain its trend and cycle. Subsequently, the specified trend 
   and cycle models are fitted to obtain its innovation variance. Moreover, the second 
-  observation series, according to its specification is fitted to obtain its innovation 
+  observation series (according to its specification) is fitted to obtain its innovation 
   variance. Lastly, the obtained innovations variances are used to get lower and upper 
   bounds. To that end, the \code{q} and \code{1-q} quantiles of the inverse gamma 
   distribution are used, with mean and standard deviation set to the estimated variances.

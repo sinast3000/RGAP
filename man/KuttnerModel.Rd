@@ -34,13 +34,13 @@ trend) and \code{trend = "DT"} a damped trend model. The default is \code{trend 
 and MA degree of the error term in the inflation equation. The default is
 \code{inflErrorARMA = c(0, 3)}, see details.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the logarithm of gdp trend.}
+\item{anchor}{(Optional) Anchor value for the logarithm of trend gdp.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \value{
 Object of class \code{KuttnerModel}, which is a list with the following components:
@@ -63,7 +63,7 @@ Creates a state space object of class \code{KuttnerModel} which can be used
 \details{
 The list of time series \code{tsl} needs to have the following components:
 \describe{
-  \item{gdp}{Real gross domestic product,}
+  \item{gdp}{Real gross domestic product.}
   \item{infl}{Inflation.}
   }
 
@@ -72,7 +72,7 @@ A \code{cycleLag} equal to \code{0} implies that only the contemporaneous cycle
   the contemporaneous as well as the lagged cycle are included.
 
 A \code{inflErrorARMA} equal to \code{c(0, 0)} implies that the error term in the
-  inlfation equation is white noise. \code{inflErrorARMA = c(1, 0)} implies that the error is
+  inflation equation is white noise. \code{inflErrorARMA = c(1, 0)} implies that the error is
   an AR(1) process and for \code{inflErrorARMA = c(1, 2)} the error follows an ARMA(1, 2)
   process.
 }

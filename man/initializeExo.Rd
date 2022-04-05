@@ -2,7 +2,7 @@
 % Please edit documentation in R/state_space.R
 \name{initializeExo}
 \alias{initializeExo}
-\title{Initialization of exogenous variables.}
+\title{Initialization of exogenous variables}
 \usage{
 initializeExo(maxDiff = 1, maxLag = 1, varNames)
 }
@@ -19,5 +19,5 @@ An array of size \code{(2, k, max(maxDiff, maxLag) + 1)}. The first row specifie
   the difference order and the second the lag order.
 }
 \description{
-Initializes the transformation of the exogenous variables.
+Initializes the transformations applied to exogenous variables.
 }

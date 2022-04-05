@@ -34,7 +34,7 @@ are specified. By default, \code{parRestr} is initialized by the function
 \item{method}{The estimation method. Options are maximum likelihood estimation \code{"MLE"}
 and bayesian estimation \code{"bayesian"}. The default is \code{method = "MLE"}.}
 
-\item{control}{A list of control arguments to be passed on to \code{optim}.}
+\item{control}{(Optional) A list of control arguments to be passed on to \code{optim}.}
 
 \item{prior}{A list of matrices with parameters for the prior distribution and box
 constraints. By default, \code{prior} is initialized by \code{initializePrior(model)}.
@@ -74,12 +74,12 @@ For maximum likelihood estimation, an object of class \code{NAWRUfit} containing
   \item{fit}{A list of model fit criteria (see below).}
   \item{call}{Original call to the function. }
   The list component \code{fit} contains the following model fit criteria:
-  \item{loglik}{Log-likelihood function values,}
-  \item{AIC}{Akaike information criterion,}
-  \item{BIC}{Bayesian information criterion,}
-  \item{AIC}{Hannan-Quinn information criterion,}
-  \item{RMSE}{root mean squared error of the Phillip's curve equation,}
-  \item{R2}{R squared of the Phillip's curve equation,}
+  \item{loglik}{Log-likelihood function values.}
+  \item{AIC}{Akaike information criterion.}
+  \item{BIC}{Bayesian information criterion.}
+  \item{AIC}{Hannan-Quinn information criterion.}
+  \item{RMSE}{root mean squared error of the Phillip's curve equation.}
+  \item{R2}{R squared of the Phillip's curve equation.}
   \item{LjungBox}{Ljung-Box test output of the Phillip's curve equation.}
   \item{signal-to-noise}{Signal-to-noise ratio.}
 For bayesian estimation, an object of class \code{NAWRUfit} containing the following
@@ -102,7 +102,7 @@ Estimates a two-dimensional state-space model and performs filtering and
 }
 \details{
 The list object \code{prior} contains three list elements \code{cycle},
-  \code{trend}, and \code{cubs}. Each list element is a \code{4 x n} matrix where \code{n}
+  \code{trend}, and \code{pcInd}. Each list element is a \code{4 x n} matrix where \code{n}
   denotes the number of parameters involved in the respective equation. The upper two
   elements specify the distribution, the lower two parameters specify box constraints.
   \code{NA} denotes no constraints. Autoregressive parameters are automatically restricted
@@ -124,10 +124,10 @@ The Gibbs sampling procedure is as follows. For each \eqn{r = 1, ..., R}
            states \eqn{\alpha_r}, a draw \eqn{\theta_{cycle,k}} is obtained either
            by a sequential Gibbs step, a Metropolis Hasting step, or by conjugacy,
            depending on the cycle model specification.
-           \item Cubs equation parameters \eqn{\theta_{cubs}}: Conditional on the
-           states \eqn{\alpha_r}, a draw \eqn{\theta_{cubs,k}} is obtained either
+           \item Phillip's curve equation parameters \eqn{\theta_{pcInd}}: Conditional on the
+           states \eqn{\alpha_r}, a draw \eqn{\theta_{pcInd,k}} is obtained either
            by a sequential Gibbs step, a Metropolis Hasting step, a combination
-           thereof, or by conjugacy, depending on the cubs equation specification.}
+           thereof, or by conjugacy, depending on the Phillip's curve equation specification.}
 }
 \examples{
 # define nawru model for France

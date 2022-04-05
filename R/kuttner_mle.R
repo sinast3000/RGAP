@@ -14,7 +14,7 @@
 #'   are specified. By default, \code{parRestr} is intitialized by the function
 #'   \code{initializeRestr(model)}.
 #' @param signalToNoise (Optional) signal to noise ratio.
-#' @param control A list of control arguments to be passed on to \code{optim}.
+#' @param control (Optional) A list of control arguments to be passed on to \code{optim}.
 #'
 #' @return An object of class \code{KuttnerFit} containing the following components:
 #'   \item{model}{The input object of class \code{KuttnerModel}.}
@@ -26,12 +26,12 @@
 #'   \item{fit}{A list of model fit criteria (see below).}
 #'   \item{call}{Original call to the function. }
 #'   The list component \code{fit} contains the following model fit criteria:
-#'   \item{loglik}{Log-likelihood function value,}
-#'   \item{AIC}{Akaike information criterion,}
-#'   \item{BIC}{Bayesian information criterion,}
-#'   \item{AIC}{Hannan-Quinn information criterion,}
-#'   \item{RMSE}{Root mean squared error of the inflation equation,}
-#'   \item{R2}{R squared of the inflation equation,}
+#'   \item{loglik}{Log-likelihood function value.}
+#'   \item{AIC}{Akaike information criterion.}
+#'   \item{BIC}{Bayesian information criterion.}
+#'   \item{AIC}{Hannan-Quinn information criterion.}
+#'   \item{RMSE}{Root mean squared error of the inflation equation.}
+#'   \item{R2}{R squared of the inflation equation.}
 #'   \item{LjungBox}{Ljung-Box test output of the inflation equation.}
 #'
 #' @export

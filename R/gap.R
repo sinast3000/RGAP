@@ -20,12 +20,12 @@
 #'
 #' @details The list of time series \code{tsl} needs to have the following components:
 #' \describe{
-#'   \item{lfnd}{Labor force non-domestic (unit: 1000 persons)}
-#'   \item{parts}{Participation rate}
-#'   \item{ahours}{Average hours worked (unit: hours)}
-#'   \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
-#'   \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
-#'   \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN)}
+#'   \item{lfnd}{Labor force non-domestic (unit: 1000 persons). (Set to zero if left unspecified).}
+#'   \item{parts}{Participation rate.}
+#'   \item{ahours}{Average hours worked (unit: hours).}
+#'   \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD).}
+#'   \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND).}
+#'   \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN).}
 #'   }
 #'
 #' @details The trend of the list components \code{parts, ahours and lfnd} (if available)
@@ -34,8 +34,8 @@
 #'   (for instance, denoted by \code{partsTrend}).
 #'
 #' @return Object of class \code{gap}, which is a list with the following components:
-#'   \item{tsl}{List of time series including potential output \code{potential} and the
-#'   output gap \code{gap} and all original series.}
+#'   \item{tsl}{List of time series including potential output \code{potential}, the
+#'   output gap \code{gap}, all HP-filtered trend series, and all original series.}
 #'   \item{NAWRUfit}{Provided \code{NAWRUfit} object.}
 #'   \item{TFPfit}{Provided \code{TFPfit} object.}
 #'   \item{call}{Original call to the function.}
@@ -43,7 +43,7 @@
 #' @export
 #' @importFrom stats start end window ts lag frequency time
 #' @examples
-#' # compute the output gap given the previously obtain nawru and trend tfp
+#' # compute the output gap given the previously obtained nawru and trend tfp
 #' \dontrun{
 #' gapProd(tsl = tslInput, NAWRUfit = fittedNAWRU, TFPfit = fittedTFP)
 #' }
@@ -179,8 +179,6 @@ print.gap <- function(x, ...) {
 #' @param end (optional) A two element vector containing a year and a period specifying the end point for the
 #'   filter application.
 #'
-#' @return A list containing the two elements \code{potential} and \code{gap} and additionally the original time
-#'   series.
 #' @return Object of class \code{gap}, which is a list containing the two elements \code{potential} and
 #'   \code{gap} and additionally the original time series.
 #'
@@ -221,15 +219,16 @@ gapHP <- function(x, lambda = NULL, end = NULL, start = NULL) {
 #' @param x An object of class \code{gap}.
 #' @param contribution A boolean indicating whether the contributions to potential output
 #'   growth and the output gap should be plotted (only applicable for production function
-#'   type output gaps.)
+#'   type output gaps).
 #' @param path An optional file path. If specified, the plots will be saved using the format
 #'   in \code{device} under the given path.
 #' @param combine A logical indicating whether the plots should be combined or not, the
 #'   default is \code{TRUE}.
 #' @param prefix An optional character string to be added to the names of the plots in case
 #'   \code{path} is specified.
-#' @param device Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-#'   "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".
+#' @param device Device passed on to \code{ggplot} for plot saving. Options are 
+#'   \code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+#'   or \code{"wmf"}.
 #' @param width The plot width in case of printing.
 #' @param height The plot height in case of printing.
 #' @param ... Ignored.

@@ -3,7 +3,7 @@
 
 #' Initialization of prior distributions
 #'
-#' @description Initializes the prior distributions for a model of class\code{TFPmodel} or
+#' @description Initializes the prior distributions for a model of class \code{TFPmodel} or
 #'   \code{NAWRUmodel}.
 #'
 #' @param model An object of class \code{TFPmodel} or \code{NAWRUmodel}.

@@ -23,7 +23,7 @@ fitTFP(
 \item{model}{An object of class TFPmodel.}
 
 \item{parRestr}{A list of matrices containing the parameter restrictions for the cycle,
-trend, and the cubs equation. Each matrix contains the lower and upper bound of the
+trend, and the CUBS equation. Each matrix contains the lower and upper bound of the
 involved parameters. \code{NA} implies that no restriction is present. Autoregressive
 parameters are automatically restricted to the stationary region unless box constraints
 are specified. By default, \code{parRestr} is initialized by the function
@@ -34,7 +34,7 @@ are specified. By default, \code{parRestr} is initialized by the function
 \item{method}{The estimation method. Options are maximum likelihood estimation \code{"MLE"}
 and bayesian estimation \code{"bayesian"}. The default is \code{method = "MLE"}.}
 
-\item{control}{A list of control arguments to be passed on to \code{optim}.}
+\item{control}{(Optional) A list of control arguments to be passed on to \code{optim}.}
 
 \item{prior}{A list of matrices with parameters for the prior distribution and box
 constraints. By default, \code{prior} is initialized by \code{initializePrior(model)}.
@@ -74,12 +74,12 @@ For maximum likelihood estimation, an object of class \code{TFPit} containing
   \item{fit}{A list of model fit criteria (see below).}
   \item{call}{Original call to the function. }
   The list component \code{fit} contains the following model fit criteria:
-  \item{loglik}{Log-likelihood function values,}
-  \item{AIC}{Akaike information criterion,}
-  \item{BIC}{Bayesian information criterion,}
-  \item{AIC}{Hannan-Quinn information criterion,}
-  \item{RMSE}{root mean squared error of the CUBS equation,}
-  \item{R2}{R squared of the CUBS equation,}
+  \item{loglik}{Log-likelihood function values.}
+  \item{AIC}{Akaike information criterion.}
+  \item{BIC}{Bayesian information criterion.}
+  \item{AIC}{Hannan-Quinn information criterion.}
+  \item{RMSE}{root mean squared error of the CUBS equation.}
+  \item{R2}{R squared of the CUBS equation.}
   \item{LjungBox}{Ljung-Box test output of the CUBS equation.}
   \item{signal-to-noise}{Signal-to-noise ratio.}
 For bayesian estimation, an object of class \code{TFPfit} containing the following components:
@@ -91,7 +91,7 @@ For bayesian estimation, an object of class \code{TFPfit} containing the followi
   \item{fit}{A list of model fit criteria (see below).}
   \item{call}{Original call to the function. }
   The list component \code{fit} contains the following model fit criteria:
-  \item{R2}{R squared of the cubs equation,}
+  \item{R2}{R squared of the CUBS equation,}
   \item{signal-to-noise}{Signal-to-noise ratio.}
 }
 \description{
@@ -123,10 +123,10 @@ The Gibbs sampling procedure is as follows. For each \eqn{r = 1, ..., R}
            states \eqn{\alpha_r}, a draw \eqn{\theta_{cycle,k}} is obtained either
            by a sequential Gibbs step, a Metropolis Hasting step, or by conjugacy,
            depending on the cycle model specification.
-           \item Cubs equation parameters \eqn{\theta_{cubs}}: Conditional on the
+           \item CUBS equation parameters \eqn{\theta_{cubs}}: Conditional on the
            states \eqn{\alpha_r}, a draw \eqn{\theta_{cubs,k}} is obtained either
            by a sequential Gibbs step, a Metropolis Hasting step, a combination
-           thereof, or by conjugacy, depending on the cubs equation specification.
+           thereof, or by conjugacy, depending on the CUBS equation specification.
   }
 }
 \examples{

@@ -35,16 +35,16 @@ in the CUBD equation. The default is \code{cycleLag = 0}, see details.}
 in the CUBS equation. The default is \code{cubsAR = 0}, see details.}
 
 \item{cubsErrorARMA}{A vector with non-negative integers specifying the AR
-and MA degree of the error term in the cubs equation. The default is
+and MA degree of the error term in the CUBS equation. The default is
 \code{cubsErrorARMA = c(0, 0)}, see details.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the log of the TFP trend.}
+\item{anchor}{(Optional) Snchor value for the log of the TFP trend.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \value{
 Object of class TFPmodel, which is a list with the following components:
@@ -67,7 +67,7 @@ Creates a state space object object of class \code{TFPmodel} which can be used a
 \details{
 The list of time series \code{tsl} needs to have the following components:
 \describe{
-    \item{tfp}{Total factor productivity,}
+    \item{tfp}{Total factor productivity.}
     \item{cubs}{Capacity utilization economic sentiment indicator.}
     }
 

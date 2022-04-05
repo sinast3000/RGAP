@@ -70,8 +70,8 @@ which contains
   \item{convergence}{0 indicates convergence of the optimization}
   \item{rrange}{relative range of trend series w.r.t original series}
   \item{neg}{1 indicates that negative values are present in the trend series}
-  \item{rev}{relative excess volatility w.r.t original series (stationary series)}
-  \item{rsd}{relative standard deviation w.r.t original series (stationary series)}
+  \item{rev}{relative excess volatility w.r.t. original series (stationary series)}
+  \item{rsd}{relative standard deviation w.r.t. original series (stationary series)}
   \item{cor}{correlation between trend and original series (stationary series)}
   \item{msdtg}{mean standardized deviation (stationary trend)}
   \item{magtg}{mean absolute growth of trend (stationaty trend)}
@@ -97,7 +97,7 @@ The input component \code{nawruPoss} is a list containing a (sub-) set of the
   \item{maxCycleLag}{Maximum cycle lag included in the second observation equation.}
   \item{trend}{Trend model specification.}
   \item{cycle}{Cycle model specification.}
-  \item{errorARmax}{Maximum auto-regressive order of the error term in the second 
+  \item{errorARmax}{Maximum autoregressive order of the error term in the second 
   observation equation.}
   \item{errorMAmax}{Maximum moving average order of the error term in the second 
   observation equation.}
@@ -113,8 +113,8 @@ The input component \code{tfpPoss} is a list containing a (sub-) set of the
   \item{maxCycleLag}{Maximum cycle lag included in the second observation equation.}
   \item{trend}{Trend model specification.}
   \item{cycle}{Cycle model specification.}
-  \item{cubsARmax}{Maximum CUBS auto-regressive order.}
-  \item{errorARmax}{Maximum auto-regressive order of the error term in the second 
+  \item{cubsARmax}{Maximum CUBS autoregressive order.}
+  \item{errorARmax}{Maximum autoregressive order of the error term in the second 
   observation equation.}
   \item{errorMAmax}{Maximum moving average order of the error term in the second 
   observation equation.}
@@ -124,17 +124,17 @@ The input component \code{tfpPoss} is a list containing a (sub-) set of the
 The list of time series \code{tsl} needs to have the following components 
  (plus those series included in the list component \code{exoNames} in \code{nawruPoss}):
 \describe{
-  \item{ur}{Unemployment rate,}
-  \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"},}
-  \item{rulc}{Real unit labor costs, if \code{type = "NKP"},}
-  \item{tfp}{Total factor productivity,}
+  \item{ur}{Unemployment rate.}
+  \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"}.}
+  \item{rulc}{Real unit labor costs, if \code{type = "NKP"}.}
+  \item{tfp}{Total factor productivity.}
   \item{cubs}{Capacity utilization economic sentiment indicator.}
-  \item{lfnd}{Labor force non-domestic (unit: 1000 persons)}
-  \item{parts}{Participation rate}
-  \item{ahours}{Average hours worked (unit: hours)}
-  \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
-  \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
-  \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN)}
+  \item{lfnd}{Labor force non-domestic (unit: 1000 persons).}
+  \item{parts}{Participation rate.}
+  \item{ahours}{Average hours worked (unit: hours).}
+  \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD).}
+  \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND).}
+  \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN).}
   }
 
 The set of tested models is extensive but not exhaustive. The best model is 

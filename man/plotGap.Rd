@@ -34,7 +34,7 @@ the first plot and so on.}
 
 \item{contribution}{A boolean indicating whether the contributions to potential output
 growth and the output gap should be plotted (only applicable for production function
-type output gaps.)}
+type output gaps).}
 
 \item{res}{The residual series as time series. If \code{res = NULL}, all graphs related
 to the residual series will not be plotted.}
@@ -51,8 +51,9 @@ the default is \code{TRUE}.}
 \item{path}{An optional file path. If specified, the plots will be saved using the format
 in \code{device} under the given path.}
 
-\item{device}{Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-"tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".}
+\item{device}{Device passed on to \code{ggplot} for plot saving. Options are 
+\code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+or \code{"wmf"}.}
 
 \item{width}{The plot width in case of printing.}
 

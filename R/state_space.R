@@ -361,9 +361,9 @@
 
 # -------------------------------------------------------------------------------------------
 
-#' Initialization of exogenous variables.
+#' Initialization of exogenous variables
 #'
-#' Initializes the transformation of the exogenous variables.
+#' Initializes the transformations applied to exogenous variables.
 #'
 #' @param maxDiff An integer specifying the maximal difference order.
 #' @param maxLag An integer specifying the maximal lag order.

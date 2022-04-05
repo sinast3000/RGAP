@@ -29,6 +29,6 @@ A list of three matrices with parameters for the prior distribution and box
   the first variable, in that respective order.
 }
 \description{
-Initializes the prior distributions for a model of class\code{TFPmodel} or
+Initializes the prior distributions for a model of class \code{TFPmodel} or
   \code{NAWRUmodel}.
 }

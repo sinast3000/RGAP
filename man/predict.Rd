@@ -12,7 +12,7 @@ predict(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE)
 \item{n.ahead}{An integer specifying the prediction horizon.}
 
 \item{exogenous}{A character string specifying the computation of exogenous variables 
-included in the model. Valid options are \code{exogenous = "mean"} and 
+included in the model (if applicable). Valid options are \code{exogenous = "mean"} and 
 \code{exogenous = "last".}}
 
 \item{returnFit}{A logical. If \code{TRUE}, an object of the same class as \code{fit}
@@ -24,6 +24,6 @@ The fitted object with an updated time series list \code{tsl}. If
   \code{returnFit = FALSE}, only the updated time series list is returned.
 }
 \description{
-Computes predictions for an object of class \code{fitNAWRU, fitTFP, fitKuttner}
-estimated via MLE or Bayesian methods.
+Computes predictions for an object of class \code{fitNAWRU, fitTFP}, or 
+\code{fitKuttner} estimated via MLE or Bayesian methods.
 }

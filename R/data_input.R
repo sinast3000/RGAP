@@ -7,10 +7,10 @@
 #'
 #' @param country The country name. If left unspecified, data for all countries will be
 #'   returned.
-#' @param cubs A logical indicating whether the cubs indicator should be computed if
+#' @param cubs A logical indicating whether the CUBS indicator should be computed if
 #'   possible (see details).
 #'
-#' @details For the computation of cubs, the following three seasonally adjusted series are
+#' @details For the computation of CUBS, the following three seasonally adjusted series are
 #'   used: the utilization indicators in the service industry, the building and construction
 #'   industry, and capacity utilization in manufacturing/industry.
 #'
@@ -43,20 +43,20 @@
 #'   \item{etd}{Employment, persons: total economy (National accounts) (unit: 1000 persons, code: NETN)}
 #'   \item{et}{Employment, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NETD)}
 #'   \item{eet}{Employees, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NWTD)}
-#'   \item{vaind}{Gross value added at 2010 prices: manufacturing industry (unit: Mrd National currency, code: OVGM)}
-#'   \item{vaserv}{Gross value added at 2010 prices: services (unit: Mrd National currency, code: OVG5)}
-#'   \item{vabuil}{Gross value added at 2010 prices: building and construction (unit: Mrd National currency, code: OVG4)}
-#'   \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency 2010 = 100, code: PCPH)}
+#'   \item{vaind}{Gross value added at constant prices: manufacturing industry (unit: bn National currency, code: OVGM)}
+#'   \item{vaserv}{Gross value added at constant prices: services (unit: bn National currency, code: OVG5)}
+#'   \item{vabuil}{Gross value added at constant prices: building and construction (unit: bn National currency, code: OVG4)}
+#'   \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency reference year = 100, code: PCPH)}
 #'   \item{cpih}{Harmonised consumer price index (All-items, 2015 = 100, code: ZCPIH)}
 #'   \item{cpin}{National consumer price index (All-items, 2015 = 100, code: ZCPIN)}
-#'   \item{ngdp}{Gross domestic product at current prices (unit: Mrd National currency, code: UVGD)}
-#'   \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
-#'   \item{gdpdefl}{Price deflator gross domestic product (unit: National currency 2010 = 100, code: PVGD)}
+#'   \item{ngdp}{Gross domestic product at current prices (unit: bn National currency, code: UVGD)}
+#'   \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD)}
+#'   \item{gdpdefl}{Price deflator gross domestic product (unit: National currency reference year = 100, code: PVGD)}
 #'   \item{ahours}{Average annual hours worked per person employed (unit: Hours, code: NLHA)}
 #'   \item{l}{Total annual hours worked: total economy (unit: millions, code: NLHT)}
-#'   \item{wtotal}{Compensation of employees: total economy (unit: Mrd National currency, code: UWCD)}
-#'   \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency 2010 = 100, code: PLCD)}
-#'   \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
+#'   \item{wtotal}{Compensation of employees: total economy (unit: bn National currency, code: UWCD)}
+#'   \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency reference year = 100, code: PLCD)}
+#'   \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND)}
 #'   \item{serv}{Confidence indicator in the service industry}
 #'   \item{buil}{Confidence indicator in the bulding and construction industry}
 #'   \item{indu}{Capacity utilization in manufacturing/industry}
@@ -290,13 +290,13 @@ extract_ameco_data <- function(df) {
 #'   \item{etd}{Employment, persons: total economy (National accounts) (unit: 1000 persons, code: NETN)}
 #'   \item{et}{Employment, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NETD)}
 #'   \item{eet}{Employees, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NWTD)}
-#'   \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency 2010 = 100, code: PCPH)}
-#'   \item{ngdp}{Gross domestic product at current prices (unit: Mrd National currency, code: UVGD)}
-#'   \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
+#'   \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency reference year = 100, code: PCPH)}
+#'   \item{ngdp}{Gross domestic product at current prices (unit: bn National currency, code: UVGD)}
+#'   \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD)}
 #'   \item{l}{Total annual hours worked: total economy (unit: millions, code: NLHT)}
-#'   \item{wtotal}{Compensation of employees: total economy (unit: Mrd National currency, code: UWCD)}
-#'   \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency 2010 = 100, code: PLCD)}
-#'   \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
+#'   \item{wtotal}{Compensation of employees: total economy (unit: bn National currency, code: UWCD)}
+#'   \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency reference year = 100, code: PLCD)}
+#'   \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND)}
 #' }
 #'
 #' @return A list of time series containing the same components as the input list \code{tslAmeco}
@@ -307,8 +307,8 @@ extract_ameco_data <- function(df) {
 #'   \item{parts}{Participation rate}
 #'   \item{ahours}{Average hours worked (unit: hours)}
 #'   \item{prod}{Labor productivity (unit: real output in millions per person)}
-#'   \item{tot}{Terms of trade}
-#'   \item{ws}{wage share (unit: compensation per unit of nominal output)}
+#'   \item{tot}{Terms of trade (pconcp / gdpdefl)}
+#'   \item{ws}{Wage share (unit: compensation per unit of nominal output)}
 #'   \item{winfl}{Wage inflation}
 #'   \item{rulc}{Real unit labor costs}
 #'   

@@ -2,12 +2,12 @@
 
 #' Predictions
 #'
-#' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP, fitKuttner}
-#' estimated via MLE or Bayesian methods.
+#' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP}, or 
+#' \code{fitKuttner} estimated via MLE or Bayesian methods.
 #'
 #' @param n.ahead An integer specifying the prediction horizon. 
 #' @param exogenous A character string specifying the computation of exogenous variables 
-#'   included in the model. Valid options are \code{exogenous = "mean"} and 
+#'   included in the model (if applicable). Valid options are \code{exogenous = "mean"} and 
 #'   \code{exogenous = "last".}
 #' @param returnFit A logical. If \code{TRUE}, an object of the same class as \code{fit}
 #'   where the list entry \code{tsl} is replaced. If \code{FALSE}, only the new time series 

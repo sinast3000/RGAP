@@ -4,7 +4,7 @@
 #'
 #' @description Computes the capacity utilization economic sentiment (CUBS) indicator.
 #'
-#' @param tsCU A multiple time series containing three survey time series, the first list
+#' @param tsCU A multiple time series containing three survey time series, the first
 #'   element needs to be capacity utilization in industry, see details. Alternatively, a list
 #'   of time series can be supplied.
 #' @param tsVA A multiple time series containing three value added series that correspond to
@@ -13,8 +13,8 @@
 #'   \code{frequency = 1} (annual), \code{frequency = 4} (quarterly). The default is
 #'   \code{frequency = 1}.
 #' @param lambda The smoothing parameter for the application of the HP filter (see details).
-#'   If not supplied, \code{lambda = 6.25} for yearly data and \code{lambda = 1600} for
-#'   quarterly data.
+#'   If not supplied, \code{lambda = 6.25} is used for yearly data and \code{lambda = 1600} 
+#'   for quarterly data.
 #'
 #' @details The list \code{tslCU} contains capacity utilization in industry, and the relevant
 #'   survey outcomes of the construction and service sector. The first list object needs to

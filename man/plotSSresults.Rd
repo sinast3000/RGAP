@@ -46,8 +46,9 @@ the default is \code{TRUE}.}
 \item{path}{An optional file path. If specified, the plots will be saved using the format
 in \code{device} under the given path.}
 
-\item{device}{Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-"tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".}
+\item{device}{Device passed on to \code{ggplot} for plot saving. Options are 
+\code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+or \code{"wmf"}.}
 
 \item{width}{The plot width in case of printing.}
 

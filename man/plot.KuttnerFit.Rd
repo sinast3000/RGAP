@@ -35,8 +35,9 @@ the default is \code{TRUE}.}
 \item{prefix}{An optional character string to be added to the names of the plots in case
 \code{path} is specified.}
 
-\item{device}{Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-"tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".}
+\item{device}{Device passed on to \code{ggplot} for plot saving. Options are 
+\code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+or \code{"wmf"}.}
 
 \item{width}{The plot width in case of printing.}
 

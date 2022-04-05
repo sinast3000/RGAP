@@ -20,9 +20,6 @@ filter application.}
 filter application.}
 }
 \value{
-A list containing the two elements \code{potential} and \code{gap} and additionally the original time
-  series.
-
 Object of class \code{gap}, which is a list containing the two elements \code{potential} and
   \code{gap} and additionally the original time series.
 }

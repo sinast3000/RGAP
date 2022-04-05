@@ -24,7 +24,7 @@ are specified. By default, \code{parRestr} is initialized by the function
 
 \item{signalToNoise}{(Optional) signal to noise ratio. Only used if \code{method = "MLE"}.}
 
-\item{control}{A list of control arguments to be passed on to \code{optim}.}
+\item{control}{(Optional) A list of control arguments to be passed on to \code{optim}.}
 }
 \description{
 Estimates a two-dimensional state-space model and performs filtering and smoothing to

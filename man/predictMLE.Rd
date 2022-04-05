@@ -12,7 +12,7 @@ predictMLE(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE)
 \item{n.ahead}{An integer specifying the prediction horizon.}
 
 \item{exogenous}{A character string specifying the computation of exogenous variables 
-included in the model. Valid options are \code{exogenous = "mean"} and 
+included in the model (if applicable). Valid options are \code{exogenous = "mean"} and 
 \code{exogenous = "last".}}
 
 \item{returnFit}{A logical. If \code{TRUE}, an object of the same class as \code{fit}

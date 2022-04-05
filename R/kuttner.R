@@ -18,21 +18,21 @@
 #'   \code{inflErrorARMA = c(0, 3)}, see details.
 #' @param cycleLag A non-negative integer specifying the maximum cycle lag that is included
 #'   in the inflation equation. The default is \code{cycleLag = 0}, see details.
-#' @param start Optional start vector for the estimation, e.g. \code{c(1980, 1)}.
-#' @param end Optional end vector for the estimation, e.g. \code{c(2020, 1)}.
-#' @param anchor Optional anchor value for the logarithm of gdp trend.
-#' @param anchor.h Optional anchor horizon in the frequency of the given time series.
+#' @param start (Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.
+#' @param end (Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.
+#' @param anchor (Optional) Anchor value for the logarithm of trend gdp.
+#' @param anchor.h (Optional) Anchor horizon in the frequency of the given time series.
 #'
 #' @details The list of time series \code{tsl} needs to have the following components:
 #' \describe{
-#'   \item{gdp}{Real gross domestic product,}
+#'   \item{gdp}{Real gross domestic product.}
 #'   \item{infl}{Inflation.}
 #'   }
 #' @details A \code{cycleLag} equal to \code{0} implies that only the contemporaneous cycle
 #'   is included in the inflation equation.  A \code{cycleLag} equal to \code{0:1} implies that
 #'   the contemporaneous as well as the lagged cycle are included.
 #' @details A \code{inflErrorARMA} equal to \code{c(0, 0)} implies that the error term in the
-#'   inlfation equation is white noise. \code{inflErrorARMA = c(1, 0)} implies that the error is
+#'   inflation equation is white noise. \code{inflErrorARMA = c(1, 0)} implies that the error is
 #'   an AR(1) process and for \code{inflErrorARMA = c(1, 2)} the error follows an ARMA(1, 2)
 #'   process.
 #'
@@ -349,17 +349,9 @@ print.KuttnerFit <- function(x, ...) {
 #'   \code{bounds = TRUE}.
 #' @param bounds A logical indicating whether significance intervals should be plotted around
 #'   gdp. The default is \code{bounds = TRUE}.
-#' @param path An optional file path. If specified, the plots will be saved using the format
-#'   in \code{device} under the given path.
 #' @param combine A logical indicating whether the diagnostic plots should be combined or not,
 #'   the default is \code{TRUE}.
-#' @param prefix An optional character string to be added to the names of the plots in case
-#'   \code{path} is specified.
-#' @param device Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-#'   "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".
-#' @param width The plot width in case of printing.
-#' @param height The plot height in case of printing.
-#' @param ... Ignored.
+#' @inheritParams plot.gap
 #'
 #' @export
 plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = TRUE,

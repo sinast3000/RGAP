@@ -35,10 +35,10 @@
 #'   Only used if \code{method = "bayesian"}.
 #' @param MLEfit (Optional) An object of class \code{NAWRUfit} which is used for
 #'   initialization. Only used if \code{method = "bayesian"}.
-#' @param control A list of control arguments to be passed on to \code{optim}.
+#' @param control (Optional) A list of control arguments to be passed on to \code{optim}.
 #'
 #' @details The list object \code{prior} contains three list elements \code{cycle},
-#'   \code{trend}, and \code{cubs}. Each list element is a \code{4 x n} matrix where \code{n}
+#'   \code{trend}, and \code{pcInd}. Each list element is a \code{4 x n} matrix where \code{n}
 #'   denotes the number of parameters involved in the respective equation. The upper two
 #'   elements specify the distribution, the lower two parameters specify box constraints.
 #'   \code{NA} denotes no constraints. Autoregressive parameters are automatically restricted
@@ -58,10 +58,10 @@
 #'            states \eqn{\alpha_r}, a draw \eqn{\theta_{cycle,k}} is obtained either
 #'            by a sequential Gibbs step, a Metropolis Hasting step, or by conjugacy,
 #'            depending on the cycle model specification.
-#'            \item Cubs equation parameters \eqn{\theta_{cubs}}: Conditional on the
-#'            states \eqn{\alpha_r}, a draw \eqn{\theta_{cubs,k}} is obtained either
+#'            \item Phillip's curve equation parameters \eqn{\theta_{pcInd}}: Conditional on the
+#'            states \eqn{\alpha_r}, a draw \eqn{\theta_{pcInd,k}} is obtained either
 #'            by a sequential Gibbs step, a Metropolis Hasting step, a combination
-#'            thereof, or by conjugacy, depending on the cubs equation specification.}
+#'            thereof, or by conjugacy, depending on the Phillip's curve equation specification.}
 #'
 #' @return For maximum likelihood estimation, an object of class \code{NAWRUfit} containing
 #'   the following components:
@@ -75,12 +75,12 @@
 #'   \item{fit}{A list of model fit criteria (see below).}
 #'   \item{call}{Original call to the function. }
 #'   The list component \code{fit} contains the following model fit criteria:
-#'   \item{loglik}{Log-likelihood function values,}
-#'   \item{AIC}{Akaike information criterion,}
-#'   \item{BIC}{Bayesian information criterion,}
-#'   \item{AIC}{Hannan-Quinn information criterion,}
-#'   \item{RMSE}{root mean squared error of the Phillip's curve equation,}
-#'   \item{R2}{R squared of the Phillip's curve equation,}
+#'   \item{loglik}{Log-likelihood function values.}
+#'   \item{AIC}{Akaike information criterion.}
+#'   \item{BIC}{Bayesian information criterion.}
+#'   \item{AIC}{Hannan-Quinn information criterion.}
+#'   \item{RMSE}{root mean squared error of the Phillip's curve equation.}
+#'   \item{R2}{R squared of the Phillip's curve equation.}
 #'   \item{LjungBox}{Ljung-Box test output of the Phillip's curve equation.}
 #'   \item{signal-to-noise}{Signal-to-noise ratio.}
 #' For bayesian estimation, an object of class \code{NAWRUfit} containing the following
@@ -168,18 +168,18 @@ fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToN
 #'  function \code{inizializeExo}. The column names give the  variable names.
 #'  \code{exoType[, , 1]} contains the difference transformations and \code{exoType[, , 2]}
 #'  the subsequent lag transformations, see details.
-#' @param start Optional start vector for the estimation, e.g. \code{c(1980, 1)}.
-#' @param end Optional end vector for the estimation, e.g. \code{c(2020, 1)}.
-#' @param anchor Optional anchor value for the unemployment rate.
-#' @param anchor.h Optional anchor horizon in the frequency of the given time series.
+#' @param start (Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.
+#' @param end (Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.
+#' @param anchor (Optional) Anchor value for the unemployment rate.
+#' @param anchor.h (Optional) Anchor horizon in the frequency of the given time series.
 #'
 #' @details The list of time series \code{tsl} needs to have the following components:
 #' \describe{
-#'     \item{ur}{Unemployment rate,}
-#'     \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"},}
-#'     \item{rulc}{Real unit labor costs, if \code{type = "NKP"},}
+#'     \item{ur}{Unemployment rate.}
+#'     \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"}.}
+#'     \item{rulc}{Real unit labor costs, if \code{type = "NKP"}.}
 #'     }
-#'   optionally other variables included in \code{exoType}.
+#'   and optionally other variables included in \code{exoType}.
 #' @details A \code{cycleLag} equal to \code{0} implies that only the contemporaneous cycle
 #'   is included in the Phillip's curve.  A \code{cycleLag} equal to \code{0:1} implies that
 #'   the contemporaneous as well as the lagged cycle are included.
@@ -610,19 +610,12 @@ print.NAWRUfit <- function(x, ...) {
 #'   \code{bounds = TRUE}.
 #' @param bounds A logical indicating whether significance intervals should be plotted around
 #'   the nawru. The default is \code{bounds = TRUE}.
-#' @param path An optional file path. If specified, the plots will be saved using the format
-#'   in \code{device} under the given path.
 #' @param combine A logical indicating whether the diagnostic plots should be combined or not,
 #'   the default is \code{TRUE}.
-#' @param prefix An optional character string to be added to the names of the plots in case
-#'   \code{path} is specified.
 #' @param posterior A logical indicating whether posterior diagnostics should be plotted. The
 #'   default is \code{FALSE}. Only applied in the case of bayesian estimation.
-#' @param device Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-#'   "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".
-#' @param width The plot width in case of printing.
-#' @param height The plot height in case of printing.
-#' @param ... Ignored.
+#' @inheritParams plot.gap
+
 #'
 #' @export
 plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = TRUE, prefix = NULL,

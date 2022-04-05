@@ -36,8 +36,8 @@ data, and \code{lambda = 129600} for monthly data.}
 }
 \value{
 Object of class \code{gap}, which is a list with the following components:
-  \item{tsl}{List of time series including potential output \code{potential} and the
-  output gap \code{gap} and all original series.}
+  \item{tsl}{List of time series including potential output \code{potential}, the
+  output gap \code{gap}, all HP-filtered trend series, and all original series.}
   \item{NAWRUfit}{Provided \code{NAWRUfit} object.}
   \item{TFPfit}{Provided \code{TFPfit} object.}
   \item{call}{Original call to the function.}
@@ -49,12 +49,12 @@ Computes potential output and the output gap based on a production function
 \details{
 The list of time series \code{tsl} needs to have the following components:
 \describe{
-  \item{lfnd}{Labor force non-domestic (unit: 1000 persons)}
-  \item{parts}{Participation rate}
-  \item{ahours}{Average hours worked (unit: hours)}
-  \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
-  \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
-  \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN)}
+  \item{lfnd}{Labor force non-domestic (unit: 1000 persons). (Set to zero if left unspecified).}
+  \item{parts}{Participation rate.}
+  \item{ahours}{Average hours worked (unit: hours).}
+  \item{gdp}{Gross domestic product at constant prices (unit: bn National currency, code: OVGD).}
+  \item{k}{Net capital stock at constant prices: total economy (unit: bn National currency, code: OKND).}
+  \item{popw}{Population: 15 to 64 years (unit: 1000 persons, code: NPAN).}
   }
 
 The trend of the list components \code{parts, ahours and lfnd} (if available)
@@ -63,7 +63,7 @@ The trend of the list components \code{parts, ahours and lfnd} (if available)
   (for instance, denoted by \code{partsTrend}).
 }
 \examples{
-# compute the output gap given the previously obtain nawru and trend tfp
+# compute the output gap given the previously obtained nawru and trend tfp
 \dontrun{
 gapProd(tsl = tslInput, NAWRUfit = fittedNAWRU, TFPfit = fittedTFP)
 }

@@ -37,13 +37,13 @@ in the CUBS equation. The default is \code{cubsAR = 0}, see details.}
 \item{errorARMA}{A vector with non-negative integers specifying the AR
 and MA degree of the error term in the CUBS equation.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the log of the TFP trend.}
+\item{anchor}{(Optional) Snchor value for the log of the TFP trend.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \description{
 Checks the input variables for the procedure \code{TFPmodel} for consistency and validity.

@@ -39,8 +39,9 @@ the default is \code{TRUE}.}
 \item{posterior}{A logical indicating whether posterior diagnostics should be plotted. The
 default is \code{FALSE}. Only applied in the case of bayesian estimation.}
 
-\item{device}{Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-"tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".}
+\item{device}{Device passed on to \code{ggplot} for plot saving. Options are 
+\code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+or \code{"wmf"}.}
 
 \item{width}{The plot width in case of printing.}
 

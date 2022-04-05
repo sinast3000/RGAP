@@ -50,13 +50,13 @@ function \code{inizializeExo}. The column names give the  variable names.
 \code{exoType[, , 1]} contains the difference transformations and \code{exoType[, , 2]}
 the subsequent lag transformations, see details.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the unemployment rate.}
+\item{anchor}{(Optional) Anchor value for the unemployment rate.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \description{
 Checks the input variables for the procedure \code{NAWRUmodel} for consistency and

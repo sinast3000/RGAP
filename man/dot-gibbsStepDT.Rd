@@ -15,7 +15,7 @@ the states.}
 \item{distr}{A \code{4 x 3} matrix with prior parameters and box constraints.}
 
 \item{varName}{A code{3 x 1} vector with parameter names in the correct order, i.e.,
-mean reversion, auto-regressive parameter, variance.}
+mean reversion, autoregressive parameter, variance.}
 }
 \description{
 Draws from the posterior of the parameters of the damped trend equation, conditional on

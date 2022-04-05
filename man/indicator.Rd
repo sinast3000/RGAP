@@ -7,9 +7,9 @@
 \format{
 A list with 53 nested country lists with time series objects. Each country list contains 3 time series variables:
 \describe{
-  \item{serv}{Confidence indicator in the service industry}
-  \item{buil}{Confidence indicator in the bulding and construction industry}
-  \item{indu}{Capacity utilization in manufacturing/industry}
+  \item{serv}{Confidence indicator in the service industry.}
+  \item{buil}{Confidence indicator in the bulding and construction industry.}
+  \item{indu}{Capacity utilization in manufacturing/industry.}
   }
 }
 \source{
@@ -19,7 +19,7 @@ A list with 53 nested country lists with time series objects. Each country list 
 indicator
 }
 \description{
-A dataset containing the service sector confidence indicator, the construction sector confidence indicator and the capacity utilization in manufacturing/industry
+A dataset containing the service sector confidence indicator, the construction sector confidence indicator and the capacity utilization in manufacturing/industry.
 }
 \details{
 A dataset containing the seasonally adjusted utilization indicators in the service industry, the building and construction industry,

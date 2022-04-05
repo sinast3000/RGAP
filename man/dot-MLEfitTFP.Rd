@@ -16,7 +16,7 @@ to obtain the tfp trend.}
 \item{model}{An object of class TFPmodel.}
 
 \item{parRestr}{A list of matrices containing the parameter restrictions for the cycle,
-trend, and the cubs equation. Each matrix contains the lower and upper bound of the
+trend, and the CUBS equation. Each matrix contains the lower and upper bound of the
 involved parameters. \code{NA} implies that no restriction is present. Autoregressive
 parameters are automatically restricted to the stationary region unless box constraints
 are specified. By default, \code{parRestr} is initialized by the function
@@ -24,7 +24,7 @@ are specified. By default, \code{parRestr} is initialized by the function
 
 \item{signalToNoise}{(Optional) signal to noise ratio. Only used if \code{method = "MLE"}.}
 
-\item{control}{A list of control arguments to be passed on to \code{optim}.}
+\item{control}{(Optional) A list of control arguments to be passed on to \code{optim}.}
 }
 \description{
 Estimates a two-dimensional state-space model and performs filtering and smoothing

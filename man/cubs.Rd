@@ -7,7 +7,7 @@
 cubs(tsCU, tsVA, frequency = 1, lambda = NULL)
 }
 \arguments{
-\item{tsCU}{A multiple time series containing three survey time series, the first list
+\item{tsCU}{A multiple time series containing three survey time series, the first
 element needs to be capacity utilization in industry, see details. Alternatively, a list
 of time series can be supplied.}
 
@@ -19,8 +19,8 @@ of time series can be supplied.}
 \code{frequency = 1}.}
 
 \item{lambda}{The smoothing parameter for the application of the HP filter (see details).
-If not supplied, \code{lambda = 6.25} for yearly data and \code{lambda = 1600} for
-quarterly data.}
+If not supplied, \code{lambda = 6.25} is used for yearly data and \code{lambda = 1600} 
+for quarterly data.}
 }
 \value{
 A list containing the two time series capacity utilization in industry \code{cu}

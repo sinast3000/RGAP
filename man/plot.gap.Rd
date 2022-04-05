@@ -21,7 +21,7 @@
 
 \item{contribution}{A boolean indicating whether the contributions to potential output
 growth and the output gap should be plotted (only applicable for production function
-type output gaps.)}
+type output gaps).}
 
 \item{path}{An optional file path. If specified, the plots will be saved using the format
 in \code{device} under the given path.}
@@ -32,8 +32,9 @@ default is \code{TRUE}.}
 \item{prefix}{An optional character string to be added to the names of the plots in case
 \code{path} is specified.}
 
-\item{device}{Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-"tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".}
+\item{device}{Device passed on to \code{ggplot} for plot saving. Options are 
+\code{"eps", "ps", "tex"} (pictex), \code{"pdf", "jpeg", "tiff", "png", "bmp", "svg"} 
+or \code{"wmf"}.}
 
 \item{width}{The plot width in case of printing.}
 

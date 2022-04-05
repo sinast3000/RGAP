@@ -33,13 +33,13 @@ in the inflation equation. The default is \code{cycleLag = 0}, see details.}
 \item{errorARMA}{A vector with non-negative integers specifying the AR
 and MA degree of the error term in the inflation equation.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the logarithm of gdp trend.}
+\item{anchor}{(Optional) Anchor value for the logarithm of trend gdp.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \description{
 Checks the input variables for the procedure \code{KuttnerModel} for consistency and validity.

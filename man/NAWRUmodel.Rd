@@ -47,13 +47,13 @@ function \code{inizializeExo}. The column names give the  variable names.
 \code{exoType[, , 1]} contains the difference transformations and \code{exoType[, , 2]}
 the subsequent lag transformations, see details.}
 
-\item{start}{Optional start vector for the estimation, e.g. \code{c(1980, 1)}.}
+\item{start}{(Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.}
 
-\item{end}{Optional end vector for the estimation, e.g. \code{c(2020, 1)}.}
+\item{end}{(Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.}
 
-\item{anchor}{Optional anchor value for the unemployment rate.}
+\item{anchor}{(Optional) Anchor value for the unemployment rate.}
 
-\item{anchor.h}{Optional anchor horizon in the frequency of the given time series.}
+\item{anchor.h}{(Optional) Anchor horizon in the frequency of the given time series.}
 }
 \value{
 Object of class \code{NAWRUmodel}, which is a list with the following components:
@@ -76,11 +76,11 @@ Creates a state space object object of class \code{NAWRUmodel} which can be used
 \details{
 The list of time series \code{tsl} needs to have the following components:
 \describe{
-    \item{ur}{Unemployment rate,}
-    \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"},}
-    \item{rulc}{Real unit labor costs, if \code{type = "NKP"},}
+    \item{ur}{Unemployment rate.}
+    \item{nulc}{Nominal Unit labor costs, if \code{type = "TKP"}.}
+    \item{rulc}{Real unit labor costs, if \code{type = "NKP"}.}
     }
-  optionally other variables included in \code{exoType}.
+  and optionally other variables included in \code{exoType}.
 
 A \code{cycleLag} equal to \code{0} implies that only the contemporaneous cycle
   is included in the Phillip's curve.  A \code{cycleLag} equal to \code{0:1} implies that

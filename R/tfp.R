@@ -9,7 +9,7 @@
 #'
 #' @param model An object of class TFPmodel.
 #' @param parRestr A list of matrices containing the parameter restrictions for the cycle,
-#'   trend, and the cubs equation. Each matrix contains the lower and upper bound of the
+#'   trend, and the CUBS equation. Each matrix contains the lower and upper bound of the
 #'   involved parameters. \code{NA} implies that no restriction is present. Autoregressive
 #'   parameters are automatically restricted to the stationary region unless box constraints
 #'   are specified. By default, \code{parRestr} is initialized by the function
@@ -35,7 +35,7 @@
 #'   Only used if \code{method = "bayesian"}.
 #' @param MLEfit (Optional) An object of class \code{TFPfit} which is used for
 #'   initialization. Only used if \code{method = "bayesian"}.
-#' @param control A list of control arguments to be passed on to \code{optim}.
+#' @param control (Optional) A list of control arguments to be passed on to \code{optim}.
 #'
 #' @details The list object \code{prior} contains three list elements \code{cycle},
 #'   \code{trend}, and \code{cubs}. Each list element is a \code{4 x n} matrix where \code{n}
@@ -58,10 +58,10 @@
 #'            states \eqn{\alpha_r}, a draw \eqn{\theta_{cycle,k}} is obtained either
 #'            by a sequential Gibbs step, a Metropolis Hasting step, or by conjugacy,
 #'            depending on the cycle model specification.
-#'            \item Cubs equation parameters \eqn{\theta_{cubs}}: Conditional on the
+#'            \item CUBS equation parameters \eqn{\theta_{cubs}}: Conditional on the
 #'            states \eqn{\alpha_r}, a draw \eqn{\theta_{cubs,k}} is obtained either
 #'            by a sequential Gibbs step, a Metropolis Hasting step, a combination
-#'            thereof, or by conjugacy, depending on the cubs equation specification.
+#'            thereof, or by conjugacy, depending on the CUBS equation specification.
 #'   }
 #'
 #' @return For maximum likelihood estimation, an object of class \code{TFPit} containing
@@ -76,12 +76,12 @@
 #'   \item{fit}{A list of model fit criteria (see below).}
 #'   \item{call}{Original call to the function. }
 #'   The list component \code{fit} contains the following model fit criteria:
-#'   \item{loglik}{Log-likelihood function values,}
-#'   \item{AIC}{Akaike information criterion,}
-#'   \item{BIC}{Bayesian information criterion,}
-#'   \item{AIC}{Hannan-Quinn information criterion,}
-#'   \item{RMSE}{root mean squared error of the CUBS equation,}
-#'   \item{R2}{R squared of the CUBS equation,}
+#'   \item{loglik}{Log-likelihood function values.}
+#'   \item{AIC}{Akaike information criterion.}
+#'   \item{BIC}{Bayesian information criterion.}
+#'   \item{AIC}{Hannan-Quinn information criterion.}
+#'   \item{RMSE}{root mean squared error of the CUBS equation.}
+#'   \item{R2}{R squared of the CUBS equation.}
 #'   \item{LjungBox}{Ljung-Box test output of the CUBS equation.}
 #'   \item{signal-to-noise}{Signal-to-noise ratio.}
 #' For bayesian estimation, an object of class \code{TFPfit} containing the following components:
@@ -93,7 +93,7 @@
 #'   \item{fit}{A list of model fit criteria (see below).}
 #'   \item{call}{Original call to the function. }
 #'   The list component \code{fit} contains the following model fit criteria:
-#'   \item{R2}{R squared of the cubs equation,}
+#'   \item{R2}{R squared of the CUBS equation.}
 #'   \item{signal-to-noise}{Signal-to-noise ratio.}
 ##' @export
 #' @examples
@@ -159,16 +159,16 @@ fitTFP <- function(model, parRestr = initializeRestr(model = model), signalToNoi
 #' @param cubsAR A non-negative integer specifying the maximum CUBS lag that is included
 #'   in the CUBS equation. The default is \code{cubsAR = 0}, see details.
 #' @param cubsErrorARMA A vector with non-negative integers specifying the AR
-#'   and MA degree of the error term in the cubs equation. The default is
+#'   and MA degree of the error term in the CUBS equation. The default is
 #'   \code{cubsErrorARMA = c(0, 0)}, see details.
-#' @param start Optional start vector for the estimation, e.g. \code{c(1980, 1)}.
-#' @param end Optional end vector for the estimation, e.g. \code{c(2020, 1)}.
-#' @param anchor Optional anchor value for the log of the TFP trend.
-#' @param anchor.h Optional anchor horizon in the frequency of the given time series.
+#' @param start (Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.
+#' @param end (Optional) End vector for the estimation, e.g. \code{c(2020, 1)}.
+#' @param anchor (Optional) Snchor value for the log of the TFP trend.
+#' @param anchor.h (Optional) Anchor horizon in the frequency of the given time series.
 #'
 #' @details The list of time series \code{tsl} needs to have the following components:
 #' \describe{
-#'     \item{tfp}{Total factor productivity,}
+#'     \item{tfp}{Total factor productivity.}
 #'     \item{cubs}{Capacity utilization economic sentiment indicator.}
 #'     }
 #' @details A \code{cycleLag} equal to \code{0} implies that only the contemporaneous cycle
@@ -564,19 +564,11 @@ print.TFPfit <- function(x, ...) {
 #'   \code{bounds = TRUE}.
 #' @param bounds A logical indicating whether significance intervals should be plotted around
 #'   tfp growth. The default is \code{bounds = TRUE}.
-#' @param path An optional file path. If specified, the plots will be saved using the format
-#'   in \code{device} under the given path.
 #' @param combine A logical indicating whether the diagnostic plots should be combined or not,
 #'   the default is \code{TRUE}.
-#' @param prefix An optional character string to be added to the names of the plots in case
-#'   \code{path} is specified.
 #' @param posterior A logical indicating whether posterior diagnostics should be plotted. The
 #'   default is \code{FALSE}. Only applied in the case of bayesian estimation.
-#' @param device Device passed on to \code{ggplot} for plot saving. Options are eps", "ps",
-#'   "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf".
-#' @param width The plot width in case of printing.
-#' @param height The plot height in case of printing.
-#' @param ... Ignored.
+#' @inheritParams plot.gap
 #'
 #' @export
 plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = TRUE, prefix = NULL,

@@ -12,20 +12,20 @@ A list object with 53 country time series objects. Each time series object conta
   \item{etd}{Employment, persons: total economy (National accounts) (unit: 1000 persons, code: NETN)}
   \item{et}{Employment, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NETD)}
   \item{eet}{Employees, persons: all domestic industries (National accounts) (unit: 1000 persons, code: NWTD)}
-  \item{vaind}{Gross value added at 2010 prices: manufacturing industry (unit: Mrd National currency, code: OVGM)}
-  \item{vaserv}{Gross value added at 2010 prices: services (unit: Mrd National currency, code: OVG5)}
-  \item{vabuil}{Gross value added at 2010 prices: building and construction (unit: Mrd National currency, code: OVG4)}
+  \item{vaind}{Gross value added at 2010 prices: manufacturing industry (unit: bn National currency, code: OVGM)}
+  \item{vaserv}{Gross value added at 2010 prices: services (unit: bn National currency, code: OVG5)}
+  \item{vabuil}{Gross value added at 2010 prices: building and construction (unit: bn National currency, code: OVG4)}
   \item{pconsp}{Price deflator private final consumption expenditure (unit: National currency 2010 = 100, code: PCPH)}
   \item{cpih}{Harmonised consumer price index (All-items, 2015 = 100, code: ZCPIH)}
   \item{cpin}{National consumer price index (All-items, 2015 = 100, code: ZCPIN)}
-  \item{ngdp}{Gross domestic product at current prices (unit: Mrd National currency, code: UVGD)}
-  \item{gdp}{Gross domestic product at 2010 reference levels (unit: Mrd National currency, code: OVGD)}
+  \item{ngdp}{Gross domestic product at current prices (unit: bn National currency, code: UVGD)}
+  \item{gdp}{Gross domestic product at 2010 reference levels (unit: bn National currency, code: OVGD)}
   \item{gdpdefl}{Price deflator gross domestic product (unit: National currency 2010 = 100, code: PVGD)}
   \item{ahours}{Average annual hours worked per person employed (unit: Hours, code: NLHA)}
   \item{l}{Total annual hours worked: total economy (unit: millions, code: NLHT)}
-  \item{wtotal}{Compensation of employees: total economy (unit: Mrd National currency, code: UWCD)}
+  \item{wtotal}{Compensation of employees: total economy (unit: bn National currency, code: UWCD)}
   \item{nulc}{Nominal unit labour costs: total economy (Ratio of compensation per employee to real GDP per person employed.) (unit: National currency 2010 = 100, code: PLCD)}
-  \item{k}{Net capital stock at 2010 prices: total economy (unit: Mrd National currency, code: OKND)}
+  \item{k}{Net capital stock at 2010 prices: total economy (unit: bn National currency, code: OKND)}
   \item{serv}{Confidence indicator in the service industry}
   \item{buil}{Confidence indicator in the bulding and construction industry}
   \item{indu}{Capacity utilization in manufacturing/industry}
