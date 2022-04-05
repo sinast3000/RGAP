@@ -4,10 +4,14 @@
 \alias{.SSresults}
 \title{Computes additional results of the Kalman filter and smoother.}
 \usage{
-.SSresults(out)
+.SSresults(out, model, prediction = FALSE)
 }
 \arguments{
 \item{out}{The return object of the function \code{KFS} from the package \code{KFAS}.}
+
+\item{model}{An object of class \code{NAWRUmodel}, \code{TFPmodel}, or \code{KuttnerModel}.}
+
+\item{prediction}{Logical indicating whether \code{out} includes predictions.}
 }
 \description{
 Computes additional results of the Kalman filter and smoother.

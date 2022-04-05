@@ -140,9 +140,7 @@
   namesObs <- colnames(fit$model$y)
 
   # save filtered and smoothed time series and residuals
-  tslRes <- .SSresults(out = out)
-  tslRes$nawru <- tslRes$stateSmoothed[, "trend"]
-  tslRes$nawruSE <- tslRes$stateSmoothedSE[, "trend"]
+  tslRes <- .SSresults(out = out, model = model)
 
   # ----- inference
   dfRes <- inference(parOptim = fit$optim.out$par, hessian = fit$optim.out$hessian, loc = loc)

@@ -132,12 +132,7 @@
   out <- KFS(fit$model, simplify = FALSE, filtering = c("state", "signal"), smoothing = c("state", "signal", "disturbance"))
 
   # filtered and smoothed time series and residuals
-  tslRes <- .SSresults(out = out)
-  tslRes$tfpTrend <- exp(tslRes$stateSmoothed[, "trend"])
-  tslRes$tfpTrendGrowth <- growth(tslRes$tfpTrend)
-
-  # delta method for standard errors of tfp trend and growth
-  tslRes[c("tfpTrendSE", "tfpTrendGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend")[-1]
+  tslRes <- .SSresults(out = out, model = model)
 
   # ----- parameter inference
   dfRes <- inference(parOptim = fit$optim.out$par, hessian = fit$optim.out$hessian, loc = loc)
