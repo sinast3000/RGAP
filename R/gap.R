@@ -30,7 +30,8 @@
 #'
 #' @details The trend of the list components \code{parts, ahours and lfnd} (if available)
 #'   is computed using the Hodrick-Prescott filter with the smoothing constant
-#'   \code{lambda} .
+#'   \code{lambda}, unless the supplied time series list \code{tsl} contains their trend 
+#'   (for instance, denoted by \code{partsTrend}).
 #'
 #' @return Object of class \code{gap}, which is a list with the following components:
 #'   \item{tsl}{List of time series including potential output \code{potential} and the
@@ -71,7 +72,14 @@ gapProd <- function(tsl, NAWRUfit, TFPfit, alpha = 0.65, start = NULL, end = NUL
 
   # apply HP filter
   namesHP <- c("parts", "lfnd", "ahours")
-  tsl[paste0(namesHP, "Trend")] <- lapply(tsl[namesHP], hpfilter, lambda)
+  # tsl[paste0(namesHP, "Trend")] <- lapply(tsl[namesHP], hpfilter, lambda)
+  for (k in namesHP) {
+    k_trend <- paste0(k, "Trend")
+    if (!(k_trend %in% names(tsl))) {
+      tsl[[k_trend]] <- hpfilter(x = tsl[[k]], lambda = lambda)
+    }
+  }
+  
 
   # trend labor
   tsl$lTrend <- ((tsl$popw * tsl$partsTrend) * (1 - tsl$nawru / 100) + tsl$lfndTrend) * tsl$ahoursTrend / 1000
