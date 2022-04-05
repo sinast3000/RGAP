@@ -610,7 +610,9 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
           ub = (x$tsl$tfpTrendGrowth + x$tsl$tfpTrendGrowthSE * tvalue),
           lb = (x$tsl$tfpTrendGrowth - x$tsl$tfpTrendGrowthSE * tvalue),
           ub2 = (x$tsl$obsFitted[, 2] + x$tsl$obsFittedSE[, 2] * tvalue),
-          lb2 = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue)
+          lb2 = (x$tsl$obsFitted[, 2] - x$tsl$obsFittedSE[, 2] * tvalue),
+          ub3 = (x$tsl$tfpTrend + x$tsl$tfpTrendSE * tvalue),
+          lb3 = (x$tsl$tfpTrend - x$tsl$tfpTrendSE * tvalue)
         )
 
         # residuals
@@ -624,7 +626,9 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
           ub = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
           lb = x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")],
           ub2 = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-UB")],
-          lb2 = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")]
+          lb2 = x$tsl$cubsFittedSummary[, paste0(100 * HPDI, "% HPDI-LB")],
+          ub3 = x$tsl$tfpTrendSummary[, paste0(100 * HPDI, "% HPDI-UB")],
+          lb3 = x$tsl$tfpTrendSummary[, paste0(100 * HPDI, "% HPDI-LB")]
         )
 
         # residuals
@@ -632,15 +636,15 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
       }
 
       # --- data
-      # tfp trend
+      # tfp level
       tsl1 <- list(
-        trend = 100 * x$tsl$tfpTrendGrowth,
-        orig = 100 * growth(exp(x$model$tsl$logtfp)),
-        lb = 100 * tslBounds$lb,
-        ub = 100 * tslBounds$ub
+        trend = x$tsl$tfpTrend,
+        orig = exp(x$model$tsl$logtfp),
+        lb = tslBounds$lb3,
+        ub = tslBounds$ub3
       )
       if (!is.null(x$tsl$tfpTrendAnchored)) {
-        tsl1 <- c(tsl1, list(anchor = 100 * growth(x$tsl$tfpTrendAnchored)))
+        tsl1 <- c(tsl1, list(anchor = x$tsl$tfpTrendAnchored))
       }
       tsl1 <- do.call(cbind, tsl1)
   
@@ -651,22 +655,37 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
         lb = tslBounds$lb2,
         ub = tslBounds$ub2
       ))
+      
+      # tfp growth
+      tsl3 <- list(
+        trend = 100 * x$tsl$tfpTrendGrowth,
+        orig = 100 * growth(exp(x$model$tsl$logtfp)),
+        lb = 100 * tslBounds$lb,
+        ub = 100 * tslBounds$ub
+      )
+      if (!is.null(x$tsl$tfpTrendAnchored)) {
+        tsl3 <- c(tsl3, list(anchor = 100 * growth(x$tsl$tfpTrendAnchored)))
+      }
+      tsl3 <- do.call(cbind, tsl3)
   
       # combine lists
-      tsl <- list(tsl1, tsl2)
+      tsl <- list(tsl1, tsl2, tsl3)
   
       # --- legends and titles and print names
       legend <- list(
-        c("trend tfp growth", "tfp growth", "anchored trend tfp growth"),
-        c("fitted", "cubs")
+        c("trend tfp", "tfp", "anchored trend tfp"),
+        c("fitted", "cubs"),
+        c("trend tfp growth", "tfp growth", "anchored trend tfp growth")
       )
       title <- list(
-        "Total factor productivity growth in %",
+        "Total factor productivity",
         "CUBS",
-        "CUBS residuals"
+        "CUBS residuals",
+        "Total factor productivity growth in %"
       )
-      namesPrint <- paste(prefix, c("tfp_growth", "cubs"), sep = "_")
-  
+      namesPrint <- c("tfp", "cubs", "tfp_growth")
+      if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
+
       # plot
       plotSSresults(
         tsl = tsl, legend = legend, title = title,
@@ -678,6 +697,8 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
     } else {
       
       # ----- prediction
+      
+      n.ahead <- attr(x, "prediction")$n.ahead
       
       if (method == "MLE") {
         # confidence bounds
@@ -726,15 +747,15 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
         orig = exp(x$tsl$obs[, 1]),
         lb = tslBounds$lb,
         ub = tslBounds$ub,
-        lb2 = tslBounds$lb1,
-        ub2 = tslBounds$ub1
+        lb_fc = tslBounds$lb1,
+        ub_fc = tslBounds$ub1
       ))
 
       # cubs
       tsl2 <- do.call(cbind, list(
         E2 = x$tsl$obs[, 2],
-        lb = tslBounds$lb2,
-        ub = tslBounds$ub2
+        lb_fc = tslBounds$lb2,
+        ub_fc = tslBounds$ub2
       ))
       
       # cycle
@@ -750,8 +771,8 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
         orig = 100 * x$tsl$tfpGrowth,
         lb = tslBounds$lb4,
         ub = tslBounds$ub4,
-        lb2 = tslBounds$lb41,
-        ub2 = tslBounds$ub41
+        lb_fc = tslBounds$lb41,
+        ub_fc = tslBounds$ub41
       ))
       
       # combine lists
@@ -770,11 +791,12 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
         "Total factor productivity gap",
         "Total factor productivity growth in %"
       )
-      namesPrint <- paste(prefix, c("tfp", "cubs", "tfp_gap", "tfp_growth"), sep = "_")
+      namesPrint <- c("tfp", "cubs", "tfp_gap", "tfp_growth")
+      if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
       
       # plot
       plotSSprediction(
-        tsl = tsl, legend = legend, title = title,
+        tsl = tsl, legend = legend, title = title, n.ahead = n.ahead,
         boundName = boundName, res = NULL, namesPrint = namesPrint,
         bounds = bounds, combine = combine, path = path, device = device,
         width = width, height = height

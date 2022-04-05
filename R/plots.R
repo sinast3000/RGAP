@@ -44,7 +44,6 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
   }
 
   # ----- trend
-  # date <- as.Date(paste0(floor(time(tsl[[1]])), "-01-01", "%Y-%m-%d"))
   date <- zoo::as.Date(time(tsl[[1]]))
   df <- data.frame(date, tsl[[1]])
   color <- set$colors[1:(ncol(df) - 3)]
@@ -77,19 +76,6 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
       date_breaks = paste0(set$freqYear, " year")
     ) +
     labs(title = title[[1]], x = "year", y = "") +
-    # theme(
-    #   legend.position = c(1, 0.01),
-    #   legend.justification = c(1, 0),
-    #   legend.margin = margin(0, 0, 0, 0),
-    #   legend.text = element_text(size = set$legendFontsize),
-    #   legend.key.size = unit(0.75, "lines"),
-    #   legend.title = element_blank(),
-    #   legend.background = element_rect(fill = "transparent"),
-    #   legend.spacing.x = unit(0, "pt"),
-    #   legend.spacing.y = unit(0, "pt")
-    # ) +
-    # guides(col = guide_legend(ncol = 2, byrow = TRUE)) +
-    # guides(fill = guide_legend(override.aes = list(alpha = set$alpha)))
   theme(
     legend.position="bottom",
     legend.box = "horizontal",
@@ -106,8 +92,56 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
            linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
            fill = guide_legend(order=2)) 
   
-  
-  
+  if (length(tsl) > 2) {
+    # ----- trend growth
+    date <- zoo::as.Date(time(tsl[[3]]))
+    df <- data.frame(date, tsl[[3]])
+    color <- set$colors[1:(ncol(df) - 3)]
+    color <- color[order(legend[[3]][1:(ncol(df) - 3)])]
+    linetype <- set$linetype[1:(ncol(df) - 3)]
+    linetype <- linetype[order(legend[[3]][1:(ncol(df) - 3)])]
+    p02 <- ggplot(df, aes(x = date)) +
+      theme_classic() +
+      coord_cartesian(xlim = c(date[1], date[length(date)]), expand = FALSE) +
+      theme(
+        plot.title = element_text(size = set$titleFontsize),
+        axis.title = element_text(size = set$labelFontsize),
+        panel.grid.major.y = element_line(linetype = "solid")
+      ) +
+      geom_line(aes(y = trend, col = legend[[3]][1], linetype = legend[[3]][1])) +
+      geom_line(aes(y = orig, col = legend[[3]][2], linetype = legend[[3]][2]))
+    if (ncol(df) > 5) {
+      p02 <- p02 + geom_line(aes(y = anchor, col = legend[[3]][3], linetype = legend[[3]][3]))
+    }
+    if (bounds) {
+      p02 <- p02 +
+        geom_ribbon(aes(ymin = lb, ymax = ub, fill = boundName), alpha = set$alpha) +
+        scale_fill_manual(values = "grey12")
+    }
+    p02 <- p02 +
+      scale_color_manual(name = NULL, values = color) +
+      scale_linetype_manual(name = NULL, values = linetype) +
+      scale_x_date(
+        date_labels = "%Y", date_minor_breaks = "1 year",
+        date_breaks = paste0(set$freqYear, " year")
+      ) +
+      labs(title = title[[4]], x = "year", y = "") +
+      theme(
+        legend.position="bottom",
+        legend.box = "horizontal",
+        legend.box.margin=margin(-15,0,0,0),
+        legend.justification="left",
+        legend.text = element_text(size = set$legendFontsize),
+        legend.key.size = unit(0.75, "lines"),
+        legend.title = element_blank(),
+        legend.background = element_rect(fill = "transparent"),
+        legend.spacing.y = unit(0, "pt"),
+        plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
+      ) +
+      guides(color = guide_legend(order=1, ncol = 1, byrow = TRUE),
+             linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
+             fill = guide_legend(order=2)) 
+  }
   
   # ----- second observation equation
   date <- zoo::as.Date(time(tsl[[2]]))
@@ -139,19 +173,6 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
       date_breaks = paste0(set$freqYearSmall, " year")
     ) +
     labs(x = "year", y = "") +
-    # theme(
-    #   legend.position = c(1, 0.01),
-    #   legend.justification = c(1, 0),
-    #   legend.margin = margin(0, 0, 0, 0),
-    #   legend.text = element_text(size = set$legendFontsize),
-    #   legend.key.size = unit(0.75, "lines"),
-    #   legend.title = element_blank(),
-    #   legend.background = element_rect(fill = "transparent"),
-    #   legend.spacing.x = unit(0, "pt"),
-    #   legend.spacing.y = unit(0, "pt")
-    # ) +
-    # guides(col = guide_legend(ncol = 2, byrow = TRUE)) +
-    # guides(fill = guide_legend(override.aes = list(alpha = set$alpha)))
   theme(
     legend.position="bottom",
     legend.box = "horizontal",
@@ -167,8 +188,7 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
     guides(color = guide_legend(order=1, ncol = 1, byrow = TRUE),
            linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
            fill = guide_legend(order=2)) 
-  
-  
+
   # residual diagnostics
   if (!is.null(res)) {
 
@@ -192,16 +212,6 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
         date_breaks = paste0(set$freqYearSmall, " year")
       ) +
       labs(x = "year", y = "") +
-      # theme(
-      #   legend.position = c(1, 0.01),
-      #   legend.justification = c(1, 0),
-      #   legend.text = element_text(size = set$legendFontsize),
-      #   legend.key.size = unit(0.75, "lines"),
-      #   legend.title = element_blank(),
-      #   legend.background = element_rect(fill = "transparent"),
-      #   legend.spacing.x = unit(0, "pt"),
-      #   legend.spacing.y = unit(0, "pt")
-      # )
     theme(
       legend.position="bottom",
       legend.box = "horizontal",
@@ -245,10 +255,18 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
       labs(title = "Histogram", x = "recursive residuals", y = "count")
 
     # print
-    suppressWarnings(print(p0))
     if (combine) {
-      pCubs <- suppressWarnings(gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2, top = title[[2]]))
+      if (length(tsl) > 2) {
+        p0 <- suppressWarnings(gridExtra::grid.arrange(p0, p02, nrow = 1))
+      } else {
+        suppressWarnings(print(p0))
+      }
+      pCombine <- suppressWarnings(gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2, top = title[[2]]))
     } else {
+      suppressWarnings(print(p0))
+      if (length(tsl) > 2) {
+        suppressWarnings(print(p02))
+      }
       p1 <- p1 + labs(title = title[[2]])
       p2 <- p2 + labs(title = title[[3]])
       suppressWarnings(print(p1))
@@ -261,7 +279,7 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
     if (!is.null(path)) {
       do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[1], ".", device)), plot = p0), setPrint))
       if (combine) {
-        do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], ".", device)), plot = pCubs), setPrintComb))
+        do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], ".", device)), plot = pCombine), setPrintComb))
       } else {
         do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], "_fitted.", device)), plot = p1), setPrint))
         do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], "_residuals.", device)), plot = p2), setPrint))
@@ -273,7 +291,13 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
     # no residuals
 
     # print
-    suppressWarnings(print(p0))
+    if (combine) {
+      if (length(tsl) > 2) {
+        p0 <- suppressWarnings(gridExtra::grid.arrange(p0, p02, nrow = 1))
+      }
+    } else {
+      suppressWarnings(print(p0))
+    }
     p1 <- p1 + labs(title = title[[2]])
     suppressWarnings(print(p1))
 
@@ -516,7 +540,6 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
   }
 
   # ----- potential
-  # date <- as.Date(paste0(floor(time(tsl[[1]])), "-01-01", "%Y-%m-%d"))
   date <- zoo::as.Date(time(tsl[[1]]))
   df <- data.frame(date, tsl[[1]])
 
@@ -539,27 +562,15 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
         plot.title = element_text(size = set$titleFontsize),
         axis.title = element_text(size = set$labelFontsize)
       ) +
-      geom_line(data = data.frame("value" = apply(tmp, 1, sum), "time" = date), aes(y = value, x = time))
-    p0 <- p0 +
+      geom_line(data = data.frame("value" = apply(tmp, 1, sum), "time" = date), aes(y = value, x = time)) +
       scale_color_manual(name = NULL, values = "black") +
-      scale_fill_manual(values = set$colors_contr) +
+      scale_fill_manual(values = set$colors_contr)
+    p0 <- p0 +
       scale_x_date(
         date_labels = "%Y", date_minor_breaks = "1 year",
         date_breaks = paste0(set$freqYearSmall, " year")
       ) +
       labs(title = title[[1]], x = "year", y = "") +
-      # theme(
-      #   legend.position = c(1, 0.85),
-      #   legend.justification = c(1, 0),
-      #   legend.margin = margin(0, 0, 0, 0),
-      #   legend.text = element_text(size = set$legendFontsize),
-      #   legend.key.size = unit(0.75, "lines"),
-      #   legend.title = element_blank(),
-      #   legend.background = element_rect(fill = "transparent"),
-      #   legend.spacing.x = unit(0, "pt"),
-      #   legend.spacing.y = unit(0, "pt")
-      # ) +
-      # guides(col = guide_legend(ncol = 2, byrow = TRUE))
     theme(
       legend.position="bottom",
       legend.box = "horizontal",
@@ -573,10 +584,8 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
       plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
     ) +
       guides(color = guide_legend(order=1, ncol = 1, byrow = TRUE),
-             linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
-             fill = guide_legend(order=2)) 
-    
-    
+             # linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
+             fill = guide_legend(order=2, ncol = 1)) 
     
   } else {
     color <- set$colors[1:(ncol(df) - 3)]
@@ -606,19 +615,6 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
         date_breaks = paste0(set$freqYearSmall, " year")
       ) +
       labs(title = title[[1]], x = "year", y = "") +
-      # theme(
-      #   legend.position = c(1, 0.01),
-      #   legend.justification = c(1, 0),
-      #   legend.margin = margin(0, 0, 0, 0),
-      #   legend.text = element_text(size = set$legendFontsize),
-      #   legend.key.size = unit(0.75, "lines"),
-      #   legend.title = element_blank(),
-      #   legend.background = element_rect(fill = "transparent"),
-      #   legend.spacing.x = unit(0, "pt"),
-      #   legend.spacing.y = unit(0, "pt")
-      # ) +
-      # guides(col = guide_legend(ncol = 2, byrow = TRUE)) +
-      # guides(fill = guide_legend(override.aes = list(alpha = set$alpha)))
     theme(
       legend.position="bottom",
       legend.box = "horizontal",
@@ -637,7 +633,6 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
   }
 
   # ----- gap
-
   if (contribution) {
     tmp <- na.trim(tsl[[2]])
     date <- zoo::as.Date(tmp)
@@ -666,18 +661,6 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
         date_breaks = paste0(set$freqYearSmall, " year")
       ) +
       labs(title = title[[2]], x = "year", y = "") +
-      # theme(
-      #   legend.position = c(1, 0.85 + 0.035),
-      #   legend.justification = c(1, 0),
-      #   legend.margin = margin(0, 0, 0, 0),
-      #   legend.text = element_text(size = set$legendFontsize),
-      #   legend.key.size = unit(0.75, "lines"),
-      #   legend.title = element_blank(),
-      #   legend.background = element_rect(fill = "transparent"),
-      #   legend.spacing.x = unit(0, "pt"),
-      #   legend.spacing.y = unit(0, "pt")
-      # ) +
-      # guides(col = guide_legend(ncol = 2, byrow = TRUE)) # +
     theme(
       legend.position="bottom",
       legend.box = "horizontal",
@@ -691,8 +674,8 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
       plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")
     ) +
       guides(color = guide_legend(order=1, ncol = 1, byrow = TRUE),
-             linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
-             fill = guide_legend(order=2)) 
+             # linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
+             fill = guide_legend(order=2, ncol = 1)) 
     
   } else {
     date <- zoo::as.Date(time(tsl[[2]]))
@@ -720,19 +703,6 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
         date_breaks = paste0(set$freqYearSmall, " year")
       ) +
       labs(title = title[[2]], x = "year", y = "") +
-      # theme(
-      #   legend.position = c(1, 0.01),
-      #   legend.justification = c(1, 0),
-      #   legend.margin = margin(0, 0, 0, 0),
-      #   legend.text = element_text(size = set$legendFontsize),
-      #   legend.key.size = unit(0.75, "lines"),
-      #   legend.title = element_blank(),
-      #   legend.background = element_rect(fill = "transparent"),
-      #   legend.spacing.x = unit(0, "pt"),
-      #   legend.spacing.y = unit(0, "pt")
-      # ) +
-      # guides(col = guide_legend(ncol = 2, byrow = TRUE)) +
-      # guides(fill = guide_legend(override.aes = list(alpha = set$alpha)))
     theme(
       legend.position="bottom",
       legend.box = "horizontal",
@@ -780,6 +750,7 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
 #' @param legend A list with two character vectors. The first contains the legend names for
 #'   the first plot and so on.
 #' @param title A list with the titles for the first three plots.
+#' @param n.ahead Integer indicating the forecast horizon.
 #' @param boundName The legend name of the confidence bounds.
 #' @param res The residual series as time series. If \code{res = NULL}, all graphs realted
 #'   to the residual series will not be plotted.
@@ -791,11 +762,11 @@ plotGap <- function(tsl, legend, title, boundName, contribution, res = NULL, nam
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
 #' @keywords internal
-plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPrint, bounds,
+plotSSprediction <- function(tsl, legend, title, n.ahead, boundName, res = NULL, namesPrint, bounds,
                              combine, path, device, width, height) {
   
   # to suppress R CMD check notes.
-  trend <- orig <- anchor <- lb <- ub <- fitted <- E2 <- residuals <- ..density.. <- NULL
+  trend <- cycle <- orig <- anchor <- lb <- lb_fc <- ub <- ub_fc <- fitted <- E2 <- residuals <- ..density.. <- NULL
   
   # settings
   setPrint <- list(width = width, height = height)
@@ -814,11 +785,10 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
     set$freqYearSmall <- set$freqYear
   }
   
-  
   # ----- trend
-  # date <- as.Date(paste0(floor(time(tsl[[1]])), "-01-01", "%Y-%m-%d"))
     date <- zoo::as.Date(time(tsl[[1]]))
-    xmin_fc_window <- date[sum(is.na(tsl[[1]][, NCOL(tsl[[1]])]))+1]
+    xmin_fc_window <- date[length(date) - n.ahead + 1]
+    tsl[[1]][1:(length(date) - n.ahead), c("lb_fc", "ub_fc")] <- NA
     df <- data.frame(date, tsl[[1]])
     color <- c(set$colors[1:2], rep(set$colors[7], 2))
     linetype <- c(set$linetype[1:2], rep(set$linetype[5], 2))
@@ -832,8 +802,8 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
       ) +
       geom_line(aes(y = trend, color = legend[[1]][1], linetype = legend[[1]][1])) +
       geom_line(aes(y = orig, color = legend[[1]][2], linetype = legend[[1]][2])) +
-      geom_line(aes(y = lb2, color = legend[[1]][3], linetype = legend[[1]][3])) +
-      geom_line(aes(y = ub2, color = legend[[1]][4], linetype = legend[[1]][4])) +
+      geom_line(aes(y = lb_fc, color = legend[[1]][3], linetype = legend[[1]][3])) +
+      geom_line(aes(y = ub_fc, color = legend[[1]][4], linetype = legend[[1]][4])) +
       scale_color_manual(name = NULL, values = color, limits = legend[[1]]) +
       scale_linetype_manual(name = NULL, values = linetype, limits = legend[[1]]) +
       annotate("rect", xmin = xmin_fc_window, xmax = date[length(date)], 
@@ -868,6 +838,7 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
   # ----- trend growth
   if (length(tsl) == 4) {
     date <- zoo::as.Date(time(tsl[[4]]))
+    tsl[[4]][1:(length(date) - n.ahead), c("lb_fc", "ub_fc")] <- NA
     df <- data.frame(date, tsl[[4]])
     color <- c(set$colors[1:2], rep(set$colors[7], 2))
     linetype <- c(set$linetype[1:2], rep(set$linetype[5], 2))
@@ -881,8 +852,8 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
       ) +
       geom_line(aes(y = trend, color = legend[[4]][1], linetype = legend[[4]][1])) +
       geom_line(aes(y = orig, color = legend[[4]][2], linetype = legend[[4]][2])) +
-      geom_line(aes(y = lb2, color = legend[[4]][3], linetype = legend[[4]][3])) +
-      geom_line(aes(y = ub2, color = legend[[4]][4], linetype = legend[[4]][4])) +
+      geom_line(aes(y = lb_fc, color = legend[[4]][3], linetype = legend[[4]][3])) +
+      geom_line(aes(y = ub_fc, color = legend[[4]][4], linetype = legend[[4]][4])) +
       scale_color_manual(name = NULL, values = color, limits = legend[[4]]) +
       scale_linetype_manual(name = NULL, values = linetype, limits = legend[[4]]) +
       annotate("rect", xmin = xmin_fc_window, xmax = date[length(date)], 
@@ -914,10 +885,10 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
              linetype = guide_legend(order=1, ncol = 1, byrow = TRUE),
              fill = guide_legend(order=2)) 
   }
- 
   
   # ----- 2nd obs equation
   date <- zoo::as.Date(time(tsl[[2]]))
+  tsl[[2]][1:(length(date) - n.ahead), c("lb_fc", "ub_fc")] <- NA
   df <- data.frame(date, tsl[[2]])
   color <- c(set$colors[1], rep(set$colors[7], 2))
   linetype <- c(set$linetype[2], rep(set$linetype[5], 2))
@@ -930,14 +901,10 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
       panel.grid.major.y = element_line(linetype = "solid")
     ) +
     geom_line(aes(y = E2, color = legend[[2]][1], linetype = legend[[2]][1])) +
-    geom_line(aes(y = lb, color = legend[[2]][2], linetype = legend[[2]][2]), show.legend = FALSE) +
-    geom_line(aes(y = ub, color = legend[[2]][3], linetype = legend[[2]][3]), show.legend = FALSE) +
+    geom_line(aes(y = lb_fc, color = legend[[2]][2], linetype = legend[[2]][2]), show.legend = FALSE) +
+    geom_line(aes(y = ub_fc, color = legend[[2]][3], linetype = legend[[2]][3]), show.legend = FALSE) +
     annotate("rect", xmin = xmin_fc_window, xmax = date[length(date)], 
              ymin = -Inf, ymax = Inf, alpha = .1)
-  # add ribbon for state
-  # p2 <- p2 +
-  #   geom_ribbon(aes(ymin = lb, ymax = ub, fill =  boundName), alpha = set$alpha) +
-  #   scale_fill_manual(values = "grey12")
   # color and legend settings
   p2 <- p2 +
     scale_color_manual(name = NULL, values = color, limits = legend[[2]]) +
@@ -1012,9 +979,9 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
   # print
   if (combine) {
     if (length(tsl)==4) {
-    pCubs <- suppressWarnings(gridExtra::grid.arrange(p1, p4, p2, p3, nrow = 2))
+      pCombine <- suppressWarnings(gridExtra::grid.arrange(p1, p4, p2, p3, nrow = 2))
     } else {
-      pCubs <- suppressWarnings(gridExtra::grid.arrange(p1, p2, p3, nrow = 2))
+      pCombine <- suppressWarnings(gridExtra::grid.arrange(p1, p2, p3, nrow = 2))
     }
   } else {
     suppressWarnings(print(p1))
@@ -1031,12 +998,18 @@ plotSSprediction <- function(tsl, legend, title, boundName, res = NULL, namesPri
 
   # save files
   if (!is.null(path)) {
-    do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[1], ".", device)), plot = p1), setPrint))
-    do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], ".", device)), plot = p2), setPrint))
-    do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[3], ".", device)), plot = p3), setPrint))
+    
+    if (combine) {
+      do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[1], "_etc_prediction.", device)), plot = pCombine), setPrintComb))
+    } else {
+      do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[1], ".", device)), plot = p1), setPrint))
+      do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[2], ".", device)), plot = p2), setPrint))
+      do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[3], ".", device)), plot = p3), setPrint))
+      if (length(tsl)==4) {
+        do.call(ggsave, c(list(filename = file.path(path, paste0(namesPrint[4], ".", device)), plot = p4), setPrint))
+      }      
+    }
   }
   
 }
-
-
 

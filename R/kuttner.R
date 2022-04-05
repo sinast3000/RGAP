@@ -469,8 +469,9 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
       "GDP growth in %",
       "Output gap in %"
     )
-    namesPrint <- paste(prefix, c("potential_growth", "gap"), sep = "_")
-  
+    namesPrint <-  c("potential_growth", "gap")
+    if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
+
     # plot
     plotGap(
       tsl = tsl, legend = legend, title = title, boundName = boundName,
@@ -480,6 +481,8 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
     )
     
   } else { # plot predictions
+    
+    n.ahead <- attr(x, "prediction")$n.ahead
     
     # confidence bounds
     tvalue <- -qnorm((alpha) / 2)
@@ -495,17 +498,15 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
       orig = x$tsl$gdp,
       lb = (x$tsl$potential - x$tsl$potentialSE * tvalue),
       ub = (x$tsl$potential + x$tsl$potentialSE * tvalue),
-      lb2 = (x$tsl$gdp - x$tsl$gdpSE * tvalue),
-      ub2 = (x$tsl$gdp + x$tsl$gdpSE * tvalue)
+      lb_fc = (x$tsl$gdp - x$tsl$gdpSE * tvalue),
+      ub_fc = (x$tsl$gdp + x$tsl$gdpSE * tvalue)
     ))
     
-    # tsl1 <- do.call(cbind, tsl1)
-    
-    # cubs equation
+    # inflation equation
     tsl2 <- do.call(cbind, list(
       E2 = x$tsl$obs[, 2],
-      lb = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
-      ub = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue)
+      lb_fc = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
+      ub_fc = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue)
     ))
     
     # cycle
@@ -522,8 +523,8 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
       orig = 100 * x$tsl$gdpGrowth,
       lb = 100 * (x$tsl$potentialGrowth - x$tsl$potentialGrowthSE * tvalue),
       ub = 100 * (x$tsl$potentialGrowth + x$tsl$potentialGrowthSE * tvalue),
-      lb2 = 100 * (x$tsl$gdpGrowth - x$tsl$gdpGrowthSE * tvalue),
-      ub2 = 100 * (x$tsl$gdpGrowth + x$tsl$gdpGrowthSE * tvalue)
+      lb_fc = 100 * (x$tsl$gdpGrowth - x$tsl$gdpGrowthSE * tvalue),
+      ub_fc = 100 * (x$tsl$gdpGrowth + x$tsl$gdpGrowthSE * tvalue)
     ))
     
     # combine lists
@@ -542,11 +543,12 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
       "Output gap",
       "Potential output growth"
     )
-    namesPrint <- paste(prefix, c("potential", "inflation", "gap"), sep = "_")
+    namesPrint <-  c("potential", "inflation", "gap")
+    if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
     
     # plot
     plotSSprediction(
-      tsl = tsl, legend = legend, title = title,
+      tsl = tsl, legend = legend, title = title, n.ahead = n.ahead,
       boundName = boundName, res = NULL, namesPrint = namesPrint,
       bounds = bounds, combine = combine, path = path, device = device,
       width = width, height = height

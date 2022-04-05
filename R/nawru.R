@@ -712,8 +712,9 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
         "Phillips curve",
         "Phillips curve residuals"
       )
-      namesPrint <- paste(prefix, c("nawru", "phillips_curve"), sep = "_")
-  
+      namesPrint <- c("nawru", "phillips_curve")
+      if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
+      
       # plot
       plotSSresults(
         tsl = tsl, legend = legend, title = title,
@@ -724,6 +725,8 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
     } else {
       
       # ----- prediction
+      
+      n.ahead <- attr(x, "prediction")$n.ahead
       
       if (method == "MLE") {
         # confidence bounds
@@ -762,16 +765,16 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
         orig = x$tsl$obs[, 1],
         lb = tslBounds$lb,
         ub = tslBounds$ub,
-        lb2 = tslBounds$lb1,
-        ub2 = tslBounds$ub1
+        lb_fc = tslBounds$lb1,
+        ub_fc = tslBounds$ub1
       )
       tsl1 <- do.call(cbind, tsl1)
       
       # phillips curve
       tsl2 <- do.call(cbind, list(
         E2 = x$tsl$obs[, 2],
-        lb = tslBounds$lb2,
-        ub = tslBounds$ub2
+        lb_fc = tslBounds$lb2,
+        ub_fc = tslBounds$ub2
       ))
       
       # cycle
@@ -795,11 +798,12 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
         "Phillips curve",
         "Unemployment gap"
       )
-      namesPrint <- paste(prefix, c("nawru", "phillips_curve", "u_gap"), sep = "_")
+      namesPrint <-  c("nawru", "phillips_curve", "u_gap")
+      if (!is.null(prefix)) namesPrint <- paste(prefix, namesPrint , sep = "_")
       
       # plot
       plotSSprediction(
-        tsl = tsl, legend = legend, title = title,
+        tsl = tsl, legend = legend, title = title, n.ahead = n.ahead,
         boundName = boundName, res = NULL, namesPrint = namesPrint,
         bounds = bounds, combine = combine, path = path, device = device,
         width = width, height = height
