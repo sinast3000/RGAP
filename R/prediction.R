@@ -17,8 +17,11 @@
 #' @return The fitted object with an updated time series list \code{tsl}. If 
 #'   \code{returnFit = FALSE}, only the updated time series list is returned.
 #' 
+#' @aliases predict
+#' 
 #' @export
-predict <- function(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE) {
+predict.NAWRUfit <- predict.TFPfit <- predict.KuttnerFit <- function(fit, 
+  n.ahead = 10, exogenous = "mean", returnFit = TRUE) {
 
   method <- attr(fit, "method")
   if (method != "MLE") {
