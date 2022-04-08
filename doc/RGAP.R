@@ -33,7 +33,7 @@ model
 data("gap")
 tsList <- amecoData2input(gap[["Italy"]], alpha = 0.65)
 model <- TFPmodel(tsl = tsList, trend = "DT", cycle = "RAR2",
-                  cycleLag = 0, cubsErrorAR = 1)
+                  cycleLag = 0, cubsErrorARMA = c(1, 0))
 model
 
 
