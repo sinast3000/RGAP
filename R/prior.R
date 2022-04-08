@@ -39,7 +39,7 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
   prior <- list()
 
   # load model data
-  namesExtract <- c("varName", "mean", "std", "lowerBound", "upperBound")
+  namesExtract <- c("varName", "mean", "std", "LB", "UB")
 
   prior <- .accessDfSystem(model = model)
   prior <- lapply(prior, function(x) {
@@ -49,7 +49,7 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
   # rearrange data
   prior <- lapply(prior, function(x) {
     rownames(x) <- x[, "varName"]
-    x <- x[, c("mean", "std", "lowerBound", "upperBound")]
+    x <- x[, c("mean", "std", "LB", "UB")]
     x <- t(x)
     return(x)
   })

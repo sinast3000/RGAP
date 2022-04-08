@@ -496,7 +496,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   tmp <- list()
 
   # load model data
-  namesExtract <- c("equation", "variant", "sysMatrix", "variableRow", "varName", "lowerBound", "upperBound", "statRestr", "distribution")
+  namesExtract <- c("equation", "variant", "sysMatrix", "variableRow", "varName", "LB", "UB", "statRestr", "distribution")
   tmp <- .accessDfSystem(model = model)
   tmp <- lapply(tmp, function(x) {
     x[, namesExtract]
@@ -509,8 +509,8 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   loc <- cbind(tmpAll, data.frame(restriction = rep("NA", dim(tmpAll)[1]), stringsAsFactors = FALSE))
 
   for (k in tmpAll$varName) {
-    lb <- tmpAll[tmpAll$varName == k, "lowerBound"]
-    ub <- tmpAll[tmpAll$varName == k, "upperBound"]
+    lb <- tmpAll[tmpAll$varName == k, "LB"]
+    ub <- tmpAll[tmpAll$varName == k, "UB"]
     stat <- tmpAll[tmpAll$varName == k, "statRestr"]
     if (!is.na(lb) & !is.na(ub)) {
       tmp <- paste0("I", lb, "_", ub)
@@ -1186,8 +1186,8 @@ trendAnchor <- function(fit, anchor = NULL, h = NULL, returnFit = FALSE) {
 #'
 #' @keywords internal
 .checkBoundaries <- function(fit, loc) {
-  ub <- loc$upperBound
-  lb <- loc$lowerBound
+  ub <- loc$UB
+  lb <- loc$LB
   par <- assignConstraints(par = fit$optim.out$par, loc = loc)
   par_index_lb <- round((lb - par) / (ub - lb), 4) >= 0
   par_index_ub <- round((ub - par) / (ub - lb), 4) <= 0

@@ -38,7 +38,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
   restr <- list()
 
   # load model data
-  namesExtract <- c("varName", "lowerBound", "upperBound")
+  namesExtract <- c("varName", "LB", "UB")
   restr <- .accessDfSystem(model = model)
   restr <- lapply(restr, function(x) {
     x[, namesExtract]
@@ -47,7 +47,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
   # rearrange data
   restr <- lapply(restr, function(x) {
     rownames(x) <- x[, "varName"]
-    x <- x[, c("lowerBound", "upperBound")]
+    x <- x[, c("LB", "UB")]
     x <- t(x)
     return(x)
   })
@@ -55,10 +55,10 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
   # variance restrictions
   varRestr <- .initializeVar(model = model, type = type, lambda = lambda, errorARMA = errorARMA, q = q)
   trendNames <- model$loc$varName[grepl("trend", model$loc$variableRow) & model$loc$sysMatrix == "Q"]
-  restr$cycle[c("upperBound", "lowerBound"), "cSigma"] <- varRestr[, "cSigma"]
-  restr$trend[c("upperBound", "lowerBound"), trendNames] <- varRestr[, 2:(dim(varRestr)[2] - 1)]
-  restr[[3]][c("lowerBound"), grepl("Sigma", colnames(restr[[3]]))] <- 1e-8
-  restr[[3]][c("upperBound", "lowerBound"), grepl("Sigma", colnames(restr[[3]]))][1:2] <- varRestr[, "E2Sigma"]
+  restr$cycle[c("UB", "LB"), "cSigma"] <- varRestr[, "cSigma"]
+  restr$trend[c("UB", "LB"), trendNames] <- varRestr[, 2:(dim(varRestr)[2] - 1)]
+  restr[[3]][c("LB"), grepl("Sigma", colnames(restr[[3]]))] <- 1e-8
+  restr[[3]][c("UB", "LB"), grepl("Sigma", colnames(restr[[3]]))][1:2] <- varRestr[, "E2Sigma"]
 
   # if tSigma is 0
   if (trend != "RW1" & dim(model$loc[model$loc$sysMatrix == "Q", ])[2] < 4) {
@@ -228,20 +228,20 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
       ub <- parRestr[[j]][2, k]
       if (!is.na(lb) & !is.na(ub)) {
         tmp <- paste0("I", lb, "_", ub)
-        model$loc$lowerBound[ind] <- lb
-        model$loc$upperBound[ind] <- ub
+        model$loc$LB[ind] <- lb
+        model$loc$UB[ind] <- ub
       } else if (is.na(lb) & !is.na(ub)) {
         tmp <- paste0("I", "-Inf", "_", ub)
-        model$loc$lowerBound[ind] <- NA
-        model$loc$upperBound[ind] <- ub
+        model$loc$LB[ind] <- NA
+        model$loc$UB[ind] <- ub
       } else if (!is.na(lb) & is.na(ub)) {
         tmp <- paste0("I", lb, "_", "Inf")
-        model$loc$lowerBound[ind] <- lb
-        model$loc$upperBound[ind] <- NA
+        model$loc$LB[ind] <- lb
+        model$loc$UB[ind] <- NA
       } else {
         tmp <- "NA"
-        model$loc$lowerBound[ind] <- NA
-        model$loc$upperBound[ind] <- NA
+        model$loc$LB[ind] <- NA
+        model$loc$UB[ind] <- NA
       }
       for (l in sysMat) {
         varname2 <- model$loc$varName[model$loc$sysMatrix == l]
