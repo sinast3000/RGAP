@@ -336,17 +336,17 @@
   }
 
   # ----- state space model
-  if (class(model) == "TFPmodel") {
+  if (inherits(model, "TFPmodel")) {
     modelSS <- SSModel(cbind(logtfp, cubs) ~ -1 + SSMcustom(Z = Z, T = T, R = R, Q = Q, a1 = a1, P1 = P1, P1inf = P1inf, state_names = stateNames),
       H = H,
       data = model$tsl
     )
-  } else if (class(model) == "NAWRUmodel") {
+  } else if (inherits(model, "NAWRUmodel")) {
     modelSS <- SSModel(cbind(ur, pcInd) ~ -1 + SSMcustom(Z = Z, T = T, R = R, Q = Q, a1 = a1, P1 = P1, P1inf = P1inf, state_names = stateNames),
       H = H,
       data = model$tsl
     )
-  } else if (class(model) == "KuttnerModel") {
+  } else if (inherits(model, "KuttnerModel")) {
     modelSS <- SSModel(cbind(loggdp, dinfl) ~ -1 +
       +SSMcustom(Z = Z, T = T, R = R, Q = Q, a1 = a1, P1 = P1, P1inf = P1inf, state_names = stateNames),
     H = H,
@@ -398,7 +398,6 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
 .accessDfSystem <- function(model) {
 
   # model attributes
-  class <- class(model)
   trend <- attr(model, "trend")
   cycle <- attr(model, "cycle")
 
@@ -410,7 +409,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   tmp$cycle <- dfSystem[dfSystem$equation == "cycle" & dfSystem$variant == cycle, ]
   tmp$trend <- dfSystem[dfSystem$equation == "trend" & dfSystem$variant == trend, ]
 
-  if (class == "TFPmodel") {
+  if (inherits(model, "TFPmodel")) {
     nameE2 <- "cubs"
     # tfp attributes
     cycleLag <- attr(model, "cubs")$cycleLag
@@ -422,7 +421,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
     if (cubsAR > 0) {
       tmp[[nameE2]] <- rbind(tmp[[nameE2]], dfSystem[dfSystem$equation == nameE2 & dfSystem$variant == paste0("cubsAR", cubsAR), ])
     }
-  } else if (class == "NAWRUmodel") {
+  } else if (inherits(model, "NAWRUmodel")) {
     nameE2 <- "pcInd"
     # nawru attributes
     type <- attr(model, "phillips curve")$type
@@ -443,7 +442,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
         }
       }
     }
-  } else if (class == "KuttnerModel") {
+  } else if (inherits(model, "KuttnerModel")) {
     nameE2 <- "infl"
     # kuttner attributes
     cycleLag <- attr(model, "inflation equation")$cycleLag
@@ -490,10 +489,8 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
 .initializeLoc <- function(model) {
 
   # model attributes
-  class <- class(model)
   trend <- attr(model, "trend")
   cycle <- attr(model, "cycle")
-
 
   # initialize
   tmp <- list()
@@ -541,24 +538,21 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
 #' @keywords internal
 .printSSModel <- function(x, call = TRUE, check = TRUE) {
 
-  # class
-  modelClass <- class(x)
-
   ARterms <- 0
   type <- NULL
-  if (modelClass == "NAWRUmodel") {
+  if (inherits(x, "NAWRUmodel")) {
     nameE2 <- "pcInd"
     nameE2long <- "phillips curve"
     checkFUN <- is.NAWRUmodel
 
     type <- attr(x, nameE2long)$type
-  } else if (modelClass == "TFPmodel") {
+  } else if (inherits(x, "TFPmodel")) {
     nameE2 <- "cubs"
     nameE2long <- "cubs"
     checkFUN <- is.TFPmodel
 
     ARterms <- attr(x, "cubs")$cubsAR
-  } else if (modelClass == "KuttnerModel") {
+  } else if (inherits(x, "KuttnerModel")) {
     nameE2 <- "infl"
     nameE2long <- "inflation equation"
     checkFUN <- is.KuttnerModel
@@ -583,7 +577,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
       sep = ""
     )
   }
-  cat(paste0("\tState space model object of class ", modelClass, "\n\n"))
+  cat(paste0("\tState space model object of class ", class(x)[1], "\n\n"))
   cat(paste0("cycle ", "\t\t\t\t", cycle, "\n"))
   cat(paste0("trend ", "\t\t\t\t", trend, "\n"))
   cat(paste0(nameE2long, "\n"))
@@ -609,7 +603,7 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
   cat(paste0("  frequency ", "\t\t\t", freq, "\n\n"))
   if (check) {
     if (checkFUN(x, return.logical = TRUE)) {
-      cat(paste0("Object is a valid object of class ", modelClass, ".\n"))
+      cat(paste0("Object is a valid object of class ", class(x)[1], ".\n"))
     } else {
       checkFUN(x, return.logical = FALSE)
     }
@@ -626,9 +620,6 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
 #' @keywords internal
 .printSSModelFit <- function(x, call = TRUE, check = TRUE, print.model = TRUE) {
 
-  # class
-  modelClass <- class(x$model)
-
   if (attr(x, "method") == "bayesian") {
     bayes <- TRUE
     title <- "MCMC estimation results"
@@ -639,15 +630,15 @@ initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
     dfIndex <- 1:4
   }
 
-  if (modelClass == "NAWRUmodel") {
+  if (inherits(x$model, "NAWRUmodel")) {
     nameE2 <- "pcInd"
     nameE2long <- "phillips curve"
     nameE2short <- "pc"
-  } else if (modelClass == "TFPmodel") {
+  } else if (inherits(x$model, "TFPmodel")) {
     nameE2 <- "cubs"
     nameE2long <- "cubs"
     nameE2short <- "cu"
-  } else if (modelClass == "KuttnerModel") {
+  } else if (inherits(x$model, "KuttnerModel")) {
     nameE2 <- "infl"
     nameE2long <- "inflation equation"
     nameE2short <- "infl"

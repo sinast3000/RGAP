@@ -168,7 +168,7 @@
     parRestr = parRestr,
     fit = info
   )
-  class(NAWRUfit) <- "NAWRUfit"
+  class(NAWRUfit) <- c("NAWRUfit", "fit")
   attr(NAWRUfit, "method") <- "MLE"
 
   # ----- anchor

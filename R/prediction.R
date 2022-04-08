@@ -1,10 +1,24 @@
 # -------------------------------------------------------------------------------------------
 
+#' Prediction Method
+#'
+#' @description Defines the predict method as it does not seem to exist.
+#'   
+#' @param object Some object.
+#' @param ... Some stuff passed on to methods.
+#'
+#' @keywords internal
+predict <- function(object, ...) UseMethod("predict")
+
+# -------------------------------------------------------------------------------------------
+
 #' Predictions
 #'
 #' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP}, or 
-#' \code{fitKuttner} estimated via MLE or Bayesian methods.
+#' \code{fitKuttner} estimated via MLE or Bayesian methods (objects of class \code{fit}).
 #'
+#' @param object An object of class \code{NAWRUfit}, \code{TFPfit}, or \code{KuttnerFit} 
+#'   (objects of class \code{fit}).
 #' @param n.ahead An integer specifying the prediction horizon. 
 #' @param exogenous A character string specifying the computation of exogenous variables 
 #'   included in the model (if applicable). Valid options are \code{exogenous = "mean"} and 
@@ -12,25 +26,21 @@
 #' @param returnFit A logical. If \code{TRUE}, an object of the same class as \code{fit}
 #'   where the list entry \code{tsl} is replaced. If \code{FALSE}, only the new time series 
 #'   list is returned.
-#' @inheritParams trendAnchor
+#' @param ... Ignored.
 #' 
 #' @return The fitted object with an updated time series list \code{tsl}. If 
 #'   \code{returnFit = FALSE}, only the updated time series list is returned.
-#' 
-#' @aliases predict
-#' 
-#' @export
-predict.NAWRUfit <- predict.TFPfit <- predict.KuttnerFit <- function(fit, 
-  n.ahead = 10, exogenous = "mean", returnFit = TRUE) {
+predict.fit <- function(object, n.ahead = 10, exogenous = "mean", returnFit = TRUE, ...) {
 
-  method <- attr(fit, "method")
+  method <- attr(object, "method")
   if (method != "MLE") {
-    predictBayes(fit = fit, n.ahead = n.ahead, exogenous = exogenous, returnFit = returnFit)
+    predictBayes(fit = object, n.ahead = n.ahead, exogenous = exogenous, returnFit = returnFit)
   } else {
-    predictMLE(fit = fit, n.ahead = n.ahead, exogenous = exogenous, returnFit = returnFit)
+    predictMLE(fit = object, n.ahead = n.ahead, exogenous = exogenous, returnFit = returnFit)
   }
   
 }
+
 
 # -------------------------------------------------------------------------------------------
 

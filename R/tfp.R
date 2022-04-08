@@ -339,7 +339,7 @@ TFPmodel <- function(tsl, trend = "DT", cycle = "AR2", cycleLag = 0, cubsAR = 0,
     end = paste0(end(tslUsed$logtfp)[1], ifelse(frequency(tslUsed$logtfp) == 4, paste0(" Q", end(tslUsed$logtfp)[2]), "")),
     frequency = ifelse(frequency(tslUsed$logtfp) == 4, "quarterly", "annual")
   )
-  class(model) <- "TFPmodel"
+  class(model) <- c("TFPmodel", "model")
   attr(model, "cycle") <- cycle
   attr(model, "trend") <- trend
   attr(model, "cubs") <- lcubs

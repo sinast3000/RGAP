@@ -375,7 +375,7 @@ NAWRUmodel <- function(tsl, trend = "RW2", cycle = "AR2", type = "TKP", cycleLag
     end = paste0(end(tslUsed$ur)[1], ifelse(frequency(tslUsed$ur) == 4, paste0(" Q", end(tslUsed$ur)[2]), "")),
     frequency = ifelse(frequency(tslUsed$ur) == 4, "quarterly", "annual")
   )
-  class(model) <- "NAWRUmodel"
+  class(model) <- c("NAWRUmodel", "model")
   attr(model, "cycle") <- cycle
   attr(model, "trend") <- trend
   attr(model, "phillips curve") <- lPc

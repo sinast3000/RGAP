@@ -39,7 +39,7 @@
 
   # ----- initial parameters (from MLE)
   message("Inizializing parameters by MLE ...")
-  if (!is.null(MLEfit) & class(MLEfit) != "NAWRUfit") {
+  if (!is.null(MLEfit) & !inherits(MLEfit, "NAWRUfit")) {
     .checkModelMLEfit(model = model, MLEfit = MLEfit)
     MLEfit <- NULL
     message("The supplied object is not of class `NAWRUfit', starting MLE.")
@@ -282,7 +282,7 @@
     fit = info,
     MLE = fit
   )
-  class(NAWRUfit) <- "NAWRUfit"
+  class(NAWRUfit) <- c("NAWRUfit", "fit")
   attr(NAWRUfit, "method") <- "bayesian"
   attr(NAWRUfit, "R") <- R
   attr(NAWRUfit, "burnin") <- burnin

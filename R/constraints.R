@@ -29,7 +29,6 @@
 initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 
   # model attributes
-  class <- class(model)
   trend <- attr(model, "trend")
   cycle <- attr(model, "cycle")
   attrib <- unlist(attributes(model), recursive = FALSE)
@@ -84,7 +83,6 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 .initializeVar <- function(model, type = NULL, lambda = NULL, prior = FALSE, errorARMA = c(0, 0), q = 0.05) {
 
   # model attributes
-  class <- class(model)
   trend <- attr(model, "trend")
   cycle <- attr(model, "cycle")
 
@@ -96,15 +94,15 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 
   # 1) compute variance of second observation equation
   # 2) compute variance of HP-filtered trend of first observation equation
-  if (class == "NAWRUmodel") {
+  if (inherits(model, "NAWRUmodel")) {
     tsE2 <- model$tsl$pcInd
     varE2 <- var(model$tsl$pcInd, na.rm = TRUE)
     tsE1 <- model$tsl$ur
-  } else if (class == "TFPmodel") {
+  } else if (inherits(model, "TFPmodel")) {
     tsE2 <- model$tsl$cubs
     varE2 <- var(model$tsl$cubs, na.rm = TRUE)
     tsE1 <- model$tsl$logtfp
-  } else if (class == "KuttnerModel") {
+  } else if (inherits(model, "KuttnerModel")) {
     tsE2 <- stats::lag(model$tsl$dinfl, -2) # such that second equation is correct later ?????
     tsE2 <- stats::lag(model$tsl$dinfl, 0) #
     varE2 <- var(model$tsl$dinfl, na.rm = TRUE)

@@ -157,7 +157,7 @@
     parRestr = parRestr,
     fit = info
   )
-  class(TFPfit) <- "TFPfit"
+  class(TFPfit) <- c("TFPfit", "fit")
   attr(TFPfit, "method") <- "MLE"
 
   # ----- anchor

@@ -33,7 +33,7 @@
 
   # ----- initial parameters (from MLE)
   message("Inizializing parameters by MLE ...")
-  if (!is.null(MLEfit) & class(MLEfit) != "TFPfit") {
+  if (!is.null(MLEfit) & !inherits(MLEfit, "TFPfit")) {
     MLEfit <- NULL
     message("The supplied object is not of class `TFPfit', starting MLE.")
   }
@@ -280,7 +280,7 @@
     fit = info,
     MLE = fit
   )
-  class(TFPfit) <- "TFPfit"
+  class(TFPfit) <- c("TFPfit", "fit")
   attr(TFPfit, "method") <- "bayesian"
   attr(TFPfit, "R") <- R
   attr(TFPfit, "burnin") <- burnin

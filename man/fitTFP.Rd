@@ -91,7 +91,7 @@ For bayesian estimation, an object of class \code{TFPfit} containing the followi
   \item{fit}{A list of model fit criteria (see below).}
   \item{call}{Original call to the function. }
   The list component \code{fit} contains the following model fit criteria:
-  \item{R2}{R squared of the CUBS equation,}
+  \item{R2}{R squared of the CUBS equation.}
   \item{signal-to-noise}{Signal-to-noise ratio.}
 }
 \description{

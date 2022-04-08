@@ -743,7 +743,7 @@ helper_model_comparison <- function(models) {
   
   model_info <- lapply(models, function(x) {
     att <- attributes(x)
-    xclass <- att$class
+    xclass <- att$class[1]
     E2name <- ifelse(xclass == "NAWRUmodel", "phillips curve", "cubs")
     df <- data.frame(cycle = att$cycle,
                      trend = att$trend,

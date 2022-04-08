@@ -69,8 +69,8 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
 
   # ----- priors from MLE
   if (MLE) {
-    if (class == "TFPmodel") {
-      if (!is.null(MLEfit) & class(MLEfit) != "TFPfit") {
+    if (inherits(model, "TFPmodel")) {
+      if (!is.null(MLEfit) & !inherits(MLEfit, "TFPfit")) {
         MLEfit <- NULL
         message("The supplied object is not of class `TFPfit', starting MLE.")
       }
@@ -100,8 +100,8 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
       prior$cubs[2, grepl("Sigma", colnames(prior$cubs))] <- prior$cubs[1, grepl("Sigma", colnames(prior$cubs))]
       prior$trend[2, grepl("Sigma", colnames(prior$trend))] <- prior$trend[1, grepl("Sigma", colnames(prior$trend))]
       prior$cycle[2, grepl("Sigma", colnames(prior$cycle))] <- prior$cycle[1, grepl("Sigma", colnames(prior$cycle))]
-    } else if (class == "NAWRUmodel") {
-      if (!is.null(MLEfit) & class(MLEfit) != "NAWRUfit") {
+    } else if (inherits(model, "NAWRUmodel")) {
+      if (!is.null(MLEfit) & !inherits(MLEfit, "NAWRUfit")) {
         MLEfit <- NULL
         message("The supplied object is not of class `NAWRUfit', starting MLE.")
       }

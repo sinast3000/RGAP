@@ -161,7 +161,7 @@ KuttnerModel <- function(tsl, cycle = "AR2", cycleLag = 1, trend = "RW1", inflEr
     end = paste0(end(tslUsed$loggdp)[1], ifelse(frequency(tslUsed$loggdp) == 4, paste0(" Q", end(tslUsed$loggdp)[2]), "")),
     frequency = ifelse(frequency(tslUsed$loggdp) == 4, "quarterly", "annual")
   )
-  class(model) <- "KuttnerModel"
+  class(model) <- c("KuttnerModel", "model")
   attr(model, "cycle") <- cycle
   attr(model, "trend") <- trend
   attr(model, "inflation equation") <- lInfl

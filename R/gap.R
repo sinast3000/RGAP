@@ -98,7 +98,7 @@ gapProd <- function(tsl, NAWRUfit, TFPfit, alpha = 0.65, start = NULL, end = NUL
     TFPfit = TFPfit,
     call = mc
   )
-  class(gap) <- "gap"
+  class(gap) <- c("gap", "fit")
   attr(gap, "type") <- "prod"
   attr(gap, "alpha") <- alpha
   gap
@@ -203,7 +203,7 @@ gapHP <- function(x, lambda = NULL, end = NULL, start = NULL) {
     gap = gap,
     gdp = x
   )
-  class(res) <- "gap"
+  class(res) <- c("gap", "fit")
   attr(res, "type") <- "HP"
   res
 }

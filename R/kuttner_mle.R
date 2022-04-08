@@ -202,7 +202,7 @@ fitKuttner <- function(model, parRestr = initializeRestr(model), signalToNoise =
     fit = info,
     call = mc
   )
-  class(KuttnerFit) <- "KuttnerFit"
+  class(KuttnerFit) <- c("KuttnerFit", "fit")
   attr(KuttnerFit, "method") <- "MLE"
 
   # ----- anchor
