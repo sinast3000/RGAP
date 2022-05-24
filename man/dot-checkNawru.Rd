@@ -46,7 +46,7 @@ and MA degree of the error term in the Phillip's curve equation.}
 
 \item{exoType}{An optional \code{n x m x 2} array specifying the possible difference
 and lag transformation for the variables. \code{exoType} can be initialized using the
-function \code{inizializeExo}. The column names give the  variable names.
+function \code{inizializeExo}. The column names give the variable names.
 \code{exoType[, , 1]} contains the difference transformations and \code{exoType[, , 2]}
 the subsequent lag transformations, see details.}
 

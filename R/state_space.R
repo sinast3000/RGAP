@@ -365,22 +365,56 @@
 #'
 #' Initializes the transformations applied to exogenous variables.
 #'
-#' @param maxDiff An integer specifying the maximal difference order.
-#' @param maxLag An integer specifying the maximal lag order.
 #' @param varNames A \code{(k x 1)} character vector containing the names of the exogenous
 #'   variables.
+#' @param D A \code{(n x k)} matrix containing the difference transformations, see details.
+#' @param L A \code{(n x k)} matrix containing the lag transformations, see details.
 #'
-#' @return An array of size \code{(2, k, max(maxDiff, maxLag) + 1)}. The first row specifies
-#'   the difference order and the second the lag order.
+#' @details For the matrices \code{D} and \code{L}, the rows denote different transformations 
+#'   to each of the variables in the columns. \code{NA} indicates no transformation.
+#'
+#' @return An array of size \code{(n, k, 2)}. The \code{[, , 1]} specifies
+#'   the difference order and \code{[, , 2]} the lag order.
 #'
 #' @export
-initializeExo <- function(maxDiff = 1, maxLag = 1, varNames) {
+initializeExo <- function(varNames, D = NULL, L = NULL) {
   k <- length(varNames)
-  n <- max(maxLag, maxDiff) + 1
+  # n <- max(maxLag, maxDiff) + 1
+  n <- 2
+  
+  if (is.null(D) & is.null(L)) {
+    D <- L <- matrix(NA, n, k)
+  } else if (is.null(D) & !is.null(L)) {
+    L <- as.matrix(L)
+    D <- L
+    D[] <- NA
+    n <- dim(L)[1]
+  } else if (is.null(D) & !is.null(L)) {
+    D <- as.matrix(D)
+    L <- D
+    L[] <- NA
+    n <- dim(D)[1]
+  } else {
+    L <- as.matrix(L)
+    D <- as.matrix(D)
+    n <- dim(D)[1]
+    if (!all(dim(D) == dim(L))) {
+      stop("If both D and L are supplied, they need to have the same dimension.")
+    }
+  }
 
+  # check consistency of varNames
+  if (k != dim(D)[2]) {
+    stop("The dimension of D or L does not match the number or variables in varNames.")
+  }
+  
+  # initialize
   exoType <- array(NA, dim = c(n, k, 2))
   dimnames(exoType)[[3]] <- c("difference", "lag")
   colnames(exoType) <- varNames
+  
+  exoType[, , 1] <- D
+  exoType[, , 2] <- L
 
   exoType
 }

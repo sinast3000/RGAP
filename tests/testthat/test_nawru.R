@@ -2,9 +2,7 @@ library(RGAP)
 
 data("gap")
 tsList <- amecoData2input(gap[["France"]], alpha = 0.65)
-exoType <- initializeExo(varNames = "ws")
-exoType[1, , "difference"] <- 2
-exoType[1, , "lag"] <- 0
+exoType <- initializeExo(varNames = "ws", D = 2, L = 0)
 model <- NAWRUmodel(tsl = tsList, exoType = exoType)
 
 test_that("NAWRU model", {

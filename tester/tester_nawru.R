@@ -17,9 +17,10 @@ tslBase <- fetchAmecoData()
 tsList <- amecoData2input(tslBase[[country]], alpha = 0.65)
 
 ####### NAWRU model specification -------------------------------------
-exoType <- initializeExo(varNames = c("ws", "prod", "tot"))
-exoType[1, , "difference"] <- 2
-exoType[1, , "lag"] <- 0
+D <- matrix(c(2, 2, 2), 1, 3, byrow = TRUE)
+L <- matrix(c(0, 0, 0), 1, 3, byrow = TRUE)
+exoType <- initializeExo(varNames = c("ws", "prod","tot"), D = D, L = L)
+
 
 # default
 model[[1]] <- NAWRUmodel(tsl = tsList)

@@ -21,9 +21,7 @@ render_sweave()
 ####### Example: NAWRU model specification ----------------------------
 data("gap")
 tsList <- amecoData2input(gap[["France"]], alpha = 0.65)
-exoType <- initializeExo(varNames = "ws")
-exoType[1, , "difference"] <- 2
-exoType[1, , "lag"] <- 0
+exoType <- initializeExo(varNames = "ws", D = 2, L = 0)
 model <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                     type = "TKP", cycleLag = 0:1, exoType = exoType)
 model
@@ -58,21 +56,7 @@ dir.create(file.path(path, country), recursive = TRUE)
 # --- data, model -----------------------------------------------------
 data("gap")
 tsList <- amecoData2input(gap[["France"]], alpha = 0.65)
-exoType <- initializeExo(varNames = "ws")
-exoType[1, , "difference"] <- 2
-exoType[1, , "lag"] <- 0
-
-
-# exoType <- initializeExo(varNames = c("tot", "prod", "ws"), 3)
-# exoType[1, , "difference"] <- c(2, 1, 0)
-# exoType[2, , "difference"] <- c(2, 1, 0)
-# # exoType[3, , "difference"] <- c(NA, 2, 1)
-# exoType[4, , "difference"] <- c(NA, 2, NA)
-# exoType[1, , "lag"] <- c(0, 0, 0)
-# exoType[2, , "lag"] <- c(1, 1, 1)
-# # exoType[3, , "lag"] <- c(NA, 0, 2)
-# exoType[4, , "lag"] <- c(NA, 1, NA)
-
+exoType <- initializeExo(varNames = "ws", D = 2, L = 0)
 model <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                     type = "TKP", cycleLag = 0, exoType = exoType)
 # ---
@@ -93,10 +77,6 @@ plot(fit)
 plot(fit, path = file.path(path, country) , prefix = "mle_anchor")
 plot(fit, path = file.path(path, country) , prefix = "mle_wide7_anchor", width = 7)
 
-
-
-# test <- predict(fit = fit, n.ahead = 10, exogenous = "mean")
-# plot(test)
 
 ####### Example: TFP model estimation ---------------------------------
 country <- "Italy"
@@ -130,9 +110,6 @@ plot(fitPred, alpha = 0.1, combine = FALSE, path = file.path(path, country),
      prefix = "prediction_wide5", width = 5)
 
 
-# testB <- predict(fit = fitBayes, n.ahead = 10, exogenous = "mean")
-# plot(testB)
-
 ####### Example: Estimating the output gap ----------------------------
 country <- "Netherlands"
 dir.create(file.path(path, country), recursive = TRUE)
@@ -141,10 +118,11 @@ data("gap")
 tsList <- amecoData2input(gap[["Netherlands"]], alpha = 0.65)
 model <- parRestr <- prior <- fit <- list()
 exoType <- initializeExo(varNames = c("ws", "prod", "tot"))
-exoType[1, , "difference"] <- 2
-exoType[2, , "difference"] <- 1
-exoType[1, , "lag"] <- 0
-exoType[2, , "lag"] <- 1
+D <- matrix(c(2, 2, 2, 1, 1, 1), 2, 3, byrow = TRUE)
+L <- matrix(c(0, 0, 0, 1, 1, 1), 2, 3, byrow = TRUE)
+exoType <- initializeExo(varNames = c("ws", "prod","tot"), D = D, L = L)
+exoType
+
 model$nawru <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                           type = "TKP", cycleLag = 0, exoType = exoType)
 model$tfp <- TFPmodel(tsl = tsList, trend = "DT", cycle = "RAR2",
@@ -188,10 +166,7 @@ plot(gapKuttner, path = file.path(path, country), prefix = "kuttner")
 gapHPfilter <- gapHP(tsList$gdp, lambda = 10)
 # ---
 plot(gapHPfilter, path = file.path(path, country), prefix = "hp")
-# 
-# plot(gapKuttner)
-# test <- predict(fit = gapKuttner, n.ahead = 10, exogenous = "mean")
-# plot(test, alpha = 0.05)
+
 
 # --- plot gap comparison ---------------------------------------------
 {
@@ -262,11 +237,9 @@ for (k in countries) {
   # data
   tsl[[k]] <- amecoData2input(gap[[k]], alpha = 0.65)
   # NAWRU
-  exoType <- initializeExo(varNames = c("ws", "prod", "tot"))
-  exoType[1, , "difference"] <- 2
-  exoType[2, , "difference"] <- 1
-  exoType[1, , "lag"] <- 0
-  exoType[2, , "lag"] <- 1
+  D <- matrix(c(2, 2, 2, 1, 1, 1), 2, 3, byrow = TRUE)
+  L <- matrix(c(0, 0, 0, 1, 1, 1), 2, 3, byrow = TRUE)
+  exoType <- initializeExo(varNames = c("ws", "prod","tot"), D = D, L = L)
   model[[k]]$nawru <- NAWRUmodel(tsl = tsl[[k]], trend = "RW2", cycle = "AR2",
                                  type = "TKP", cycleLag = 0, exoType = exoType)
   parRestr[[k]]$nawru <- initializeRestr(model = model[[k]]$nawru, type = type)
@@ -419,9 +392,7 @@ dir.create(file.path(path, "EC_gap"), recursive = TRUE)
 # --- data, model, fit -----------------------------------------------------
 data("gap")
 tsList <- amecoData2input(gap[["France"]], alpha = 0.65)
-exoType <- initializeExo(varNames = "ws")
-exoType[1, , "difference"] <- 2
-exoType[1, , "lag"] <- 0
+exoType <- initializeExo(varNames = "ws", D = 2, L = 0)
 model <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                     type = "TKP", cycleLag = 0, exoType = exoType)
 parRestr <- initializeRestr(model = model, type = "hp")

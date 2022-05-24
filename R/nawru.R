@@ -165,7 +165,7 @@ fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToN
 #'   \code{pcErrorARMA = c(0, 0)}, see details.
 #' @param exoType An optional \code{n x m x 2} array specifying the possible difference
 #'  and lag transformation for the variables. \code{exoType} can be initialized using the
-#'  function \code{inizializeExo}. The column names give the  variable names.
+#'  function \code{inizializeExo}. The column names give the variable names.
 #'  \code{exoType[, , 1]} contains the difference transformations and \code{exoType[, , 2]}
 #'  the subsequent lag transformations, see details.
 #' @param start (Optional) Start vector for the estimation, e.g. \code{c(1980, 1)}.
@@ -226,11 +226,9 @@ fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToN
 #'
 #' # Traditional Phillips curve with 6 exogenous variables
 #' # specify exogenous variable transformations
-#' exoType <- initializeExo(maxDiff = 1, maxLag = 1, varNames = c("tot", "prod", "ws"))
-#' exoType[1, , "difference"] <- 2
-#' exoType[2, , "difference"] <- 1
-#' exoType[1, , "lag"] <- 0
-#' exoType[2, , "lag"] <- 1
+#' D <- matrix(c(2, 2, 2, 1, 1, 1), 2, 3, byrow = TRUE)
+#' L <- matrix(c(0, 0, 0, 1, 1, 1), 2, 3, byrow = TRUE)
+#' exoType <- initializeExo(varNames = c("tot", "prod","ws"), D = D, L = L)
 #' model <- NAWRUmodel(tsl = tsList, cycleLag = 0:1, exoType = exoType)
 NAWRUmodel <- function(tsl, trend = "RW2", cycle = "AR2", type = "TKP", cycleLag = 0, pcErrorARMA = c(0, 0),
                        exoType = NULL, start = NULL, end = NULL, anchor = NULL, anchor.h = NULL) {

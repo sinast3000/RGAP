@@ -4,20 +4,24 @@
 \alias{initializeExo}
 \title{Initialization of exogenous variables}
 \usage{
-initializeExo(maxDiff = 1, maxLag = 1, varNames)
+initializeExo(varNames, D = NULL, L = NULL)
 }
 \arguments{
-\item{maxDiff}{An integer specifying the maximal difference order.}
-
-\item{maxLag}{An integer specifying the maximal lag order.}
-
 \item{varNames}{A \code{(k x 1)} character vector containing the names of the exogenous
 variables.}
+
+\item{D}{A \code{(n x k)} matrix containing the difference transformations, see details.}
+
+\item{L}{A \code{(n x k)} matrix containing the lag transformations, see details.}
 }
 \value{
-An array of size \code{(2, k, max(maxDiff, maxLag) + 1)}. The first row specifies
-  the difference order and the second the lag order.
+An array of size \code{(n, k, 2)}. The \code{[, , 1]} specifies
+  the difference order and \code{[, , 2]} the lag order.
 }
 \description{
 Initializes the transformations applied to exogenous variables.
+}
+\details{
+For the matrices \code{D} and \code{L}, the rows denote different transformations 
+  to each of the variables in the columns. \code{NA} indicates no transformation.
 }
