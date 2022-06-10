@@ -1,21 +1,10 @@
-# -------------------------------------------------------------------------------------------
-
-#' Prediction Method
-#'
-#' @description Defines the predict method as it does not seem to exist.
-#'   
-#' @param object Some object.
-#' @param ... Some stuff passed on to methods.
-#'
-#' @keywords internal
-predict <- function(object, ...) UseMethod("predict")
 
 # -------------------------------------------------------------------------------------------
 
 #' Predictions
 #'
-#' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP}, or 
-#' \code{fitKuttner} estimated via MLE or Bayesian methods (objects of class \code{fit}).
+#' @description Computes predictions for an object of class \code{NAWRUfit, TFPfit}, or 
+#' \code{KuttnerFit} estimated via MLE or Bayesian methods (objects of class \code{fit}).
 #'
 #' @param object An object of class \code{NAWRUfit}, \code{TFPfit}, or \code{KuttnerFit} 
 #'   (objects of class \code{fit}).
@@ -27,7 +16,10 @@ predict <- function(object, ...) UseMethod("predict")
 #'   where the list entry \code{tsl} is replaced. If \code{FALSE}, only the new time series 
 #'   list is returned.
 #' @param ... Ignored.
-#' 
+#'
+#' @export
+#' @importFrom stats predict
+#' @aliases predict.fit
 #' @return The fitted object with an updated time series list \code{tsl}. If 
 #'   \code{returnFit = FALSE}, only the updated time series list is returned.
 predict.fit <- function(object, n.ahead = 10, exogenous = "mean", returnFit = TRUE, ...) {
@@ -46,10 +38,10 @@ predict.fit <- function(object, n.ahead = 10, exogenous = "mean", returnFit = TR
 
 #' Predictions for MLE
 #'
-#' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP, fitKuttner}
+#' @description Computes predictions for an object of class \code{NAWRUfit, TFPfit, KuttnerFit}
 #' estimated via MLE.
 #'
-#' @inheritParams predict
+#' @inheritParams predict.fit
 #' 
 #' @keywords internal
 predictMLE <- function(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE) {
@@ -106,10 +98,10 @@ predictMLE <- function(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE) 
 
 #' Predictions for Bayesian estimation
 #'
-#' @description Computes predictions for an object of class \code{fitNAWRU, fitTFP}
+#' @description Computes predictions for an object of class \code{NAWRUfit, TFPfit}
 #' estimated via Bayesian methods.
 #'
-#' @inheritParams predict
+#' @inheritParams predict.fit
 #' 
 #' @keywords internal
 predictBayes <- function(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE) {
