@@ -6,8 +6,19 @@
 \usage{
 predictBayes(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE)
 }
+\arguments{
+\item{n.ahead}{An integer specifying the prediction horizon.}
+
+\item{exogenous}{A character string specifying the computation of exogenous variables 
+included in the model (if applicable). Valid options are \code{exogenous = "mean"} and 
+\code{exogenous = "last".}}
+
+\item{returnFit}{A logical. If \code{TRUE}, an object of the same class as \code{fit}
+where the list entry \code{tsl} is replaced. If \code{FALSE}, only the new time series 
+list is returned.}
+}
 \description{
-Computes predictions for an object of class \code{fitNAWRU, fitTFP}
+Computes predictions for an object of class \code{NAWRUfit, TFPfit}
 estimated via Bayesian methods.
 }
 \keyword{internal}

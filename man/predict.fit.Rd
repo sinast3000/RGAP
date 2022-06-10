@@ -27,6 +27,6 @@ The fitted object with an updated time series list \code{tsl}. If
   \code{returnFit = FALSE}, only the updated time series list is returned.
 }
 \description{
-Computes predictions for an object of class \code{fitNAWRU, fitTFP}, or 
-\code{fitKuttner} estimated via MLE or Bayesian methods (objects of class \code{fit}).
+Computes predictions for an object of class \code{NAWRUfit, TFPfit}, or 
+\code{KuttnerFit} estimated via MLE or Bayesian methods (objects of class \code{fit}).
 }
