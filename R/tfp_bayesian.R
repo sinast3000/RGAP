@@ -3,7 +3,7 @@
 #' Estimates the parameters and states of a two-dimensional state-space model by Bayesian
 #' methods to obtain the tfp trend.
 #'
-#' @inheritParams fitTFP
+#' @inheritParams fit.TFPmodel
 #' @param FUN A function to be used to compute estimates from the posterior distribution.
 #'   Possible options are \code{"mean"} and \code{"median"}. The default is \code{FUN = "mean"}.
 #'   Only used if \code{method = "bayesian"}.
@@ -39,13 +39,13 @@
   }
   if (is.null(MLEfit)) {
     parRestr <- initializeRestr(model = model, type = "hp")
-    fit <- suppressWarnings(fitTFP(model = model, parRestr = parRestr))
+    f <- suppressWarnings(fit(model = model, parRestr = parRestr))
   } else {
     .checkModelMLEfit(model = model, MLEfit = MLEfit)
-    fit <- MLEfit
+    f <- MLEfit
   }
-  pars <- fit$parameters[sort(rownames(fit$parameters)), 1]
-  names(pars) <- sort(rownames(fit$parameters))
+  pars <- f$parameters[sort(rownames(f$parameters)), 1]
+  names(pars) <- sort(rownames(f$parameters))
 
   # get rid of trend variance if present
   if (trend != "RW1") {
@@ -278,7 +278,7 @@
     mcmc = mcmc,
     prior = prior,
     fit = info,
-    MLE = fit
+    MLE = f
   )
   class(TFPfit) <- c("TFPfit", "fit")
   attr(TFPfit, "method") <- "bayesian"
@@ -297,7 +297,7 @@
 #' @param names The names of the columns.
 #' @param trim A logical indicating whether NAs should be trimmed.
 #' @inheritParams TFPmodel
-#' @inheritParams fitTFP
+#' @inheritParams fit.TFPmodel
 #' @keywords internal
 .getXYcubs <- function(stateSmoothed, model, cycleLag, cubsAR, names, trim = FALSE) {
   loc <- model$loc

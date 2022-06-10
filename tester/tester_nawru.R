@@ -7,7 +7,7 @@ rm(list=ls())
 # load package
 devtools::load_all()
 
-model <- fit <- fitBayes <- fitSTN <- list()
+model <- f <- fBayes <- fSTN <- list()
 
 ####### data ----------------------------------------------------------
 country <- "France"
@@ -58,8 +58,8 @@ model[[8]]
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]], type = "hp")
   # parRestr <- initializeRestr(model = model[[k]])
-  fit[[k]] <- fitNAWRU(model = model[[k]], parRestr = parRestr)
-  plot(fit[[k]])
+  f[[k]] <- fit(model = model[[k]], parRestr = parRestr)
+  plot(f[[k]])
 }
 
 ####### NAWRU bayesian fitting ----------------------------------------
@@ -67,10 +67,10 @@ for (k in 1:length(model)) {
 for (k in 1:length(model)) {
   prior <- initializePrior(model = model[[k]])
   # prior <- initializePrior(model = model[[k]], MLEfit = fit[[k]], MLE = TRUE)
-  fitBayes[[k]] <- fitNAWRU(model = model[[k]], method = "bayesian", prior = prior,
-                            R = 1000, thin = 2, MLEfit = fit[[k]])
+  fBayes[[k]] <- fit(model = model[[k]], method = "bayesian", prior = prior,
+                       R = 1000, thin = 2, MLEfit = fit[[k]])
   # error for NKP: bayesian methods not available
-  plot(fitBayes[[k]])
+  plot(fBayes[[k]])
 
 }
 
@@ -78,9 +78,9 @@ for (k in 1:length(model)) {
 
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]])
-  fitSTN[[k]] <- fitNAWRU(model = model[[k]], parRestr = parRestr, signalToNoise = 0.05)
-  # fitSTN[[k]] <- fitNAWRU(model = model[[k]], parRestr = parRestr, R = 1000, signalToNoise = 0.05, method = "bayesian")
+  fSTN[[k]] <- fit(model = model[[k]], parRestr = parRestr, signalToNoise = 0.05)
+  # fSTN[[k]] <- fit(model = model[[k]], parRestr = parRestr, R = 1000, signalToNoise = 0.05, method = "bayesian")
   # # warning that signal to noise not applicable for method "bayesian"
-  plot(fitSTN[[k]])
+  plot(fSTN[[k]])
 }
 

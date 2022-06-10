@@ -24,7 +24,7 @@
 # TFP MLE fit
 
     Call:
-    fitTFP(model = model)
+    fit.TFPmodel(model = model)
     
     	State space model object of class TFPmodel
     
@@ -72,8 +72,8 @@
 # TFP bayesian fit
 
     Call:
-    fitTFP(model = model, method = "bayesian", R = 1000, thin = 2, 
-        MLEfit = fit)
+    fit.TFPmodel(model = model, method = "bayesian", R = 1000, thin = 2, 
+        MLEfit = f)
     
     	State space model object of class TFPmodel
     

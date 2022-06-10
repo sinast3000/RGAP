@@ -36,6 +36,7 @@
 #' @param MLEfit (Optional) An object of class \code{TFPfit} which is used for
 #'   initialization. Only used if \code{method = "bayesian"}.
 #' @param control (Optional) A list of control arguments to be passed on to \code{optim}.
+#' @param ... additional arguments to be passed to the methods functions.
 #'
 #' @details The list object \code{prior} contains three list elements \code{cycle},
 #'   \code{trend}, and \code{cubs}. Each list element is a \code{4 x n} matrix where \code{n}
@@ -95,7 +96,8 @@
 #'   The list component \code{fit} contains the following model fit criteria:
 #'   \item{R2}{R squared of the CUBS equation.}
 #'   \item{signal-to-noise}{Signal-to-noise ratio.}
-##' @export
+#'   
+#' @export
 #' @examples
 #' # load data for Italy
 #' data("gap")
@@ -105,21 +107,21 @@
 #' model <- TFPmodel(tsl = tsList, cycle = "RAR2")
 #' # initialize parameter restrictions and estimate model
 #' parRestr <- initializeRestr(model = model, type = "hp")
-#' fit <- fitTFP(model = model, parRestr = parRestr)
+#' f <- fit(model = model, parRestr = parRestr)
 #' # Bayesian estimation
 #' prior <- initializePrior(model = model)
 #' \dontrun{
-#' fit <- fitTFP(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
+#' f <- fit(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
 #' }
-fitTFP <- function(model, parRestr = initializeRestr(model = model), signalToNoise = NULL,
+fit.TFPmodel <- function(model, parRestr = initializeRestr(model = model), signalToNoise = NULL,
                    method = "MLE", control = NULL,
                    prior = initializePrior(model), R = 10000, burnin = ceiling(R / 10),
-                   thin = 1, HPDIprob = 0.85, pointEstimate = "mean", MLEfit = NULL) {
+                   thin = 1, HPDIprob = 0.85, pointEstimate = "mean", MLEfit = NULL, ...) {
   # save call
   mc <- match.call(expand.dots = FALSE)
 
   if (method == "MLE") {
-    fit <- .MLEfitTFP(
+    f <- .MLEfitTFP(
       model = model, parRestr = parRestr, signalToNoise = signalToNoise,
       control = control
     )
@@ -127,7 +129,7 @@ fitTFP <- function(model, parRestr = initializeRestr(model = model), signalToNoi
     if (!is.null(signalToNoise)) {
       warning("'signalToNoise' not applicable for method = 'bayesian'.")
     }
-    fit <- .BayesFitTFP(
+    f <- .BayesFitTFP(
       model = model, prior = prior, R = R, burnin = burnin,
       thin = thin, HPDIprob = HPDIprob, FUN = pointEstimate, MLEfit = MLEfit
     )
@@ -135,17 +137,17 @@ fitTFP <- function(model, parRestr = initializeRestr(model = model), signalToNoi
     stop("Invalid estimation method: please use either \"MLE\" or \"bayesian\".")
   }
 
-  fit$call <- mc
-  print(fit)
-  fit
+  f$call <- mc
+  print(f)
+  f
 }
 
 # -------------------------------------------------------------------------------------------
 
 #' TFP trend model
 #'
-#' @description Creates a state space object object of class \code{TFPmodel} which can be used as
-#'   to fit the model using \code{fitTFP}.
+#' @description Creates a state space object object of class \code{TFPmodel} which can be 
+#'   fitted using \code{fit}.
 #'
 #' @param tsl A list of time series objects, see details.
 #' @param trend A character string specifying the trend model. \code{trend = "RW1"} denotes

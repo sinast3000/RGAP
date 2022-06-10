@@ -15,23 +15,23 @@ test_that("TFP model", {
 test_that("TFP MLE fit", {
 
   skip_on_cran()
-  fit <- fitTFP(model = model)
+  f <- fit(model = model)
 
-  expect_s3_class(fit, "TFPfit")
-  expect_equal(RGAP:::is.TFPfit(fit, return.logical = TRUE), TRUE)
-  expect_snapshot_output(x = fit, cran = FALSE)
+  expect_s3_class(f, "TFPfit")
+  expect_equal(RGAP:::is.TFPfit(f, return.logical = TRUE), TRUE)
+  expect_snapshot_output(x = f, cran = FALSE)
 
 })
 
 test_that("TFP bayesian fit", {
 
   skip_on_cran()
-  fit <- fitTFP(model = model)
+  f <- fit(model = model)
   set.seed(5)
-  fitBayes <- fitTFP(model = model, method = "bayesian", R = 1000, thin = 2, MLEfit = fit)
+  fBayes <- fit(model = model, method = "bayesian", R = 1000, thin = 2, MLEfit = f)
 
-  expect_s3_class(fitBayes, "TFPfit")
-  expect_equal(RGAP:::is.TFPfit(fitBayes, return.logical = TRUE), TRUE)
-  expect_snapshot_output(x = fitBayes, cran = FALSE)
+  expect_s3_class(fBayes, "TFPfit")
+  expect_equal(RGAP:::is.TFPfit(fBayes, return.logical = TRUE), TRUE)
+  expect_snapshot_output(x = fBayes, cran = FALSE)
 
 })

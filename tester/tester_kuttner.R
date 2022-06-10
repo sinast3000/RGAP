@@ -7,7 +7,7 @@ rm(list=ls())
 # load package
 devtools::load_all()
 
-model <- fit <- fitBayes <- fitSTN <- list()
+model <- f <- fBayes <- fSTN <- list()
 
 ####### data ----------------------------------------------------------
 country <- "Netherlands"
@@ -52,16 +52,16 @@ KuttnerModel(tsl = tsList, inflErrorARMA = c(2, 1)) # error: AR should be 0
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]], type = "hp")
   # parRestr <- initializeRestr(model = model[[k]])
-  fit[[k]] <- fitKuttner(model = model[[k]], parRestr = parRestr)
-  plot(fit[[k]])
+  f[[k]] <- fit(model = model[[k]], parRestr = parRestr)
+  plot(f[[k]])
 }
 
 ####### Kuttner MLE fitting - signal to noise -------------------------
 
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]])
-  fitSTN[[k]] <- fitKuttner(model = model[[k]], parRestr = parRestr, signalToNoise = 0.2)
-  plot(fitSTN[[k]])
+  fSTN[[k]] <- fit(model = model[[k]], parRestr = parRestr, signalToNoise = 0.2)
+  plot(fSTN[[k]])
 }
 
 

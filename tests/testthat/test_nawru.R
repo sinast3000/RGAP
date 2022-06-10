@@ -16,23 +16,23 @@ test_that("NAWRU model", {
 test_that("NAWRU MLE fit", {
 
   skip_on_cran()
-  fit <-  fitNAWRU(model)
+  f <-  fit(model)
 
-  expect_s3_class(fit, "NAWRUfit")
-  expect_equal(RGAP:::is.NAWRUfit(fit, return.logical = TRUE), TRUE)
-  expect_snapshot_output(x = fit, cran = FALSE)
+  expect_s3_class(f, "NAWRUfit")
+  expect_equal(RGAP:::is.NAWRUfit(f, return.logical = TRUE), TRUE)
+  expect_snapshot_output(x = f, cran = FALSE)
 
 })
 
 test_that("NAWRU bayesian fit", {
 
   skip_on_cran()
-  fit <-  fitNAWRU(model)
+  f <-  fit(model)
   set.seed(5)
-  fitBayes <- fitNAWRU(model = model, method = "bayesian", R = 1000, thin = 2, MLEfit = fit)
+  fBayes <- fit(model = model, method = "bayesian", R = 1000, thin = 2, MLEfit = f)
 
-  expect_s3_class(fitBayes, "NAWRUfit")
-  expect_equal(RGAP:::is.NAWRUfit(fitBayes, return.logical = TRUE), TRUE)
-  expect_snapshot_output(x = fitBayes, cran = FALSE)
+  expect_s3_class(fBayes, "NAWRUfit")
+  expect_equal(RGAP:::is.NAWRUfit(fBayes, return.logical = TRUE), TRUE)
+  expect_snapshot_output(x = fBayes, cran = FALSE)
 
 })

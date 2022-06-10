@@ -75,7 +75,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 #' @param errorARMA The ARMA order of the second equation error process.
 #' @param prior A logical indicating whether prior parameters should be returned.
 #' @inheritParams initializeRestr
-#' @inheritParams fitNAWRU
+#' @inheritParams fit.NAWRUmodel
 #' @inheritParams hpfilter
 #'
 #' @importFrom stats optim arima as.formula lm
@@ -213,7 +213,7 @@ initializeRestr <- function(model, type = "basic", lambda = NULL, q = 0.01) {
 #' \code{TFPmodel}.
 #'
 #' @param model A model of class \code{NAWRUmodel} or \code{TFPmodel}.
-#' @inheritParams fitNAWRU
+#' @inheritParams fit.NAWRUmodel
 #'
 #' @return The same model with updated list item \code{loc}.
 #' @keywords internal

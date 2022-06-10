@@ -3,8 +3,8 @@
 
 #' Kuttner model
 #'
-#' @description Creates a state space object of class \code{KuttnerModel} which can be used
-#'   to fit the model using \code{fitKuttner}.
+#' @description Creates a state space object object of class \code{KuttnerModel} which can be 
+#'   fitted using \code{fit}.
 #'
 #' @param tsl A list of time series objects, see details.
 #' @param trend A character string specifying the trend model. \code{trend = "RW1"} denotes

@@ -7,7 +7,7 @@ rm(list=ls())
 # load package
 devtools::load_all()
 
-model <- fit <- fitBayes <- fitSTN <- list()
+model <- f <- fBayes <- fSTN <- list()
 
 ####### data ----------------------------------------------------------
 country <- "Italy"
@@ -47,19 +47,19 @@ TFPmodel(tsl = tsList, cubsErrorARMA = c(2, 1)) # error: MA should be 0
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]], type = "hp")
   # parRestr <- initializeRestr(model = model[[k]])
-  fit[[k]] <- fitTFP(model = model[[k]], parRestr = parRestr)
-  plot(fit[[k]])
+  f[[k]] <- fit(model = model[[k]], parRestr = parRestr)
+  plot(f[[k]])
 }
 
 ####### TFP bayesian fitting ------------------------------------------
 
 for (k in 1:length(model)) {
   # prior <- initializePrior(model = model[[k]])
-  prior <- initializePrior(model = model[[k]], MLEfit = fit[[k]], MLE = TRUE)
-  fitBayes[[k]] <- fitTFP(model = model[[k]], method = "bayesian", prior = prior,
-                          R = 1000, thin = 2, MLEfit = fit[[k]])
+  prior <- initializePrior(model = model[[k]], MLEfit = f[[k]], MLE = TRUE)
+  fBayes[[k]] <- fit(model = model[[k]], method = "bayesian", prior = prior,
+                          R = 1000, thin = 2, MLEfit = f[[k]])
   # error for NKP: bayesian methods not available
-  plot(fitBayes[[k]])
+  plot(fBayes[[k]])
 
 }
 
@@ -67,9 +67,9 @@ for (k in 1:length(model)) {
 
 for (k in 1:length(model)) {
   parRestr <- initializeRestr(model = model[[k]])
-  fitSTN[[k]] <- fitTFP(model = model[[k]], parRestr = parRestr, signalToNoise = 0.05)
-  # fitSTN[[k]] <- fitTFP(model = model[[k]], parRestr = parRestr, R = 1000, signalToNoise = 0.05, method = "bayesian")
+  fSTN[[k]] <- fit(model = model[[k]], parRestr = parRestr, signalToNoise = 0.05)
+  # fSTN[[k]] <- fit(model = model[[k]], parRestr = parRestr, R = 1000, signalToNoise = 0.05, method = "bayesian")
   # # warning that signal to noise not applicable for method "bayesian"
-  plot(fitSTN[[k]])
+  plot(fSTN[[k]])
 }
 

@@ -57,8 +57,8 @@ Object of class \code{KuttnerModel}, which is a list with the following componen
   \item{period}{A list containing the components \code{start, end, frequency}.}
 }
 \description{
-Creates a state space object of class \code{KuttnerModel} which can be used
-  to fit the model using \code{fitKuttner}.
+Creates a state space object object of class \code{KuttnerModel} which can be 
+  fitted using \code{fit}.
 }
 \details{
 The list of time series \code{tsl} needs to have the following components:

@@ -24,7 +24,7 @@
 # Kuttner MLE fit
 
     Call:
-    fitKuttner(model = model, parRestr = parRestr)
+    fit.KuttnerModel(model = model, parRestr = parRestr)
     
     	State space model object of class KuttnerModel
     

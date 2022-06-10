@@ -3,7 +3,7 @@
 #' Estimates the parameters and states of a two-dimensional state-space model by Bayesian
 #' methods to obtain the nawru.
 #'
-#' @inheritParams fitNAWRU
+#' @inheritParams fit.NAWRUmodel
 #' @param FUN A function to be used to compute estimates from the posterior distribution.
 #'   Possible options are \code{"mean"} and \code{"median"}. The default is \code{FUN = "mean"}.
 #'   Only used if \code{method = "bayesian"}.
@@ -46,14 +46,14 @@
   }
   if (is.null(MLEfit)) {
     parRestr <- initializeRestr(model = model, type = "hp")
-    fit <- suppressWarnings(.MLEfitNAWRU(model = model, parRestr = parRestr))
+    f <- suppressWarnings(.MLEfitNAWRU(model = model, parRestr = parRestr))
   } else {
-    fit <- MLEfit
+    f <- MLEfit
     .checkModelMLEfit(model = model, MLEfit = MLEfit)
   }
 
-  pars <- fit$parameters[sort(rownames(fit$parameters)), 1]
-  names(pars) <- sort(rownames(fit$parameters))
+  pars <- f$parameters[sort(rownames(f$parameters)), 1]
+  names(pars) <- sort(rownames(f$parameters))
 
   # get rid of trend variance if present
   if (trend != "RW1") {
@@ -280,7 +280,7 @@
     mcmc = mcmc,
     prior = prior,
     fit = info,
-    MLE = fit
+    MLE = f
   )
   class(NAWRUfit) <- c("NAWRUfit", "fit")
   attr(NAWRUfit, "method") <- "bayesian"

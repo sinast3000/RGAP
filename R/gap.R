@@ -6,8 +6,8 @@
 #'   methodology.
 #'
 #' @param tsl A list of time series objects, see details.
-#' @param NAWRUfit An object of class \code{NAWRUfit} obtained via the function \code{fitNAWRU}.
-#' @param TFPfit An object of class \code{TFPfit} obtained via the function \code{fitTFP}.
+#' @param NAWRUfit An object of class \code{NAWRUfit} obtained via the function \code{fit}.
+#' @param TFPfit An object of class \code{TFPfit} obtained via the function \code{fit}.
 #' @param alpha A scalar between zero and one depicting the labor share. The default is
 #'   \code{alpha = 0.65}.
 #' @param lambda The smoothing parameter for the application of the HP filter (see details).

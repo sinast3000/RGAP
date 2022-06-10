@@ -9,7 +9,7 @@ autoTFPmodel(tsl, poss, nModels = 10)
 \arguments{
 \item{tsl}{A list of time series objects, see details.}
 
-\item{poss}{A list with the characteristics of possible models (see \code{auto.gapProd)}}
+\item{poss}{A list with the characteristics of possible models (see \code{autoGapProd)}}
 
 \item{nModels}{Integer, the maximum number of models for each unobserved component model.}
 }

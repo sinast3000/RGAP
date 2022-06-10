@@ -70,8 +70,8 @@ Object of class \code{NAWRUmodel}, which is a list with the following components
   \item{period}{A list containing the components \code{start, end, frequency}.}
 }
 \description{
-Creates a state space object object of class \code{NAWRUmodel} which can be used as
-  to fit the model using \code{fitNAWRU}.
+Creates a state space object object of class \code{NAWRUmodel} which can be 
+  fitted using \code{fit}.
 }
 \details{
 The list of time series \code{tsl} needs to have the following components:

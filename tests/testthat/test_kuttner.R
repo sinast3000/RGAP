@@ -18,11 +18,11 @@ test_that("Kuttner model", {
 test_that("Kuttner MLE fit", {
 
   skip_on_cran()
-  fit <- fitKuttner(model, parRestr = parRestr)
+  f <- fit(model, parRestr = parRestr)
 
-  expect_s3_class(fit, "KuttnerFit")
-  expect_equal(RGAP:::is.KuttnerFit(fit, return.logical = TRUE), TRUE)
-  expect_snapshot_output(x = fit, cran = FALSE)
+  expect_s3_class(f, "KuttnerFit")
+  expect_equal(RGAP:::is.KuttnerFit(f, return.logical = TRUE), TRUE)
+  expect_snapshot_output(x = f, cran = FALSE)
 
 })
 

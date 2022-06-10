@@ -4,7 +4,7 @@
 #' Estimates a two-dimensional state-space model and performs filtering and smoothing to
 #' obtain the nawru.
 #'
-#' @inheritParams fitNAWRU
+#' @inheritParams fit.NAWRUmodel
 #'
 #' @importFrom KFAS fitSSM KFS
 #' @importFrom stats start end window ts lag frequency time Box.test coef
@@ -71,7 +71,7 @@
 
   # optimiziation
   message("Starting optimization ...")
-  fit <- fitSSM(
+  f <- fitSSM(
     model$SSModel,
     inits = initPar,
     method = "BFGS",
@@ -82,8 +82,8 @@
   )
 
   # check covariance matrix
-  rerun <- .checkCV(fit = fit, loc = loc)
-  loc <- .checkBoundaries(fit = fit, loc = loc)
+  rerun <- .checkCV(fit = f, loc = loc)
+  loc <- .checkBoundaries(fit = f, loc = loc)
   if (rerun) {
     # check Fisher information
     message(
@@ -103,7 +103,7 @@
   # rerun if necessary
   if (rerun) {
     message("Rerunning optimization ...")
-    fit <- fitSSM(
+    f <- fitSSM(
       model$SSModel,
       inits = initPar,
       method = "BFGS",
@@ -112,9 +112,9 @@
       hessian = TRUE,
       control = controlList
     )
-    rerun <- .checkCV(fit = fit, loc = loc)
+    rerun <- .checkCV(fit = f, loc = loc)
   }
-  if (fit$optim.out$convergence != 0) {
+  if (f$optim.out$convergence != 0) {
     message("The optimization could NOT be completed.")
   } else {
     message("The optimization was successfully completed.")
@@ -125,25 +125,25 @@
     message("The covariance matrix contains negative values on its diagonal.")
   }
   # check boundaries
-  loc <- .checkBoundaries(fit = fit, loc = loc)
+  loc <- .checkBoundaries(fit = f, loc = loc)
   if (any(loc$boundaries)) {
     message("Box constraints have been reached. Consider modifying the constraints.")
   }
 
 
   # ----- filtering and smoothing
-  out <- KFS(fit$model, simplify = FALSE, filtering = c("state", "signal"), smoothing = c("state", "signal", "disturbance"))
+  out <- KFS(f$model, simplify = FALSE, filtering = c("state", "signal"), smoothing = c("state", "signal", "disturbance"))
 
   # non exogenous and non constant states
   indexTmp <- (!colnames(coef(out)) %in% c(exoNames, "const"))
   namesState <- colnames(coef(out))[indexTmp]
-  namesObs <- colnames(fit$model$y)
+  namesObs <- colnames(f$model$y)
 
   # save filtered and smoothed time series and residuals
   tslRes <- .SSresults(out = out, model = model)
 
   # ----- inference
-  dfRes <- inference(parOptim = fit$optim.out$par, hessian = fit$optim.out$hessian, loc = loc)
+  dfRes <- inference(parOptim = f$optim.out$par, hessian = f$optim.out$hessian, loc = loc)
 
   # add pre-specified parameter to output
   if (type == "NKP" && cycle == "AR2") dfRes <- rbind(pcC1 = c(0.99 * dfRes["pcC0", "Coefficient"] * dfRes["cPhi2", "Coefficient"], NA, NA, NA), dfRes)
@@ -162,7 +162,7 @@
   NAWRUfit <- list(
     model = model,
     tsl = tslRes,
-    SSMfit = fit,
+    SSMfit = f,
     SSMout = out,
     parameters = dfRes,
     parRestr = parRestr,

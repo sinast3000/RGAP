@@ -25,7 +25,7 @@
 # NAWRU MLE fit
 
     Call:
-    fitNAWRU(model = model)
+    fit.NAWRUmodel(model = model)
     
     	State space model object of class NAWRUmodel
     
@@ -73,8 +73,8 @@
 # NAWRU bayesian fit
 
     Call:
-    fitNAWRU(model = model, method = "bayesian", R = 1000, thin = 2, 
-        MLEfit = fit)
+    fit.NAWRUmodel(model = model, method = "bayesian", R = 1000, 
+        thin = 2, MLEfit = f)
     
     	State space model object of class NAWRUmodel
     

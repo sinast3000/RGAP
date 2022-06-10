@@ -76,22 +76,22 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
       }
       if (is.null(MLEfit)) {
         parRestr <- initializeRestr(model = model, type = "hp")
-        invisible(utils::capture.output(fit <- suppressWarnings(fitTFP(model = model, parRestr = parRestr))))
+        invisible(utils::capture.output(f <- suppressWarnings(fit(model = model, parRestr = parRestr))))
       } else {
-        fit <- MLEfit
+        f <- MLEfit
       }
-      pars <- fit$parameters[sort(rownames(fit$parameters)), 1]
-      names(pars) <- sort(rownames(fit$parameters))
-      name <- rownames(fit$parameters)
-      Tn <- length(fit$tsl$tfpTrend)
+      pars <- f$parameters[sort(rownames(f$parameters)), 1]
+      names(pars) <- sort(rownames(f$parameters))
+      name <- rownames(f$parameters)
+      Tn <- length(f$tsl$tfpTrend)
 
       # in case of NaNs for standard error; set standard error equal to estimate
-      fit$parameters[is.na(fit$parameters[, 2]), 2] <- fit$parameters[is.na(fit$parameters[, 2]), 1]
+      f$parameters[is.na(f$parameters[, 2]), 2] <- f$parameters[is.na(f$parameters[, 2]), 1]
 
       prior2 <- list()
-      prior2$cubs <- t(as.matrix(fit$parameters[grepl("cu", name, fixed = TRUE), 1:2]))
-      prior2$trend <- t(as.matrix(fit$parameters[grepl("td", name, fixed = TRUE), 1:2]))
-      prior2$cycle <- t(as.matrix(fit$parameters[grepl("c", name, fixed = TRUE) & !grepl("cu", name, fixed = TRUE), 1:2]))
+      prior2$cubs <- t(as.matrix(f$parameters[grepl("cu", name, fixed = TRUE), 1:2]))
+      prior2$trend <- t(as.matrix(f$parameters[grepl("td", name, fixed = TRUE), 1:2]))
+      prior2$cycle <- t(as.matrix(f$parameters[grepl("c", name, fixed = TRUE) & !grepl("cu", name, fixed = TRUE), 1:2]))
 
       prior$cubs[1:2, colnames(prior2$cubs)] <- matrix(c(prior2$cubs[1, ], prior2$cubs[2, ] * sqrt(Tn)), 2, dim(prior2$cubs)[2], byrow = TRUE)
       prior$trend[1:2, colnames(prior2$trend)] <- matrix(c(prior2$trend[1, ], prior2$trend[2, ] * sqrt(Tn)), 2, dim(prior2$trend)[2], byrow = TRUE)
@@ -107,22 +107,22 @@ initializePrior <- function(model, MLE = !is.null(MLEfit), MLEfit = NULL) {
       }
       if (is.null(MLEfit)) {
         parRestr <- initializeRestr(model = model, type = "hp")
-        invisible(utils::capture.output(fit <- suppressWarnings(.MLEfitNAWRU(model = model, parRestr = parRestr))))
+        invisible(utils::capture.output(f <- suppressWarnings(.MLEfitNAWRU(model = model, parRestr = parRestr))))
       } else {
-        fit <- MLEfit
+        f <- MLEfit
       }
-      pars <- fit$parameters[sort(rownames(fit$parameters)), 1]
-      names(pars) <- sort(rownames(fit$parameters))
-      name <- rownames(fit$parameters)
-      Tn <- length(fit$tsl$nawru)
+      pars <- f$parameters[sort(rownames(f$parameters)), 1]
+      names(pars) <- sort(rownames(f$parameters))
+      name <- rownames(f$parameters)
+      Tn <- length(f$tsl$nawru)
 
       # in case of NaNs for standard error; set standard error equal to estimate
-      fit$parameters[is.na(fit$parameters[, 2]), 2] <- fit$parameters[is.na(fit$parameters[, 2]), 1]
+      f$parameters[is.na(f$parameters[, 2]), 2] <- f$parameters[is.na(f$parameters[, 2]), 1]
 
       prior2 <- list()
-      prior2$pcInd <- t(as.matrix(fit$parameters[grepl("pc", name, fixed = TRUE), 1:2]))
-      prior2$trend <- t(as.matrix(fit$parameters[grepl("td", name, fixed = TRUE), 1:2]))
-      prior2$cycle <- t(as.matrix(fit$parameters[grepl("c", name, fixed = TRUE) & !grepl("pc", name, fixed = TRUE), 1:2]))
+      prior2$pcInd <- t(as.matrix(f$parameters[grepl("pc", name, fixed = TRUE), 1:2]))
+      prior2$trend <- t(as.matrix(f$parameters[grepl("td", name, fixed = TRUE), 1:2]))
+      prior2$cycle <- t(as.matrix(f$parameters[grepl("c", name, fixed = TRUE) & !grepl("pc", name, fixed = TRUE), 1:2]))
 
       prior$pcInd[1:2, colnames(prior2$pcInd)] <- matrix(c(prior2$pcInd[1, ], prior2$pcInd[2, ] * sqrt(Tn)), 2, dim(prior2$pcInd)[2], byrow = TRUE)
       prior$trend[1:2, colnames(prior2$trend)] <- matrix(c(prior2$trend[1, ], prior2$trend[2, ] * sqrt(Tn)), 2, dim(prior2$trend)[2], byrow = TRUE)

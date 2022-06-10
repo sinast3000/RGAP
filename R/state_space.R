@@ -1,3 +1,12 @@
+#' Fit Method
+#'
+#' @description Defines the fit method.
+#'
+#' @param model Some model.
+#' @param ... Some stuff passed on to methods.
+#'
+#' @export
+fit <- function(model, ...) UseMethod("fit")
 
 # -------------------------------------------------------------------------------------------
 
@@ -173,7 +182,7 @@
 #' @param bayes A logical indicating whether the update is part of a Bayesian procedure, i.e.,
 #'   the parameter constraints do not need to be enforced.
 #' @inheritParams NAWRUmodel
-#' @inheritParams fitNAWRU
+#' @inheritParams fit.NAWRUmodel
 #'
 #' @importFrom stats start end window ts lag frequency time
 #' @keywords internal
@@ -294,7 +303,7 @@
 #' Modifies a an object of type \code{NAWRUmodel} or \code{TFPmodel} in case the variance
 #' constraint for the trend is set to zero or in case a signal-to-noise ratio is specified.
 #'
-#' @inheritParams fitTFP
+#' @inheritParams fit.TFPmodel
 #'
 #' @importFrom KFAS SSModel SSMcustom
 #' @keywords internal
@@ -809,7 +818,7 @@ initializeExo <- function(varNames, D = NULL, L = NULL) {
 #' @param state_s An array with the smoothed state.
 #' @param state_f An array with the filtered state.
 #' @param obsFitted An array with the fitted observables.
-#' @inheritParams fitTFP
+#' @inheritParams fit.TFPmodel
 #' @importFrom KFAS mvInnovations
 #' @importFrom stats coef ts start frequency
 #' @keywords internal
@@ -1068,10 +1077,10 @@ inference <- function(parOptim, hessian, loc) {
 #' model <- NAWRUmodel(tsl = tsList)
 #'
 #' # estimate nawru model
-#' fit <- fitNAWRU(model = model)
+#' f <- fit(model = model)
 #'
 #' # compute anchored nawru
-#' anchoredNawru <- trendAnchor(fit = fit, anchor = 6.5, h = 10)
+#' anchoredNawru <- trendAnchor(fit = f, anchor = 6.5, h = 10)
 trendAnchor <- function(fit, anchor = NULL, h = NULL, returnFit = FALSE) {
   if (attr(fit, "method") == "bayesian") {
     stop("Anchor only implemented for MLE.")

@@ -109,7 +109,7 @@
 #'   \item{drop}{1 indicates the model should be dropped}
 #' 
 #' @export
-auto.gapProd <- function(tsl, 
+autoGapProd <- function(tsl, 
                          type = "hp",
                          q = 0.01,
                          method = "MLE",
@@ -214,7 +214,7 @@ auto.gapProd <- function(tsl,
     
     # define and fit models
     res <- helper_model_fit(FUNmodel = NAWRUmodel, 
-                            FUNfit = fitNAWRU, 
+                            FUNfit = fit.NAWRUmodel, 
                             tsl = tsl,
                             comb = comb, 
                             poss = nawruPoss, 
@@ -302,7 +302,7 @@ auto.gapProd <- function(tsl,
     
     # define and fit models
     res <- helper_model_fit(FUNmodel = TFPmodel, 
-                            FUNfit = fitTFP, 
+                            FUNfit = fit.TFPmodel, 
                             tsl = tsl,
                             comb = comb, 
                             poss = tfpPoss, 
@@ -387,8 +387,8 @@ auto.gapProd <- function(tsl,
 #'
 #' @description Finds the most suitable NAWRU models.
 #'
-#' @param poss A list with the characteristics of possible models (see \code{auto.gapProd)}
-#' @inheritParams auto.gapProd
+#' @param poss A list with the characteristics of possible models (see \code{autoGapProd)}
+#' @inheritParams autoGapProd
 #'
 #' @return A nested list with one model specification per list entry.
 #' @keywords internal
@@ -476,8 +476,8 @@ autoNAWRUmodel <- function(tsl, poss, nModels = 10) {
 #'
 #' @description Finds the most suitable TFP models.
 #'
-#' @param poss A list with the characteristics of possible models (see \code{auto.gapProd)}
-#' @inheritParams auto.gapProd
+#' @param poss A list with the characteristics of possible models (see \code{autoGapProd)}
+#' @inheritParams autoGapProd
 #'
 #' @return A nested list with one model specification per list entry.
 #' @keywords internal
@@ -541,10 +541,10 @@ autoTFPmodel <- function(tsl, poss, nModels = 10) {
 #'
 #' @param FUNmodel The model definition function.
 #' @param FUNmodel The model fitting function.
-#' @param poss A list with the characteristics of possible models (see \code{auto.gapProd)}
+#' @param poss A list with the characteristics of possible models (see \code{autoGapProd)}
 #' @param comb A nested list with one model specification per list entry.
 #' @param modelName Name of the model, i.e., NAWRU or TFP.
-#' @inheritParams auto.gapProd
+#' @inheritParams autoGapProd
 #'
 #' @return A nested list with the models and fitted objects.
 #' @keywords internal
@@ -552,7 +552,7 @@ helper_model_fit <- function(FUNmodel, FUNfit, tsl, comb, poss, method, type, q,
   n_poss <- length(comb)
   
   # define models
-  model <- fit <- fitBayes <- list()
+  model <- f <- fBayes <- list()
   valid <- rep(NA, n_poss)
   message(paste0("\nDefining ", n_poss," ", modelName, " models ..."))
   pb <- utils::txtProgressBar(min = 0, max = n_poss, style = 3)
@@ -611,20 +611,20 @@ helper_model_fit <- function(FUNmodel, FUNfit, tsl, comb, poss, method, type, q,
       cat("\n")
     }
     parRestr <- initializeRestr(model = model[[k]], type = type, q = q)
-    fit[[k]] <- FUNfit(model = model[[k]], 
+    f[[k]] <- FUNfit(model = model[[k]], 
                        parRestr = parRestr,
                        signalToNoise = poss$signalToNoise,
                        control = list(maxit = 1000))
     if (method == "bayesian") {
       prior <- initializePrior(model = model[[k]])
-      fitBayes[[k]] <- tryCatch(
+      fBayes[[k]] <- tryCatch(
         {     FUNfit(model = model[[k]], 
                      parRestr = parRestr, 
                      prior = prior,
                      signalToNoise = poss$signalToNoise,
                      method = method,
                      R = 1000,
-                     MLEfit = fit[[k]])
+                     MLEfit = f[[k]])
         },
         error=function(cond) {
           return(NA)
@@ -634,8 +634,8 @@ helper_model_fit <- function(FUNmodel, FUNfit, tsl, comb, poss, method, type, q,
   }
   
   res <- list(model = model,
-              fit = fit,
-              fitBayes = fitBayes)
+              fit = f,
+              fitBayes = fBayes)
   return(res)
   
 }

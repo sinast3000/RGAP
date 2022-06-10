@@ -36,6 +36,7 @@
 #' @param MLEfit (Optional) An object of class \code{NAWRUfit} which is used for
 #'   initialization. Only used if \code{method = "bayesian"}.
 #' @param control (Optional) A list of control arguments to be passed on to \code{optim}.
+#' @param ... additional arguments to be passed to the methods functions.
 #'
 #' @details The list object \code{prior} contains three list elements \code{cycle},
 #'   \code{trend}, and \code{pcInd}. Each list element is a \code{4 x n} matrix where \code{n}
@@ -105,21 +106,21 @@
 #' model <- NAWRUmodel(tsl = tsList)
 #' # estimate nawru model via MLE
 #' parRestr <- initializeRestr(model = model, type = "hp")
-#' fit <- fitNAWRU(model = model, parRestr = parRestr)
+#' f <- fit(model = model, parRestr = parRestr)
 #' # initialize priors and estimate model via Bayesian methods
 #' prior <- initializePrior(model = model)
 #' \dontrun{
-#' fit <- fitNAWRU(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
+#' f <- fit(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
 #' }
-fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToNoise = NULL,
+fit.NAWRUmodel <- function(model, parRestr = initializeRestr(model = model), signalToNoise = NULL,
                      method = "MLE", control = NULL,
                      prior = initializePrior(model), R = 10000, burnin = ceiling(R / 10),
-                     thin = 1, HPDIprob = 0.85, pointEstimate = "mean", MLEfit = NULL) {
+                     thin = 1, HPDIprob = 0.85, pointEstimate = "mean", MLEfit = NULL, ...) {
   # save call
   mc <- match.call(expand.dots = FALSE)
 
   if (method == "MLE") {
-    fit <- .MLEfitNAWRU(
+    f <- .MLEfitNAWRU(
       model = model, parRestr = parRestr, signalToNoise = signalToNoise,
       control = control
     )
@@ -127,7 +128,7 @@ fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToN
     if (!is.null(signalToNoise)) {
       warning("'signalToNoise' not applicable for method = 'bayesian'.")
     }
-    fit <- .BayesFitNAWRU(
+    f <- .BayesFitNAWRU(
       model = model, prior = prior, R = R, burnin = burnin,
       thin = thin, HPDIprob = HPDIprob, FUN = pointEstimate, MLEfit = MLEfit
     )
@@ -135,17 +136,17 @@ fitNAWRU <- function(model, parRestr = initializeRestr(model = model), signalToN
     stop("Invalid estimation method: please use either 'MLE' or 'bayesian'.")
   }
 
-  fit$call <- mc
-  print(fit)
-  fit
+  f$call <- mc
+  print(f)
+  f
 }
 
 # -------------------------------------------------------------------------------------------
 
 #' NAWRU model
 #'
-#' @description Creates a state space object object of class \code{NAWRUmodel} which can be used as
-#'   to fit the model using \code{fitNAWRU}.
+#' @description Creates a state space object object of class \code{NAWRUmodel} which can be 
+#'   fitted using \code{fit}.
 #'
 #' @param tsl A list of time series objects, see details.
 #' @param trend A character string specifying the trend model. \code{trend = "RW1"} denotes

@@ -17,9 +17,9 @@ gapProd(
 \arguments{
 \item{tsl}{A list of time series objects, see details.}
 
-\item{NAWRUfit}{An object of class \code{NAWRUfit} obtained via the function \code{fitNAWRU}.}
+\item{NAWRUfit}{An object of class \code{NAWRUfit} obtained via the function \code{fit}.}
 
-\item{TFPfit}{An object of class \code{TFPfit} obtained via the function \code{fitTFP}.}
+\item{TFPfit}{An object of class \code{TFPfit} obtained via the function \code{fit}.}
 
 \item{alpha}{A scalar between zero and one depicting the labor share. The default is
 \code{alpha = 0.65}.}

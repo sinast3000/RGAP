@@ -6,6 +6,7 @@ rm(list=ls())
 
 # load package
 # library(RGAP)
+library(stats)
 devtools::load_all()
 
 # file path for plots
@@ -65,17 +66,17 @@ exoType
 parRestr <- initializeRestr(model = model, type = "hp")
 parRestr
 # ---
-fit <- fitNAWRU(model = model, parRestr = parRestr)
-plot(fit)
+f <- fit(model = model, parRestr = parRestr)
+plot(f)
 # ---
-plot(fit, path = file.path(path, country), prefix = "mle")
-plot(fit, path = file.path(path, country), prefix = "mle_wide7", width = 7)
+plot(f, path = file.path(path, country), prefix = "mle")
+plot(f, path = file.path(path, country), prefix = "mle_wide7", width = 7)
 # --- anchor ----------------------------------------------------------
-fit <- trendAnchor(fit = fit, anchor = 8, h = 10, returnFit = TRUE)
-plot(fit)
+f <- trendAnchor(fit = f, anchor = 8, h = 10, returnFit = TRUE)
+plot(f)
 # ---
-plot(fit, path = file.path(path, country) , prefix = "mle_anchor")
-plot(fit, path = file.path(path, country) , prefix = "mle_wide7_anchor", width = 7)
+plot(f, path = file.path(path, country) , prefix = "mle_anchor")
+plot(f, path = file.path(path, country) , prefix = "mle_wide7_anchor", width = 7)
 
 
 ####### Example: TFP model estimation ---------------------------------
@@ -87,27 +88,28 @@ tsList <- amecoData2input(gap[["Italy"]], alpha = 0.65)
 model <- TFPmodel(tsl = tsList, trend = "DT", cycle = "RAR2",
                   cycleLag = 0, cubsErrorARMA = c(0, 0))
 parRestr <- initializeRestr(model = model, type = "hp")
-fit <- fitTFP(model = model, parRestr = parRestr)
-plot(fit)
+f <- fit(model = model, parRestr = parRestr)
+plot(f)
 # ---
-plot(fit, path = file.path(path, country), prefix = "mle")
+plot(f, path = file.path(path, country), prefix = "mle")
+# --- Prediction ------------------------------------------------------
+fPred <- predict(object = f, n.ahead = 10)
+plot(fPred, alpha = 0.1)
+# ---
+plot(fPred, alpha = 0.1, combine = FALSE, path = file.path(path, country), 
+     prefix = "prediction_wide5", width = 5)
 # --- Bayesian --------------------------------------------------------
 prior <- initializePrior(model = model)
 prior
 # ---
-fitBayes <- fitTFP(model = model, method = "bayesian", prior = prior,
-                   R = 5000, thin = 2, MLEfit = fit)
-plot(fitBayes)
-plot(fitBayes, posterior = TRUE)
+fBayes <- fit(model = model, method = "bayesian", prior = prior,
+               R = 5000, thin = 2, MLEfit = f)
+plot(fBayes)
+plot(fBayes, posterior = TRUE)
 # ---
-plot(fitBayes, posterior = TRUE, path = file.path(path, country), prefix = "bayes")
-plot(fitBayes, posterior = FALSE, path = file.path(path, country), prefix = "bayes")
-# --- Prediction ------------------------------------------------------
-fitPred <- predict(fit = fit, n.ahead = 10)
-plot(fitPred, alpha = 0.1)
-# ---
-plot(fitPred, alpha = 0.1, combine = FALSE, path = file.path(path, country), 
-     prefix = "prediction_wide5", width = 5)
+plot(fBayes, posterior = TRUE, path = file.path(path, country), prefix = "bayes")
+plot(fBayes, posterior = FALSE, path = file.path(path, country), prefix = "bayes")
+
 
 
 ####### Example: Estimating the output gap ----------------------------
@@ -116,37 +118,34 @@ dir.create(file.path(path, country), recursive = TRUE)
 # --- data and models -------------------------------------------------
 data("gap")
 tsList <- amecoData2input(gap[["Netherlands"]], alpha = 0.65)
-model <- parRestr <- prior <- fit <- list()
-exoType <- initializeExo(varNames = c("ws", "prod", "tot"))
+model <- parRestr <- prior <- fits <- list()
 D <- matrix(c(2, 2, 2, 1, 1, 1), 2, 3, byrow = TRUE)
 L <- matrix(c(0, 0, 0, 1, 1, 1), 2, 3, byrow = TRUE)
 exoType <- initializeExo(varNames = c("ws", "prod","tot"), D = D, L = L)
-exoType
-
 model$nawru <- NAWRUmodel(tsl = tsList, trend = "RW2", cycle = "AR2",
                           type = "TKP", cycleLag = 0, exoType = exoType)
 model$tfp <- TFPmodel(tsl = tsList, trend = "DT", cycle = "RAR2",
                       cycleLag = 0, cubsErrorARMA = c(0,0))
 # --- MLE -------------------------------------------------------------
 parRestr$nawru <- initializeRestr(model = model$nawru, type = "hp")
-fit$nawru <- fitNAWRU(model = model$nawru, parRestr = parRestr$nawru)
+fits$nawru <- fit(model = model$nawru, parRestr = parRestr$nawru)
 # ---
-plot(fit$nawru, path = file.path(path, country), prefix = "mle")
+plot(fits$nawru, path = file.path(path, country), prefix = "mle")
 # ---
 parRestr$tfp <- initializeRestr(model = model$tfp, type = "hp")
-fit$tfp <- fitTFP(model = model$tfp, parRestr = parRestr$tfp)
+fits$tfp <- fit(model = model$tfp, parRestr = parRestr$tfp)
 # ---
-plot(fit$tfp, path = file.path(path, country), prefix = "mle")
+plot(fits$tfp, path = file.path(path, country), prefix = "mle")
 # ---
-fit$gap <- gapProd(tsl = tsList, NAWRUfit = fit$nawru,
-                   TFPfit = fit$tfp, lambda = 100, alpha = 0.65)
-plot(fit$gap)
+fits$gap <- gapProd(tsl = tsList, NAWRUfit = fits$nawru,
+                   TFPfit = fits$tfp, lambda = 100, alpha = 0.65)
+plot(fits$gap)
 # ---
-plot(fit$gap, path = file.path(path, country), prefix = "mle")
+plot(fits$gap, path = file.path(path, country), prefix = "mle")
 # ---
-plot(fit$gap, contribution = TRUE)
+plot(fits$gap, contribution = TRUE)
 # ---
-plot(fit$gap, contribution = TRUE, path = file.path(path, country), prefix = "mle_contr")
+plot(fits$gap, contribution = TRUE, path = file.path(path, country), prefix = "mle_contr")
 
 
 ####### Example: alternative models -----------------------------------
@@ -159,18 +158,19 @@ tsList$infl <- diff(tsList$cpih)
 model <- KuttnerModel(tsl = tsList, trend = "RW2",
                       cycleLag = 1, cycle = "AR2")
 parRestr <- initializeRestr(model = model, type = "hp", q = 0.1)
-gapKuttner <- fitKuttner(model, parRestr)
+gapKuttner <- fit(model = model, parRestr = parRestr)
+plot(gapKuttner)
 # ---
 plot(gapKuttner, path = file.path(path, country), prefix = "kuttner")
 # --- HP filter -------------------------------------------------------
-gapHPfilter <- gapHP(tsList$gdp, lambda = 10)
+gapHPfilter <- gapHP(tsList$gdp, lambda = 100)
 # ---
 plot(gapHPfilter, path = file.path(path, country), prefix = "hp")
 
 
 # --- plot gap comparison ---------------------------------------------
 {
-  tsl_plot <- list("Kuttner" = gapKuttner$tsl$gap, "HP" = gapHPfilter$gap, "EC" = fit$gap$tsl$gap)
+  tsl_plot <- list("Kuttner" = gapKuttner$tsl$gap, "HP" = gapHPfilter$gap, "EC" = fits$gap$tsl$gap)
 
   # settings
   set <- list()
@@ -232,7 +232,7 @@ countries <- c("Belgium", "Denmark", "Germany", "Ireland", "Greece",
                "Spain", "France", "Italy", "Luxembourg", "Netherlands",
                "Austria", "Poland", "Portugal", "Finland", "Sweden",
                "United Kingdom")
-tsl <- model <- parRestr <- fit <- list()
+tsl <- model <- parRestr <- fits <- list()
 for (k in countries) {
   # data
   tsl[[k]] <- amecoData2input(gap[[k]], alpha = 0.65)
@@ -243,24 +243,24 @@ for (k in countries) {
   model[[k]]$nawru <- NAWRUmodel(tsl = tsl[[k]], trend = "RW2", cycle = "AR2",
                                  type = "TKP", cycleLag = 0, exoType = exoType)
   parRestr[[k]]$nawru <- initializeRestr(model = model[[k]]$nawru, type = type)
-  fit[[k]]$nawru <- fitNAWRU(model = model[[k]]$nawru, parRestr = parRestr[[k]]$nawru)
-  plot(fit[[k]]$nawru, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
+  fits[[k]]$nawru <- fit(model = model[[k]]$nawru, parRestr = parRestr[[k]]$nawru)
+  plot(fits[[k]]$nawru, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
   # TFP trend
   model[[k]]$tfp <- TFPmodel(tsl = tsl[[k]], trend = "DT", cycle = "RAR2",
                              cycleLag = 0, cubsErrorAR = 0)
   parRestr[[k]]$tfp <- initializeRestr(model = model[[k]]$tfp, type = type)
-  fit[[k]]$tfp <- fitTFP(model = model[[k]]$tfp, parRestr = parRestr[[k]]$tfp)
-  plot(fit[[k]]$tfp, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
+  fits[[k]]$tfp <- fit(model = model[[k]]$tfp, parRestr = parRestr[[k]]$tfp)
+  plot(fits[[k]]$tfp, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
   # gap
-  fit[[k]]$gap <- gapProd(tsl = tsl[[k]], NAWRUfit = fit[[k]]$nawru,
-                          TFPfit = fit[[k]]$tfp, lambda = 100, alpha = 0.65)
-  plot(fit[[k]]$gap, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
+  fits[[k]]$gap <- gapProd(tsl = tsl[[k]], NAWRUfit = fits[[k]]$nawru,
+                          TFPfit = fits[[k]]$tfp, lambda = 100, alpha = 0.65)
+  plot(fits[[k]]$gap, path = file.path(path, path_sub), prefix = gsub(" ","_", k))
 }
 ## ---- save ---------------------------------------------------------
-save(tsl, model, parRestr, fit, file = file.path(path, path_sub, "results.RData"))
+save(tsl, model, parRestr, fits, file = file.path(path, path_sub, "results.RData"))
 ## ---- plot ---------------------------------------------------------
 {
-  tsl_plot <- lapply(lapply(lapply(fit, "[[", "gap"), "[[", "tsl"), "[[", "gap")
+  tsl_plot <- lapply(lapply(lapply(fits, "[[", "gap"), "[[", "tsl"), "[[", "gap")
 
   # settings
   set <- list()
@@ -322,22 +322,22 @@ dir.create(file.path(path, path_sub), recursive = TRUE)
 countries <- c("Belgium", "Denmark", "Finland", "France", 
                "Germany", "Greece", "Italy", "Luxembourg", 
                "Netherlands", "Portugal", "Sweden", "United Kingdom")
-tsl <- fit <- list()
+tsl <- fits <- list()
 for (k in countries) {
   # data
   tsl[[k]] <- amecoData2input(gap[[k]])
   # gap
-  fit[[k]] <- auto.gapProd(tsl = tsl[[k]], type = type, fast = TRUE, nModels = 5, q = 0.1)
+  fits[[k]] <- autoGapProd(tsl = tsl[[k]], type = type, fast = TRUE, nModels = 5, q = 0.1)
 
-  plot(fit[[k]]$nawru$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
-  plot(fit[[k]]$tfp$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
-  plot(fit[[k]]$gap, path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+  plot(fits[[k]]$nawru$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+  plot(fits[[k]]$tfp$fit[[1]], path = file.path(path,path_sub), prefix = gsub(" ","_", k))
+  plot(fits[[k]]$gap, path = file.path(path,path_sub), prefix = gsub(" ","_", k))
 }
 ## ---- save ---------------------------------------------------------
-save(tsl, fit, file = file.path(path, path_sub, "results.RData"))
+save(tsl, fits, file = file.path(path, path_sub, "results.RData"))
 ## ---- plot ---------------------------------------------------------
 {
-  tsl_plot <- lapply(lapply(lapply(fit, "[[", "gap"), "[[", "tsl"), "[[", "gap")
+  tsl_plot <- lapply(lapply(lapply(fits, "[[", "gap"), "[[", "tsl"), "[[", "gap")
   
   # settings
   set <- list()
@@ -399,15 +399,15 @@ parRestr <- initializeRestr(model = model, type = "hp")
 parRestr$pcInd[,"pcddws"] <- c(-10, 10)
 parRestr$pcInd[,"pcConst"] <- c(-0.1, 0.1)
 parRestr$pcInd[,"pcC0"] <- c(-10, 0)
-fit <- fitNAWRU(model = model, parRestr = parRestr)
-plot(fit)
+fits <- fit(model = model, parRestr = parRestr)
+plot(fits)
 write.csv(do.call(cbind,model$tsl), file.path(path, "EC_gap", "data_gap_ec.csv"))
 # --- EC gap result --------------------------------------------------------
 resEC <- read.csv(file.path(path, "EC_gap", "data_gap_ec_result.csv"))
 nawruEC <- ts(resEC$nawru, start = start(model$tsl$ur))
 # --- plot -----------------------------------------------------------------
 {
-  tsl_plot <- list("RGAP" = fit$tsl$nawru, "ECGAP" = nawruEC)
+  tsl_plot <- list("RGAP" = fits$tsl$nawru, "ECGAP" = nawruEC)
 
   # settings
   set <- list()

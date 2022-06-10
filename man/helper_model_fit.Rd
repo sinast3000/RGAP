@@ -13,7 +13,7 @@ helper_model_fit(FUNmodel, FUNfit, tsl, comb, poss, method, type, q, modelName)
 
 \item{comb}{A nested list with one model specification per list entry.}
 
-\item{poss}{A list with the characteristics of possible models (see \code{auto.gapProd)}}
+\item{poss}{A list with the characteristics of possible models (see \code{autoGapProd)}}
 
 \item{method}{The estimation method. Options are maximum likelihood estimation \code{"MLE"}
 and bayesian estimation \code{"bayesian"}. If \code{method = c("MLE", "bayesian")} the 
