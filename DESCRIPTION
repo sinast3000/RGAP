@@ -13,7 +13,8 @@ Description: The output gap indicates the percentage difference between the actu
     (NAWRU) and the trend of total factor productivity (TFP) can be estimated in two bivariate 
     unobserved component models by means of Kalman filtering and smoothing. RGAP features a 
     flexible modeling framework for the appropriate state-space models and offers frequentist as 
-    well as Bayesian estimation techniques.
+    well as Bayesian estimation techniques. Additional functionalities include direct access to 
+    the AMECO database and automated model selection procedures.
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true

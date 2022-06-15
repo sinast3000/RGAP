@@ -2,7 +2,7 @@
 
 RGAP provides tools for modeling and estimating the bivariate unobserved component models involved in the European Commission's Cobb-Douglas production function methodology to estimate potential output and the output gap.
 
-[KOF Working Paper](https://kof.ethz.ch/publikationen/kof-working-papers.html)
+[KOF Working Paper](http://hdl.handle.net/20.500.11850/552089)
 
 If you use RGAP in your paper, please cite it properly, see `citation("RGAP")` in R, or above link to the paper.
 

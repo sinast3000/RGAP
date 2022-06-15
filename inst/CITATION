@@ -3,7 +3,8 @@ citHeader("To cite RGAP in publications use:")
 citEntry(entry = "Article",
   title        = "RGAP: Output gap estimation in R",
   author       = personList(as.person("Sina Streicher")),
-  journal      = "KOF Working Paper XXX",
+  journal      = "KOF Working Papers",
+  volume       = "503",
   year         = "2021",
 
   textVersion  =
