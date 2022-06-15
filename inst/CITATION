@@ -9,5 +9,5 @@ citEntry(entry = "Article",
   textVersion  =
   paste("Sina Streicher (2022).",
         "RGAP: Output gap estimation in R.",
-        "KOF Working Paper 503")
+        "KOF Working Paper 503.")
 )
