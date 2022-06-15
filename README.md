@@ -1,6 +1,6 @@
-# RGAP: R Package for Production Function Output Gap Estimation
+# RGAP: Output Gap Estimation in R
 
-RGAP provides tools for modeling and estimating the bivariate unobserved component models involved in the Cobb-Douglas production function methodology to estimate the output gap.
+RGAP provides tools for modeling and estimating the bivariate unobserved component models involved in the European Commission's Cobb-Douglas production function methodology to estimate potential output and the output gap.
 
 [KOF Working Paper](https://kof.ethz.ch/publikationen/kof-working-papers.html)
 
@@ -8,7 +8,7 @@ If you use RGAP in your paper, please cite it properly, see `citation("RGAP")` i
 
 ## Details
 
-The output gap indicates the percentage difference between the actual output of an economy and its potential. Since potential output is a latent process, the estimation of the output gap poses a challenge and numerous filtering techniques have been proposed. RGAP facilitates the estimation of a Cobb-Douglas production function type output gap, as suggested by the European Commission (Havik et al. 2014). To that end, the non-accelerating wage rate of unemployment (NAWRU) and the trend of total factor productivity (TFP) can be estimated in two bivariate unobserved component (UC) models by means of Kalman filtering and smoothing. RGAP features a flexible modeling framework for the appropriate state-space models and offers frequentist as well as Bayesian estimation techniques.
+The output gap indicates the percentage difference between the actual output of an economy and its potential. Since potential output is a latent process, the estimation of the output gap poses a challenge and numerous filtering techniques have been proposed. RGAP facilitates the estimation of a Cobb-Douglas production function type output gap, as suggested by the European Commission (Havik et al. 2014). To that end, the non-accelerating wage rate of unemployment (NAWRU) and the trend of total factor productivity (TFP) can be estimated in two bivariate unobserved component (UC) models by means of Kalman filtering and smoothing. RGAP features a flexible modeling framework for the appropriate state-space models and offers frequentist as well as Bayesian estimation techniques. Additional functionalities include direct access to the AMECO database and automated model selection procedures.
 
 ## Main features
 
@@ -19,7 +19,9 @@ The output gap indicates the percentage difference between the actual output of 
   - maximum likelihood estimation or
   - bayesian estimation via Gibbs procedure
 - Output gap computation
+- Prediction
 - Alternative approaches: HP-filter and bivariate UC model by Kuttner (1994)
+- Additional features: automated model selection
 
 ## Install the package
 Since the package is not on CRAN just yet, you can install it using the **install_github** function from the **devtools** package.
