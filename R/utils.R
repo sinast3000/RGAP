@@ -41,3 +41,25 @@ firstLetterUp <- function(x) {
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
   return(x)
 }
+
+
+# ---------------------------------------------------------------------------------------------------
+
+#' Capitalizes the first letter of a string.
+#'
+#' @param a A multiple time series object.
+#' @param a A matrix.
+#' @keywords internal
+matmult3d <- function(a,b) {
+  n <- NROW(a)
+  m <- NCOL(a)
+  k <- dim(b)[3]
+  if (k > 1) {
+    y <- do.call(rbind, lapply(1:n, function(x) a[x, ] %*% t(b[, , x])))
+    y <- ts(y, start = start(a), frequency = frequency(a))
+  } else {
+    y <- a %*% t(b[,,1])
+  }
+  y <- ts(y, start = start(a), frequency = frequency(a))
+  return(y)
+}
