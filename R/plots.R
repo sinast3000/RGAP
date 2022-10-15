@@ -291,10 +291,8 @@ plotSSresults <- function(tsl, legend, title, boundName, res = NULL, namesPrint,
     # no residuals
 
     # print
-    if (combine) {
-      if (length(tsl) > 2) {
-        p0 <- suppressWarnings(gridExtra::grid.arrange(p0, p02, nrow = 1))
-      }
+    if (combine && (length(tsl) > 2)) {
+      p0 <- suppressWarnings(gridExtra::grid.arrange(p0, p02, nrow = 1))
     } else {
       suppressWarnings(print(p0))
     }
