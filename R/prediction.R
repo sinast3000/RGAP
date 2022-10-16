@@ -131,59 +131,52 @@ predictBayes <- function(fit, n.ahead = 10, exogenous = "mean", returnFit = TRUE
   # state and parameters
   index <- (burnin / thin + 1):(R / thin)
   state <- fit$mcmc$states[, , index]
-  state_f <- fit$mcmc$states_f[, , index]
   param <- fit$mcmc$parameters[index, ]
+  
+  # ts properties
+  start <- start(model$SSModel$y)
+  freq <- frequency(model$SSModel$y)
+  
+  # prolong model
+  SSModel <- model$SSModel
+  SSModel$y <- y
+  n <- attr(fit$SSMfit$model, "n")
+  attr(SSModel, "n") <- as.integer(n + n.ahead)
+  Z <- SSModel$Z
+  if (exogenous == "last" && dim(Z)[3]==n) {
+    SSModel$Z <- array(c(c(Z),rep(Z[, , n], n.ahead)), c(dim(Z)[1:2], n + n.ahead))
+  } else if (exogenous == "mean" && dim(Z)[3]==n) {
+    SSModel$Z <- array(c(c(Z),rep(apply(Z, 1:2, mean), n.ahead)), c(dim(Z)[1:2], n + n.ahead))
+  }
   
   # initialize and loop
   state_fc <- array(NA, dim(state) + c(n.ahead, 0, 0))
-  state_f_fc <- array(NA, dim(state_f) + c(n.ahead, 0, 0))
-  colnames(state_fc) <- colnames(state_f_fc) <- colnames(fit$SSMout$alphahat)
+  colnames(state_fc) <- colnames(fit$SSMout$alphahat)
   y_fitted_fc <- array(NA, c(dim(y), dim(state_fc)[3]))
   colnames(y_fitted_fc) <- colnames(fit$model$SSModel$y)
   for (k in 1:dim(state)[3]) {
   
     # update model matrices
     SSModel <- .updateSSSystem(
-      pars = param[k ,], SSModel = model$SSModel, loc = loc, cycle = cycle,
+      pars = param[k ,], SSModel = SSModel, loc = loc, cycle = cycle,
       trend = trend, errorARMA = errorARMA, bayes = TRUE
     )
-    n <- attr(fit$SSMfit$model, "n")
-    TT <- SSModel$T[, , 1]
-    Z <- SSModel$Z
-    if (exogenous == "last") {
-      Z <- Z[, , n]
-    } else if (exogenous == "mean") {
-      Z <- apply(Z, 1:2, mean)
-    }
-    
-    # smoothed and filtered state
-    start <- start(model$SSModel$y)
-    freq <- frequency(model$SSModel$y)
-    alphahat <- ts(state[, , k], start = start, frequency = freq)
-    att <- ts(state_f[, , k], start = start, frequency = freq)
-    colnames(alphahat) <- colnames(att) <- colnames(fit$SSMout$alphahat)
-    alphahat <- window(alphahat, end = end(alphahat) + c(0, n.ahead), extend = TRUE)
-    att <- window(att, end = end(att) + c(0, n.ahead), extend = TRUE)
-    
-    # predict
-    for (tt in 1:n.ahead) {
-      # smoothed and filtered state
-      alphahat[n + tt, ] <- att[n + tt, ] <- TT %*% alphahat[n + tt - 1, ]
-      # alphahat[n, ] equals att[n, ]
-    }
-    state_fc[, , k] <- alphahat
-    state_f_fc[, , k] <- att
-    
-    # predict observations
-    y_fitted <- ts(alphahat %*% t(Z), start = start(alphahat), frequency = frequency(alphahat))
-    y_fitted_fc[, , k] <- y_fitted
+    # simulate states
+    stateSmoothed <- ts(simulateSSM(SSModel, type = "states", nsim = 1)[,,1],
+                        start = start(SSModel$y), frequency = freq)
+    stateSmoothed_werror <- stateSmoothed
+    window(stateSmoothed_werror[,grepl("E2error", colnames(stateSmoothed))], start = start, end = start + c(0, n - 1)) <- 0
+    # observations
+    obs <- matmult3d(a = stateSmoothed_werror, b = SSModel$Z)
+    # save draw
+    state_fc[, , k] <- stateSmoothed
+    y_fitted_fc[, , k] <- obs
     
   }
   
-  
   # ----- estimated states
   tslRes <- .SSresultsBayesian(model = model$SSModel, HPDIprob = HPDIprob, FUN = FUN,
-                               state = state_fc, state_f = state_f_fc, obsFitted = y_fitted_fc)
+                               state = state_fc, obsFitted = y_fitted_fc)
   tslRes$obsSummary <- tslRes$obsFittedSummary
   tslRes$obsSummary[t(apply(t(!is.na(y)), 2, rep, each = NCOL(tslRes$obsSummary)/2))] <- NA
   

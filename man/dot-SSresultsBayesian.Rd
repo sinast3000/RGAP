@@ -4,7 +4,7 @@
 \alias{.SSresultsBayesian}
 \title{Computes additional results of the Kalman filter and smoother for Bayesian output.}
 \usage{
-.SSresultsBayesian(model, HPDIprob, state, state_f, obsFitted, FUN)
+.SSresultsBayesian(model, HPDIprob, state, obsFitted, FUN)
 }
 \arguments{
 \item{model}{The return object of the function \code{fitSSM} from the package \code{KFAS}.}
@@ -13,11 +13,9 @@
 of the highest posterior density intervals. The default is \code{HPDIprob = 0.9}. Only
 used if \code{method = "bayesian"}.}
 
-\item{state_f}{An array with the filtered state.}
+\item{state}{An array with the smoothed state.}
 
 \item{obsFitted}{An array with the fitted observables.}
-
-\item{state_s}{An array with the smoothed state.}
 }
 \description{
 Computes additional results of the Kalman filter and smoother for Bayesian output.

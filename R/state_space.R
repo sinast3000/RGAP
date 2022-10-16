@@ -815,14 +815,13 @@ initializeExo <- function(varNames, D = NULL, L = NULL) {
 #' Computes additional results of the Kalman filter and smoother for Bayesian output.
 #'
 #' @param model The return object of the function \code{fitSSM} from the package \code{KFAS}.
-#' @param state_s An array with the smoothed state.
-#' @param state_f An array with the filtered state.
+#' @param state An array with the smoothed state.
 #' @param obsFitted An array with the fitted observables.
 #' @inheritParams fit.TFPmodel
 #' @importFrom KFAS mvInnovations
 #' @importFrom stats coef ts start frequency
 #' @keywords internal
-.SSresultsBayesian <- function(model, HPDIprob, state, state_f, obsFitted, FUN) {
+.SSresultsBayesian <- function(model, HPDIprob, state, obsFitted, FUN) {
   start <- start(model$y)
   freq <- frequency(model$y)
   tsl <- list()
@@ -835,14 +834,6 @@ initializeExo <- function(varNames, D = NULL, L = NULL) {
   })
   names(tsl$stateSmoothedSummary) <- setdiff(colnames(state), "const")
   tsl$stateSmoothedSummary <- do.call(cbind, tsl$stateSmoothedSummary)
-  # filtered states
-  tsl$stateFilteredSummary <- lapply(setdiff(colnames(state_f), "const"), function(x) {
-    ts(mcmcSummary(x = t(state_f[, x, ]), HPDIprob = HPDIprob),
-       start = start, frequency = freq
-    )
-  })
-  names(tsl$stateFilteredSummary) <- setdiff(colnames(state), "const")
-  tsl$stateFilteredSummary <- do.call(cbind, tsl$stateFilteredSummary)
   # fitted obs
   tsl$obsFittedSummary <- lapply(colnames(obsFitted), function(x) {
     ts(mcmcSummary(x = t(obsFitted[, x, ]), HPDIprob = HPDIprob),
@@ -853,7 +844,6 @@ initializeExo <- function(varNames, D = NULL, L = NULL) {
   tsl$obsFittedSummary <- do.call(cbind, tsl$obsFittedSummary)
   
   tsl$stateSmoothed <- ts(apply(state, c(1, 2), FUN), start = start, frequency = freq)
-  tsl$stateFiltered <- ts(apply(state_f, c(1, 2), FUN), start = start, frequency = freq)
   tsl$obsFitted <- ts(apply(obsFitted, c(1, 2), FUN), start = start, frequency = freq)
   tsl$obs <- model$y
   tsl

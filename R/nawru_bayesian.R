@@ -8,7 +8,7 @@
 #'   Possible options are \code{"mean"} and \code{"median"}. The default is \code{FUN = "mean"}.
 #'   Only used if \code{method = "bayesian"}.
 #'
-#' @importFrom KFAS fitSSM KFS
+#' @importFrom KFAS fitSSM KFS simulateSSM
 #' @importFrom stats start end window ts lag frequency time Box.test coef
 #' @importFrom zoo na.trim
 #' @importFrom utils txtProgressBar setTxtProgressBar
@@ -103,7 +103,7 @@
   # ----- Gibbs procedure
 
   # initialization
-  state <- state_f <- array(0, dim = c(Tt, k, R / thin))
+  state <- array(0, dim = c(Tt, k, R / thin))
   obsFitted <- array(0, dim = c(Tt, 2, R / thin))
   param <- array(0, c(R / thin, nPar))
   accept <- rep(0, R / thin)
@@ -127,13 +127,12 @@
     }
 
     # ----- Step 1 ----- states
-    # apply Kalman filter, conditional on parameters from step r-1
-    out <- KFS(SSModel,
-      simplify = FALSE, filtering = c("state", "signal"),
-      smoothing = c("state", "signal", "disturbance")
-    )
-    stateSmoothed <- coef(out)
-    stateFiltered <- out$att
+    # apply simulation smoother
+    stateSmoothed <- ts(simulateSSM(SSModel, type = "states", nsim = 1)[,,1],
+                        start = start(SSModel$y), frequency = freq)
+    stateSmoothed_werror <- stateSmoothed
+    stateSmoothed_werror[,grepl("E2error", colnames(stateSmoothed))] <- 0
+    obs <- matmult3d(a = stateSmoothed_werror, b = SSModel$Z)
     
     # ----- Step 2 ----- trend
     Ytrend <- stateSmoothed[, "trend"]
@@ -189,10 +188,9 @@
     if (r %% thin == 0) {
       count <- count + 1
       state[, , count] <- stateSmoothed
-      state_f[, , count] <- stateFiltered
       param[count, ] <- pars
       accept[count] <- aProb
-      obsFitted[, , count] <- out$m
+      obsFitted[, , count] <- obs
     }
 
     # update model parameters
@@ -207,16 +205,14 @@
   # get rid of burn in phase
   mcmc <- list(
     states = state,
-    states_f = state_f,
     parameters = param,
     fitted = obsFitted
   )
   state <- state[, , (burnin / thin + 1):(R / thin)]
-  state_f <- state_f[, , (burnin / thin + 1):(R / thin)]
   obsFitted <- obsFitted[, , (burnin / thin + 1):(R / thin)]
   param <- param[(burnin / thin + 1):(R / thin), ]
   accept <- accept[(burnin / thin + 1):(R / thin)]
-  colnames(state) <- colnames(state_f) <- colnames(stateSmoothed)
+  colnames(state) <- colnames(stateSmoothed)
 
   # ----- estimated parameters
   paramEstim <- apply(param, 2, FUN)
@@ -228,7 +224,7 @@
   
   # ----- estimated states
   tslRes <- .SSresultsBayesian(model = model$SSModel, HPDIprob = HPDIprob, FUN = FUN,
-                               state = state, state_f = state_f, obsFitted = obsFitted)
+                               state = state, obsFitted = obsFitted)
   start <- start(stateSmoothed)
   freq <- frequency(stateSmoothed)
   # nawru
@@ -249,7 +245,6 @@
   SSMout <- within(list(), {
     model <- model$SSModel
     dims <-  list(n = dim(state)[1])
-    att <- ts(apply(state_f, c(1, 2), FUN), start = start, frequency = freq)
     alphahat <- tslRes$stateSmoothed
     V <- array(apply(state, 3, var), c(rep(dim(state)[2], 2),dim(state)[3]))
     Ptt <- array(apply(state, 3, var), c(rep(dim(state)[2], 2),dim(state)[3]))
@@ -263,9 +258,9 @@
   info <- list()
   nameCoef <- firstLetterUp(FUN)
   info[["signal-to-noise"]] <- sum(dfRes[loc$varName[loc$equation == "trend" & loc$sysMatrix == "Q"], nameCoef], na.rm = TRUE) / dfRes["cSigma", nameCoef]
-  info$R2 <- 1 - sum((out$model$y[, "pcInd"] - tslRes$pcIndFitted)^2, na.rm = TRUE) / sum((out$model$y[, "pcInd"] - mean(out$model$y[, "pcInd"], na.rm = TRUE))^2, na.rm = TRUE)
+  info$R2 <- 1 - sum((SSModel$y[, "pcInd"] - tslRes$pcIndFitted)^2, na.rm = TRUE) / sum((SSModel$y[, "pcInd"] - mean(SSModel$y[, "pcInd"], na.rm = TRUE))^2, na.rm = TRUE)
   info$MRMSE <- mean(apply(apply(mcmc$fitted[, 2, , drop = TRUE], 
-                                 2, function(x) x - out$model$y[, 2]), 
+                                 2, function(x) x - SSModel$y[, 2]), 
                            2, function(x) sqrt(mean(x^2, na.rm = TRUE))))
   
   # ----- fitted bayesian nawru object

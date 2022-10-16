@@ -97,21 +97,21 @@
     	MCMC estimation results
     
     cycle
-                Mean  Median 85% HPDI-LB 85% HPDI-UB
-      cPhi1   0.7906  0.7872       0.705      0.8958
-      cPhi2  -0.0726 -0.0698      -0.156      0.0242
-      cSigma  0.2391  0.2338       0.175      0.2993
+                 Mean   Median 85% HPDI-LB 85% HPDI-UB
+      cPhi1   0.48119  0.47986     0.33020     0.61002
+      cPhi2  -0.09797 -0.10029    -0.24192     0.01716
+      cSigma  0.00563  0.00552     0.00398     0.00683
     
     trend
-                 Mean   Median 85% HPDI-LB 85% HPDI-UB
-      tdSigma 0.00048 0.000475    0.000369    0.000599
+               Mean Median 85% HPDI-LB 85% HPDI-UB
+      tdSigma 0.334  0.327       0.257       0.421
     
     phillips curve
-                  Mean   Median 85% HPDI-LB 85% HPDI-UB
-      pcC0    -0.07524 -0.07483     -0.1257     -0.0336
-      pcConst  0.00155  0.00189     -0.0253      0.0322
-      pcSigma  0.05929  0.05869      0.0464      0.0743
-      pcddws   0.05198  0.05482     -0.6225      0.6758
+                   Mean    Median 85% HPDI-LB 85% HPDI-UB
+      pcC0    -0.998241 -9.99e-01   -1.005524   -0.990917
+      pcConst -0.000144 -9.16e-05   -0.001554    0.001170
+      pcSigma  0.000113  9.03e-05    0.000028    0.000182
+      pcddws   0.000169  9.79e-04   -0.029431    0.030556
               MRMSE signal-to-noise 
-           0.046210        0.002006 
+            0.01449        59.30567 
 
