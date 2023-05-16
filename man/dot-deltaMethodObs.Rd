@@ -4,7 +4,7 @@
 \alias{.deltaMethodObs}
 \title{Computes standard errors of the observation equation using the delta method (for forecast).}
 \usage{
-.deltaMethodObs(out, nameObs, model)
+.deltaMethodObs(out, nameObs, model, constant = 1)
 }
 \arguments{
 \item{out}{The return object of the function \code{KFS} from the package \code{KFAS}.}
@@ -12,6 +12,8 @@
 \item{nameObs}{The name of the observation equation as character.}
 
 \item{model}{An object of class \code{NAWRUmodel}, \code{TFPmodel}, or \code{KuttnerModel}.}
+
+\item{constant}{A constant used in the transformation functions.}
 }
 \description{
 Computes standard errors of the observation equation using the delta method (for forecast).

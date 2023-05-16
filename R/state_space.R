@@ -780,28 +780,28 @@ initializeExo <- function(varNames, D = NULL, L = NULL) {
 
   } else if (inherits(model, "TFPmodel")) {
     
-    tsl$tfpTrend <- with(tsl, exp(stateSmoothed[, "trend"]))
+    tsl$tfpTrend <- with(tsl, exp(stateSmoothed[, "trend"] / 100))
     tsl$tfpTrendGrowth <- with(tsl, growth(tfpTrend))
-    tsl$tfp <- with(tsl, exp(obs[, 1]))
+    tsl$tfp <- with(tsl, exp(obs[, 1] / 100))
     tsl$tfpGrowth <- with(tsl, growth(tfp))
 
-    tsl[c("tfpTrendSE", "tfpTrendGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend")[c("expStateSE", "diffStateSE")]
+    tsl[c("tfpTrendSE", "tfpTrendGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend", constant = 100)[c("expStateSE", "diffStateSE")]
     if (prediction) {
-      tsl[c("tfpSE", "tfpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "logtfp", model = model)[c("expObsSE", "diffObsSE")]
+      tsl[c("tfpSE", "tfpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "logtfp", model = model, constant = 100)[c("expObsSE", "diffObsSE")]
     }
     
   } else if (inherits(model, "KuttnerModel")) {
     
-    tsl$potential <- with(tsl, exp(stateSmoothed[, "trend"]))
+    tsl$potential <- with(tsl, exp(stateSmoothed[, "trend"] / 100))
     tsl$potentialGrowth <- with(tsl, growth(potential))
-    tsl$gap <- with(tsl, stateSmoothed[, "cycle"] * 100)
-    tsl$gdp <- with(tsl, exp(obs[, 1]))
+    tsl$gap <- with(tsl, stateSmoothed[, "cycle"])
+    tsl$gdp <- with(tsl, exp(obs[, 1] / 100))
     tsl$gdpGrowth <- with(tsl, growth(gdp))
 
-    tsl[c("potentialSE", "potentialGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend")[c("expStateSE", "diffStateSE")]
-    tsl[[c("gapSE")]] <- 100 * .deltaMethodState(out = out, nameState = "cycle")$StateSE
+    tsl[c("potentialSE", "potentialGrowthSE")] <- .deltaMethodState(out = out, nameState = "trend", constant = 100)[c("expStateSE", "diffStateSE")]
+    tsl[[c("gapSE")]] <- .deltaMethodState(out = out, nameState = "cycle")$StateSE
     if (prediction) {
-      tsl[c("gdpSE", "gdpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "loggdp", model = model)[c("expObsSE", "diffObsSE")]
+      tsl[c("gdpSE", "gdpGrowthSE")] <- .deltaMethodObs(out = out, nameObs = "loggdp", model = model, constant = 100)[c("expObsSE", "diffObsSE")]
     }
 
   }
@@ -952,8 +952,9 @@ inference <- function(parOptim, hessian, loc) {
 #'
 #' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
 #' @param nameState The name of the state as character.
+#' @param constant A constant used in the transformation functions.
 #' @keywords internal
-.deltaMethodState <- function(out, nameState) {
+.deltaMethodState <- function(out, nameState, constant = 1) {
   tsl <- list()
   nTime <- out$dims$n
   tsStateSmoothed <- out$alphahat
@@ -965,22 +966,22 @@ inference <- function(parOptim, hessian, loc) {
 
   # function g = identity
   Dg <- matrix(0, nTime, nTime)
-  diag(Dg) <- 1#tsStateSmoothed[, nameState]
+  diag(Dg) <- 1 / constant #tsStateSmoothed[, nameState]
   # variance of trend
   varState <- diag(out$V[indexState, indexState, 1:nTime])
   tsl$StateSE <- ts(sqrt(diag(t(Dg) %*% varState %*% Dg)), start = start, frequency = freq)
 
   # function g = exponential
   Dg <- matrix(0, nTime, nTime)
-  diag(Dg) <- exp(tsStateSmoothed[, nameState])
+  diag(Dg) <- exp(tsStateSmoothed[, nameState] / constant) / constant
   # variance of trend
   varState <- diag(out$V[indexState, indexState, 1:nTime])
   tsl$expStateSE <- ts(sqrt(diag(t(Dg) %*% varState %*% Dg)), start = start, frequency = freq)
 
   # function g = difference
   Dg <- matrix(0, nTime, nTime)
-  diag(Dg) <- -1
-  diag(Dg[-nrow(Dg), -1]) <- 1
+  diag(Dg) <- -1 / constant
+  diag(Dg[-nrow(Dg), -1]) <- 1 / constant
   Dg <- Dg[1:(nrow(Dg) - 1), ]
   # variance of trend
   varState <- diag(out$V[indexState, indexState, 1:nTime])
@@ -995,9 +996,10 @@ inference <- function(parOptim, hessian, loc) {
 #'
 #' @param out The return object of the function \code{KFS} from the package \code{KFAS}.
 #' @param nameObs The name of the observation equation as character.
+#' @param constant A constant used in the transformation functions.
 #' @inheritParams .SSresults
 #' @keywords internal
-.deltaMethodObs <- function(out, nameObs, model) {
+.deltaMethodObs <- function(out, nameObs, model, constant = 1) {
   tsl <- list()
   nTime <- out$dims$n
   nData <- attr(model$SSModel, "n")
@@ -1013,22 +1015,22 @@ inference <- function(parOptim, hessian, loc) {
   
   # function g = identity
   Dg <- matrix(0, nForecast, nForecast)
-  diag(Dg) <- 1 #tsObs[, nameObs]
+  diag(Dg) <- 1 / constant #tsObs[, nameObs]
   # variance of trend
   varObs <- diag(V[indexObs, indexObs, ])
   tsl$ObsSE <- ts(sqrt(diag(t(Dg) %*% varObs %*% Dg)), start = start, frequency = freq)
   
   # function g = exponential
   Dg <- matrix(0, nForecast, nForecast)
-  diag(Dg) <- exp(y[(nTime - nForecast + 1):nTime, nameObs])
+  diag(Dg) <- exp(y[(nTime - nForecast + 1):nTime, nameObs] / constant) / constant
   # variance of trend
   varObs <- diag(V[indexObs, indexObs, ])
   tsl$expObsSE <- ts(sqrt(diag(t(Dg) %*% varObs %*% Dg)), start = start, frequency = freq)
   
   # function g = difference
   Dg <- matrix(0, nForecast, nForecast)
-  diag(Dg) <- -1
-  diag(Dg[-nrow(Dg), -1]) <- 1
+  diag(Dg) <- -1 / constant
+  diag(Dg[-nrow(Dg), -1]) <- 1 / constant
   Dg <- Dg[1:(nrow(Dg) - 1), ]
   # variance of trend
   varObs <- diag(V[indexObs, indexObs, ])
@@ -1177,7 +1179,7 @@ trendAnchor <- function(fit, anchor = NULL, h = NULL, returnFit = FALSE) {
     if (inherits(fit, "NAWRUfit")) {
       fit$tsl$nawruAnchored <- anchoredtrend
     } else if (inherits(fit, "TFPfit")) {
-      fit$tsl$tfpTrendAnchored <- exp(anchoredtrend)
+      fit$tsl$tfpTrendAnchored <- exp(anchoredtrend / 100)
     } else {
       fit$tsl$trendAnchored <- anchoredtrend
     }

@@ -226,11 +226,11 @@
   start <- start(stateSmoothed)
   freq <- frequency(stateSmoothed)
   # tfp trend
-  tsTmp <- exp(state[, "trend", ])
+  tsTmp <- exp(state[, "trend", ] / 100)
   tslRes$tfpTrendSummary <- ts(mcmcSummary(x = t(tsTmp), HPDIprob = HPDIprob), start = start, frequency = freq)
   tslRes$tfpTrend <- tslRes$tfpTrendSummary[, firstLetterUp(FUN)]
   # tfp trend growth rate
-  tsTmp <- apply(exp(state[, "trend", ]), 2, function(x) (x[2:length(x)] / x[1:(length(x) - 1)]) - 1)
+  tsTmp <- apply(exp(state[, "trend", ] / 100), 2, function(x) (x[2:length(x)] / x[1:(length(x) - 1)]) - 1)
   tslRes$tfpTrendGrowthSummary <- ts(mcmcSummary(x = t(tsTmp), HPDIprob = HPDIprob), start = start + c(0, 1), frequency = freq)
   tslRes$tfpTrendGrowth <- tslRes$tfpTrendGrowthSummary[, firstLetterUp(FUN)]
   # fitted cubs equation

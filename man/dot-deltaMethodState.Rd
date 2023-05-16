@@ -4,12 +4,14 @@
 \alias{.deltaMethodState}
 \title{Computes standard errors of the state using the delta method.}
 \usage{
-.deltaMethodState(out, nameState)
+.deltaMethodState(out, nameState, constant = 1)
 }
 \arguments{
 \item{out}{The return object of the function \code{KFS} from the package \code{KFAS}.}
 
 \item{nameState}{The name of the state as character.}
+
+\item{constant}{A constant used in the transformation functions.}
 }
 \description{
 Computes standard errors of the state using the delta method.

@@ -97,9 +97,9 @@ KuttnerModel <- function(tsl, cycle = "AR2", cycleLag = 1, trend = "RW1", inflEr
   exoNamesTmp <- NULL
   # merge observation equation data
   tslUsed <- list()
-  tslUsed$loggdp <- log(tsl$gdp)
+  tslUsed$loggdp <- log(tsl$gdp) * 100
   tslUsed$dinfl <- diff(tsl$infl)
-  tslUsed$gdpGL1 <- stats::lag(diff(log(tsl$gdp)), k = -1)
+  tslUsed$gdpGL1 <- stats::lag(diff(log(tsl$gdp)), k = -1) * 100
   obsNames <- varUsed <- c("loggdp", "dinfl")
   nExo <- 1
   exoNamesTmp <- "gdpGL1"
@@ -390,12 +390,12 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
     # potential growth
     tsl1 <- list(
       trend = x$tsl$potential,
-      orig = exp(x$tsl$obs[, 1]),
+      orig = exp(x$tsl$obs[, 1] / 100),
       lb = (x$tsl$potential - x$tsl$potentialSE * tvalue),
       ub = (x$tsl$potential + x$tsl$potentialSE * tvalue)
     )
     if (!is.null(x$tsl$trendAnchored)) {
-      tsl1 <- c(tsl1, list(anchor = exp(x$tsl$trendAnchored)))
+      tsl1 <- c(tsl1, list(anchor = exp(x$tsl$trendAnchored / 100)))
     }
     tsl1 <- do.call(cbind, tsl1)
   
@@ -436,7 +436,7 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
     # potential and gdp growth
     tsl1 <- list(
       potential = 100 * x$tsl$potentialGrowth,
-      gdp = 100 * growth(window(exp(x$model$tsl$loggdp), start = start(x$tsl$potential))),
+      gdp = 100 * growth(window(exp(x$model$tsl$loggdp / 100), start = start(x$tsl$potential))),
       lb = 100 * (x$tsl$potentialGrowth - x$tsl$potentialGrowthSE * tvalue),
       ub = 100 * (x$tsl$potentialGrowth + x$tsl$potentialGrowthSE * tvalue)
     )
@@ -503,9 +503,9 @@ plot.KuttnerFit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine
     
     # cycle
     tsl3 <- do.call(cbind, list(
-      cycle = 100 * x$tsl$stateSmoothed[, "cycle"],
-      lb = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
-      ub = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue))
+      cycle = x$tsl$stateSmoothed[, "cycle"],
+      lb = (x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue),
+      ub = (x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue)
     ))
     
     # potential growth

@@ -273,12 +273,12 @@ NAWRUmodel <- function(tsl, trend = "RW2", cycle = "AR2", type = "TKP", cycleLag
   exoNamesTmp <- NULL
   # merge observation equation data
   if (type == "TKP") {
-    tsl$pcInd <- diff(tsl$winfl)
-    tsl$pcInd <- diff(diff(log(tsl$nulc)))
+    tsl$pcInd <- diff(tsl$winfl) * 100
+    tsl$pcInd <- diff(diff(log(tsl$nulc))) * 100
     varUsed <- c(varUsed, "pcInd")
     obsNames <- c("ur", "ddlognulc")
   } else {
-    tsl$pcInd <- diff(log(tsl$rulc))
+    tsl$pcInd <- diff(log(tsl$rulc)) * 100
     tsl$pcIndl <- stats::lag(tsl$pcInd, k = -1)
     varUsed <- c(varUsed, "pcInd", "pcIndl")
     obsNames <- c("ur", "dlogrulc")
@@ -731,8 +731,8 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
           ub1 = (x$tsl$obs[, 1] + x$tsl$obsSE[, 1] * tvalue),
           lb2 = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
           ub2 = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue),
-          lb3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
-          ub3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue))        )
+          lb3 = (x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue),
+          ub3 = (x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue)        )
         
       } else { # Bayesian
         
@@ -746,8 +746,8 @@ plot.NAWRUfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine =
           lb1 = x$tsl$obsSummary[, paste0("ur.", 100 * HPDI, "% HPDI-LB")],
           ub2 = x$tsl$obsSummary[, paste0("pcInd.", 100 * HPDI, "% HPDI-UB")],
           lb2 = x$tsl$obsSummary[, paste0("pcInd.", 100 * HPDI, "% HPDI-LB")],
-          ub3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
-          lb3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")]       )
+          ub3 = x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
+          lb3 = x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")]       )
         
       }
       

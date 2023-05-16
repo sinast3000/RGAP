@@ -25,7 +25,7 @@
 # NAWRU MLE fit
 
     Call:
-    fit.NAWRUmodel(model = model)
+    fit.NAWRUmodel(model = model, parRestr = parRestr)
     
     	State space model object of class NAWRUmodel
     
@@ -49,32 +49,32 @@
     
     cycle
              Coefficient Standard Error t-statistic  p-value
-      cPhi1        1.270         0.1303       9.744 0.00e+00
-      cPhi2       -0.403         0.5044      -0.799 4.24e-01
-      cSigma       0.211         0.0411       5.145 2.68e-07
+      cPhi1        1.261         0.1269       9.941 0.00e+00
+      cPhi2       -0.398         0.4729      -0.841 4.00e-01
+      cSigma       0.210         0.0405       5.188 2.12e-07
     
     trend
               Coefficient Standard Error t-statistic p-value
-      tdSigma     0.00152        0.00189       0.807    0.42
+      tdSigma      0.0019       0.000689        2.76 0.00578
     
     phillips curve
               Coefficient Standard Error t-statistic  p-value
-      pcC0      -3.48e-03       1.47e-03     -2.3645 1.81e-02
-      pcConst    6.62e-05       2.08e-03      0.0319 9.75e-01
-      pcSigma    1.21e-04       2.26e-05      5.3623 8.22e-08
-      pcddws     9.83e-01       9.68e-02     10.1583 0.00e+00
-      RMSE: 0.0116
-      R2: 0.627
-      Box-Ljung test: X-squared = 21, df = 10, p-value = 0.0209
+      pcC0       -0.35277          0.149     -2.3742 1.76e-02
+      pcConst     0.00524          0.206      0.0254 9.80e-01
+      pcSigma     1.21631          0.227      5.3509 8.75e-08
+      pcddws     98.46177          9.691     10.1606 0.00e+00
+      RMSE: 1.16
+      R2: 0.628
+      Box-Ljung test: X-squared = 21, df = 10, p-value = 0.0213
     
              loglik             AIC             BIC             HQC signal-to-noise 
-          1.389e+02      -2.618e+02      -2.452e+02      -2.554e+02       7.207e-03 
+         -132.80070       281.60141       298.22171       288.08930         0.00905 
 
 # NAWRU bayesian fit
 
     Call:
-    fit.NAWRUmodel(model = model, method = "bayesian", R = 1000, 
-        thin = 2, MLEfit = f)
+    fit.NAWRUmodel(model = model, method = "bayesian", R = 10000, 
+        burnin = 3000, thin = 10, MLEfit = f)
     
     	State space model object of class NAWRUmodel
     
@@ -97,21 +97,21 @@
     	MCMC estimation results
     
     cycle
-                 Mean   Median 85% HPDI-LB 85% HPDI-UB
-      cPhi1   0.48119  0.47986     0.33020     0.61002
-      cPhi2  -0.09797 -0.10029    -0.24192     0.01716
-      cSigma  0.00563  0.00552     0.00398     0.00683
+               Mean Median 85% HPDI-LB 85% HPDI-UB
+      cPhi1   0.645  0.645       0.493      0.7952
+      cPhi2  -0.151 -0.149      -0.261     -0.0235
+      cSigma  0.150  0.145       0.079      0.2056
     
     trend
-               Mean Median 85% HPDI-LB 85% HPDI-UB
-      tdSigma 0.334  0.327       0.257       0.421
+                Mean Median 85% HPDI-LB 85% HPDI-UB
+      tdSigma 0.0243 0.0175     0.00228      0.0428
     
     phillips curve
-                   Mean    Median 85% HPDI-LB 85% HPDI-UB
-      pcC0    -0.998241 -9.99e-01   -1.005524   -0.990917
-      pcConst -0.000144 -9.16e-05   -0.001554    0.001170
-      pcSigma  0.000113  9.03e-05    0.000028    0.000182
-      pcddws   0.000169  9.79e-04   -0.029431    0.030556
+                 Mean  Median 85% HPDI-LB 85% HPDI-UB
+      pcC0    -0.9398 -0.9051     -1.5232      -0.265
+      pcConst -0.0196 -0.0156     -0.2160       0.183
+      pcSigma  3.1074  3.0504      2.3565       3.802
+      pcddws   4.8980  5.0559      0.0722       9.974
               MRMSE signal-to-noise 
-            0.01449        59.30567 
+              1.793           0.162 
 

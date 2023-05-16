@@ -261,9 +261,9 @@ TFPmodel <- function(tsl, trend = "DT", cycle = "AR2", cycleLag = 0, cubsAR = 0,
   nExo <- 0
   exoNamesTmp <- NULL
   # demean cubs
-  tsl$cubs <- log(tsl$cubs) - mean(log(tsl$cubs), na.rm = TRUE)
+  tsl$cubs <- 100 * (log(tsl$cubs) - mean(log(tsl$cubs), na.rm = TRUE))
   # log of tfp
-  tsl$logtfp <- log(tsl$tfp)
+  tsl$logtfp <- 100 * log(tsl$tfp)
   # cubs equation data
   if (cubsAR > 0) {
     for (ii in 1:cubsAR) {
@@ -633,7 +633,7 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
       # tfp level
       tsl1 <- list(
         trend = x$tsl$tfpTrend,
-        orig = exp(x$model$tsl$logtfp),
+        orig = exp(x$model$tsl$logtfp / 100),
         lb = tslBounds$lb3,
         ub = tslBounds$ub3
       )
@@ -653,7 +653,7 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
       # tfp growth
       tsl3 <- list(
         trend = 100 * x$tsl$tfpTrendGrowth,
-        orig = 100 * growth(exp(x$model$tsl$logtfp)),
+        orig = 100 * growth(exp(x$model$tsl$logtfp / 100)),
         lb = 100 * tslBounds$lb,
         ub = 100 * tslBounds$ub
       )
@@ -705,8 +705,8 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
           ub1 = (x$tsl$tfp + x$tsl$tfpSE * tvalue),
           lb2 = (x$tsl$obs[, 2] - x$tsl$obsSE[, 2] * tvalue),
           ub2 = (x$tsl$obs[, 2] + x$tsl$obsSE[, 2] * tvalue),
-          lb3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
-          ub3 = 100 * ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+          lb3 = ((x$tsl$stateSmoothed[, "cycle"] - x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
+          ub3 = ((x$tsl$stateSmoothed[, "cycle"] + x$tsl$stateSmoothedSE[, "cycle"] * tvalue)),
           lb4 = 100 * (x$tsl$tfpTrendGrowth - x$tsl$tfpTrendGrowthSE * tvalue),
           ub4 = 100 * (x$tsl$tfpTrendGrowth + x$tsl$tfpTrendGrowthSE * tvalue),
           lb41 = 100 * (x$tsl$tfpGrowth - x$tsl$tfpGrowthSE * tvalue),
@@ -725,8 +725,8 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
           lb1 = x$tsl$tfpSummary[, paste0(100 * HPDI, "% HPDI-LB")],
           ub2 = x$tsl$obsSummary[, paste0("cubs.", 100 * HPDI, "% HPDI-UB")],
           lb2 = x$tsl$obsSummary[, paste0("cubs.", 100 * HPDI, "% HPDI-LB")],
-          ub3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
-          lb3 = 100 * x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")],
+          ub3 = x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-UB")],
+          lb3 = x$tsl$stateSmoothedSummary[, paste0("cycle.", 100 * HPDI, "% HPDI-LB")],
           ub4 = 100 * x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
           lb4 = 100 * x$tsl$tfpTrendGrowthSummary[, paste0(100 * HPDI, "% HPDI-LB")],
           ub41 = 100 * x$tsl$tfpGrowthSummary[, paste0(100 * HPDI, "% HPDI-UB")],
@@ -738,7 +738,7 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
       # tfp
       tsl1 <- do.call(cbind, list(
         trend = x$tsl$tfpTrend,
-        orig = exp(x$tsl$obs[, 1]),
+        orig = x$tsl$tfp,
         lb = tslBounds$lb,
         ub = tslBounds$ub,
         lb_fc = tslBounds$lb1,
@@ -754,7 +754,7 @@ plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = T
       
       # cycle
       tsl3 <- do.call(cbind, list(
-        cycle = 100 * x$tsl$stateSmoothed[, "cycle"],
+        cycle = x$tsl$stateSmoothed[, "cycle"],
         lb = tslBounds$lb3,
         ub = tslBounds$ub3
       ))
