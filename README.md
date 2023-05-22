@@ -24,7 +24,7 @@ The output gap indicates the percentage difference between the actual output of 
 - Additional features: automated model selection
 
 ## Install the package
-Since the package is not on CRAN just yet, you can install it using the **install_github** function from the **devtools** package.
+You can install the package from 'Github` using the **install_github** function from the **devtools** package.
 ``` 
 library(devtools)
 install_github('sinast3000/RGAP')
