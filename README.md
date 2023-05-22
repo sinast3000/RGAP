@@ -24,7 +24,7 @@ The output gap indicates the percentage difference between the actual output of 
 - Additional features: automated model selection
 
 ## Install the package
-You can install the package from 'Github` using the **install_github** function from the **devtools** package.
+You can install the package from ‘Github’ using the **install_github** function from the **devtools** package.
 ``` 
 library(devtools)
 install_github('sinast3000/RGAP')
@@ -34,7 +34,7 @@ install_github('sinast3000/RGAP')
 
 Kuttner, K. N. (1994), Estimating potential output as a latent variable, Journal of Business & Economic Statistics 12(3), 361–368.
 
-Havik, K., Mc Morrow, K., Orlandi, F., Planas, C., Raciborski, R., R¨oger, W., Rossi, A., Thum-Thysen, A. & Vandermeulen, V. (2014), The production function methodology for calculating potential growth rates & output gaps, Technical report, Directorate
+Havik, K., Mc Morrow, K., Orlandi, F., Planas, C., Raciborski, R., Roeger, W., Rossi, A., Thum-Thysen, A. & Vandermeulen, V. (2014), The production function methodology for calculating potential growth rates & output gaps, Technical report, Directorate
 General Economic and Financial Affairs (DG ECFIN), European Commission.
 
 
