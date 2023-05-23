@@ -30,8 +30,10 @@ tsList <- amecoData2input(gap$France)
 model <- NAWRUmodel(tsl = tsList)
 
 # estimate nawru model
+\dontrun{
 f <- fit(model = model)
 
 # compute anchored nawru
 anchoredNawru <- trendAnchor(fit = f, anchor = 6.5, h = 10)
+}
 }

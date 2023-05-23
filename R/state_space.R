@@ -1069,10 +1069,12 @@ inference <- function(parOptim, hessian, loc) {
 #' model <- NAWRUmodel(tsl = tsList)
 #'
 #' # estimate nawru model
+#' \dontrun{
 #' f <- fit(model = model)
-#'
+#' 
 #' # compute anchored nawru
 #' anchoredNawru <- trendAnchor(fit = f, anchor = 6.5, h = 10)
+#' }
 trendAnchor <- function(fit, anchor = NULL, h = NULL, returnFit = FALSE) {
   if (attr(fit, "method") == "bayesian") {
     stop("Anchor only implemented for MLE.")
