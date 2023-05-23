@@ -64,8 +64,8 @@
 #' Additionally, if \code{cubs = TRUE}, the capacity utilization economic sentiment
 #'   indicator \code{cubs} will be returned.
 #'
-#' @source \url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/macro-economic-database-ameco/download-annual-data-set-macro-economic-database-ameco_en}
-#' @source \url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/business-and-consumer-surveys_en}
+#' @source \url{https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database/download-annual-data-set-macro-economic-database-ameco_en}
+#' @source \url{https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en}
 #' @export
 #' @importFrom utils download.file unzip read.delim
 fetchAmecoData <- function(country = NULL, cubs = TRUE) {

@@ -4,9 +4,9 @@
 \alias{fetchAmecoData}
 \title{Current AMECO data vintage}
 \source{
-\url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/macro-economic-database-ameco/download-annual-data-set-macro-economic-database-ameco_en}
+\url{https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database/download-annual-data-set-macro-economic-database-ameco_en}
 
-\url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/business-and-consumer-surveys_en}
+\url{https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en}
 }
 \usage{
 fetchAmecoData(country = NULL, cubs = TRUE)

@@ -28,7 +28,7 @@
 #'   \item{buil}{Confidence indicator in the bulding and construction industry}
 #'   \item{indu}{Capacity utilization in manufacturing/industry}
 #'   }
-#' @source \url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/macro-economic-database-ameco_en}
+#' @source \url{https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database_en}
 "gap"
 
 #' Indicators fo CUBS
@@ -62,5 +62,5 @@
 #'   \item{buil}{Confidence indicator in the bulding and construction industry.}
 #'   \item{indu}{Capacity utilization in manufacturing/industry.}
 #'   }
-#' @source \url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/business-and-consumer-surveys_en}
+#' @source \url{https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en}
 "indicator"

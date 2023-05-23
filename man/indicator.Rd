@@ -13,7 +13,7 @@ A list with 53 nested country lists with time series objects. Each country list 
   }
 }
 \source{
-\url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/business-and-consumer-surveys_en}
+\url{https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en}
 }
 \usage{
 indicator

@@ -32,7 +32,7 @@ A list object with 53 country time series objects. Each time series object conta
   }
 }
 \source{
-\url{https://ec.europa.eu/info/business-economy-euro/indicators-statistics/economic-databases/macro-economic-database-ameco_en}
+\url{https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database_en}
 }
 \usage{
 gap
