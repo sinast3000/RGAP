@@ -69,31 +69,26 @@
 #' @export
 #' @importFrom utils download.file unzip read.delim
 fetchAmecoData <- function(country = NULL, cubs = TRUE) {
-  folder <- "tmp"
-  dir.create(folder)
-
-  # delete
-  on.exit(unlink(folder, recursive = TRUE))
+  
+  # temporary fileand folder
+  file_path <- tempfile()
+  folder <- tempdir()
 
   # general ameco data -----------------------------------------------
 
   file_url <- "http://ec.europa.eu/economy_finance/db_indicators/ameco/documents/ameco0.zip"
-  file_path <- file.path(folder, paste0("ameco_", Sys.Date(), ".zip"))
   # download and unzip
   download.file(url = file_url, destfile = file_path)
   unzip(zipfile = file_path, exdir = folder)
   # file names
   file_names <- paste0(file.path(folder, list.files(path = folder)))
-  file_names <- file_names[!grepl("zip", file_names)]
-
+  file_names <- file_names[grepl("AMECO", file_names)]
+  
   df <- data.frame()
   for (x in file_names) {
     df_tmp <- read.delim(file = x, sep = ";")
     df <- rbind(df, df_tmp)
   }
-
-  # delete
-  file.remove(file_names)
 
   # get list of time series
   tsl <- extract_ameco_data(df = df)
