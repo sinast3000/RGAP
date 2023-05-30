@@ -44,8 +44,17 @@
 #' @importFrom stats start end window ts lag frequency time
 #' @examples
 #' # compute the output gap given the previously obtained nawru and trend tfp
-#' \dontrun{
-#' gapProd(tsl = tslInput, NAWRUfit = fittedNAWRU, TFPfit = fittedTFP)
+#' \donttest{
+#' data("gap")
+#' country <- "Belgium"
+#' tsList <- amecoData2input(gap[[country]])
+#' modelNAWRU <- NAWRUmodel(tsl = tsList)
+#' fittedNAWRU <- fit(model = modelNAWRU)
+#' 
+#' modelTFP <- TFPmodel(tsl = tsList, cycle = "RAR2")
+#' fittedTFP <- fit(model = modelTFP)
+#' 
+#' gapProd(tsl = tsList, NAWRUfit = fittedNAWRU, TFPfit = fittedTFP)
 #' }
 gapProd <- function(tsl, NAWRUfit, TFPfit, alpha = 0.65, start = NULL, end = NULL, lambda = NULL) {
 

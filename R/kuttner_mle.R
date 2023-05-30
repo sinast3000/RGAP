@@ -40,7 +40,7 @@
 #' @importFrom stats start end window ts lag frequency time Box.test coef
 #' @importFrom zoo na.trim
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # load data for the Netherlands
 #' data("gap")
 #' country <- "Netherlands"

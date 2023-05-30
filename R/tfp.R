@@ -107,12 +107,12 @@
 #' model <- TFPmodel(tsl = tsList, cycle = "RAR2")
 #' # initialize parameter restrictions and estimate model
 #' parRestr <- initializeRestr(model = model, type = "hp")
-#' \dontrun{
+#' \donttest{
 #' f <- fit(model = model, parRestr = parRestr)
 #' }
 #' # Bayesian estimation
 #' prior <- initializePrior(model = model)
-#' \dontrun{
+#' \donttest{
 #' f <- fit(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
 #' }
 fit.TFPmodel <- function(model, parRestr = initializeRestr(model = model), signalToNoise = NULL,

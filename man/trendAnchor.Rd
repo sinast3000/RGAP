@@ -30,7 +30,7 @@ tsList <- amecoData2input(gap$France)
 model <- NAWRUmodel(tsl = tsList)
 
 # estimate nawru model
-\dontrun{
+\donttest{
 f <- fit(model = model)
 
 # compute anchored nawru

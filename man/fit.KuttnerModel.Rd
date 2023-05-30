@@ -52,7 +52,7 @@ Estimates a two-dimensional state-space model and performs filtering and
   smoothing to obtain the output gap.
 }
 \examples{
-\dontrun{
+\donttest{
 # load data for the Netherlands
 data("gap")
 country <- "Netherlands"

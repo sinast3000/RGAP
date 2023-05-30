@@ -140,12 +140,12 @@ tsList <- amecoData2input(gap[[country]])
 model <- NAWRUmodel(tsl = tsList)
 # estimate nawru model via MLE
 parRestr <- initializeRestr(model = model, type = "hp")
-\dontrun{
+\donttest{
 f <- fit(model = model, parRestr = parRestr)
 }
 # initialize priors and estimate model via Bayesian methods
 prior <- initializePrior(model = model)
-\dontrun{
+\donttest{
 f <- fit(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
 }
 }
