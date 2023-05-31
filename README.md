@@ -1,4 +1,4 @@
-# 'RGAP': Output Gap Estimation in R
+# RGAP: Output Gap Estimation in R
 
 'RGAP' provides tools for modeling and estimating the bivariate unobserved component models involved in the European Commission's Cobb-Douglas production function methodology to estimate potential output and the output gap.
 
