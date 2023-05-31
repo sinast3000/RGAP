@@ -38,6 +38,6 @@ A list object with 53 country time series objects. Each time series object conta
 gap
 }
 \description{
-A dataset containing economic data on various countries from the AMECO 2018 autumn vintage.
+A dataset containing economic data on various countries from the 'AMECO' 2018 autumn vintage.
 }
 \keyword{datasets}

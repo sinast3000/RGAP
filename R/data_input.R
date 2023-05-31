@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------------------------------
 
-#' Current AMECO data vintage
+#' Current 'AMECO' data vintage
 #'
-#' @description Fetches the AMECO data for the EC output gap estimation from the current
+#' @description Fetches the 'AMECO' data for the EC output gap estimation from the current
 #'   vintage.
 #'
 #' @param country The country name. If left unspecified, data for all countries will be
@@ -153,7 +153,7 @@ fetchAmecoData <- function(country = NULL, cubs = TRUE) {
 
 # -------------------------------------------------------------------------------------------
 
-#' Extracts the relevant AMECO indicator data.
+#' Extracts the relevant 'AMECO' indicator data.
 #'
 #' @param folder A file path with relevant files.
 #'
@@ -229,9 +229,9 @@ extract_indicator_data <- function(folder) {
 
 # -------------------------------------------------------------------------------------------
 
-#' Extracts the relevant AMECO data
+#' Extracts the relevant 'AMECO' data
 #'
-#' @param df A data frame containing all macro-economic AMECO data.
+#' @param df A data frame containing all macro-economic 'AMECO' data.
 #' @keywords internal
 extract_ameco_data <- function(df) {
 

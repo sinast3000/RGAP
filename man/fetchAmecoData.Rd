@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_input.R
 \name{fetchAmecoData}
 \alias{fetchAmecoData}
-\title{Current AMECO data vintage}
+\title{Current 'AMECO' data vintage}
 \source{
 \url{https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database/download-annual-data-set-macro-economic-database-ameco_en}
 
@@ -49,7 +49,7 @@ Additionally, if \code{cubs = TRUE}, the capacity utilization economic sentiment
   indicator \code{cubs} will be returned.
 }
 \description{
-Fetches the AMECO data for the EC output gap estimation from the current
+Fetches the 'AMECO' data for the EC output gap estimation from the current
   vintage.
 }
 \details{

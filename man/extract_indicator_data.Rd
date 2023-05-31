@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_input.R
 \name{extract_indicator_data}
 \alias{extract_indicator_data}
-\title{Extracts the relevant AMECO indicator data.}
+\title{Extracts the relevant 'AMECO' indicator data.}
 \usage{
 extract_indicator_data(folder)
 }
@@ -10,6 +10,6 @@ extract_indicator_data(folder)
 \item{folder}{A file path with relevant files.}
 }
 \description{
-Extracts the relevant AMECO indicator data.
+Extracts the relevant 'AMECO' indicator data.
 }
 \keyword{internal}

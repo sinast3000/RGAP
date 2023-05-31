@@ -2,14 +2,14 @@
 % Please edit documentation in R/data_input.R
 \name{extract_ameco_data}
 \alias{extract_ameco_data}
-\title{Extracts the relevant AMECO data}
+\title{Extracts the relevant 'AMECO' data}
 \usage{
 extract_ameco_data(df)
 }
 \arguments{
-\item{df}{A data frame containing all macro-economic AMECO data.}
+\item{df}{A data frame containing all macro-economic 'AMECO' data.}
 }
 \description{
-Extracts the relevant AMECO data
+Extracts the relevant 'AMECO' data
 }
 \keyword{internal}

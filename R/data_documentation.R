@@ -1,7 +1,7 @@
 
 #' gap data set
 #'
-#' A dataset containing economic data on various countries from the AMECO 2018 autumn vintage.
+#' A dataset containing economic data on various countries from the 'AMECO' 2018 autumn vintage.
 #'
 #' @format A list object with 53 country time series objects. Each time series object contains 14 variables:
 #' \describe{
