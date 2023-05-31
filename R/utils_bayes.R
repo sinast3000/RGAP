@@ -327,24 +327,23 @@ mcmcSummary <- function(x, HPDIprob, frac1 = 0.1, frac2 = 0.5) {
 .printGeweke <- function(tsl, df, alpha = 0.05) {
   gewekeFail <- tsl[, grepl("Geweke", colnames(tsl))] > qnorm(1 - alpha)
   if (sum(gewekeFail, na.rm = TRUE) == 0) {
-    cat("Convergence of states satisfied.\n\n")
+    message("Convergence of states satisfied.")
   } else {
-    # cat("  Convergence of states not satisfied, increase burnin phase and/or R.\n")
-    cat(paste0(
+    message(paste0(
       "Convergence of states in the following year(s) not satisfied:\n  ",
       paste0(time(gewekeFail)[apply(gewekeFail, 1, any, na.rm = TRUE) == 1], collapse = ", "),
-      "\n  If possible, increase burnin phase and/or the number of draws R.\n\n"
+      "\n  If possible, increase burnin phase and/or the number of draws R."
     ))
   }
   gewekeFail <- df[, "Geweke statistic"] > qnorm(1 - alpha) | is.na(df[, "Geweke statistic"])
   if (sum(gewekeFail) > 0) {
-    cat(paste0(
+    message(paste0(
       "Convergence of the following parameter(s) not satisfied:\n  ",
       paste0(rownames(df)[gewekeFail], collapse = ", "),
-      "\n  If possible, increase burnin phase and/or the number of draws R.\n\n"
+      "\n  If possible, increase burnin phase and/or the number of draws R."
     ))
   } else {
-    cat("Convergence of parameters satisfied.\n\n")
+    message("Convergence of parameters satisfied.")
   }
 }
 

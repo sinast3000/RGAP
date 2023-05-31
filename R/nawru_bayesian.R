@@ -112,12 +112,15 @@
   aProb <- 0
 
   # print details and progress
-  cat("\n")
-  cat("\nBayesian Estimation of NAWRU model\n\n")
-  cat(paste0("  Burn-in period \t\t", burnin, "\n"))
-  cat(paste0("  Number of repititions \t", R, "\n"))
-  cat(paste0("  Skipped draws (thinning) \t", thin - 1, "\n\n"))
-
+  message(
+    paste0(
+      "Bayesian Estimation of NAWRU model\n",
+      "\tBurn-in period \t\t\t", burnin, "\n",
+      "\tNumber of repititions \t\t", R, "\n",
+      "\tSkipped draws (thinning) \t", thin - 1
+    )
+  )
+  
   # loop
   message("Obtaining draws ...")
   pb <- utils::txtProgressBar(min = 0, max = R, style = 3)
