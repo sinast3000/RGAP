@@ -11,6 +11,16 @@ fit(model, ...)
 
 \item{...}{Some stuff passed on to methods.}
 }
+\value{
+Depends on the model object, see documentation of specific methods.
+}
 \description{
 Defines the fit method.
 }
+\seealso{
+Other fitting methods: 
+\code{\link{fit.KuttnerModel}()},
+\code{\link{fit.NAWRUmodel}()},
+\code{\link{fit.TFPmodel}()}
+}
+\concept{fitting methods}

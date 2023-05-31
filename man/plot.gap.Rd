@@ -42,6 +42,9 @@ or \code{"wmf"}.}
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, plots are printed.
+}
 \description{
 Plots potential output growth and the output gap based on an objects of
   class \code{gap}.

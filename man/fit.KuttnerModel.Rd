@@ -52,15 +52,23 @@ Estimates a two-dimensional state-space model and performs filtering and
   smoothing to obtain the output gap.
 }
 \examples{
-\donttest{
 # load data for the Netherlands
 data("gap")
 country <- "Netherlands"
 tsList <- as.list(gap[[country]][, c("cpih", "gdp")])
 tsList$infl <- diff(tsList$cpih)
 model <- KuttnerModel(tsl = tsList, trend = "RW2", cycleLag = 1, cycle = "AR2", start = 1980)
+
 # estimate Kutter's model
 parRestr <- initializeRestr(model = model, type = "hp")
+\donttest{
 gapKuttner <- fit(model, parRestr, signalToNoise = 1 / 10)
 }
 }
+\seealso{
+Other fitting methods: 
+\code{\link{fit.NAWRUmodel}()},
+\code{\link{fit.TFPmodel}()},
+\code{\link{fit}()}
+}
+\concept{fitting methods}

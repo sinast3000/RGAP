@@ -4,6 +4,10 @@
 #'
 #' @param model Some model.
 #' @param ... Some stuff passed on to methods.
+#' 
+#' @return Depends on the model object, see documentation of specific methods.
+#' 
+#' @family fitting methods
 #'
 #' @export
 fit <- function(model, ...) UseMethod("fit")
@@ -1060,6 +1064,8 @@ inference <- function(parOptim, hessian, loc) {
 #'   including the anchored trend is returned. If \code{FALSE}, only the anchored trend time
 #'   series is returned.
 #'
+#' @return A fitted object if \code{returnFit = TRUE} or a time series with the anchored 
+#'   trend.
 #' @export
 #' @importFrom stats start end window ts lag frequency time window<-
 #' @examples

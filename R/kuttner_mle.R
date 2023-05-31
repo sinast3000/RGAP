@@ -39,16 +39,18 @@
 #' @importFrom KFAS fitSSM KFS
 #' @importFrom stats start end window ts lag frequency time Box.test coef
 #' @importFrom zoo na.trim
+#' @family fitting methods
 #' @examples
-#' \donttest{
 #' # load data for the Netherlands
 #' data("gap")
 #' country <- "Netherlands"
 #' tsList <- as.list(gap[[country]][, c("cpih", "gdp")])
 #' tsList$infl <- diff(tsList$cpih)
 #' model <- KuttnerModel(tsl = tsList, trend = "RW2", cycleLag = 1, cycle = "AR2", start = 1980)
+#' 
 #' # estimate Kutter's model
 #' parRestr <- initializeRestr(model = model, type = "hp")
+#' \donttest{
 #' gapKuttner <- fit(model, parRestr, signalToNoise = 1 / 10)
 #' }
 fit.KuttnerModel <- function(model, parRestr = initializeRestr(model), signalToNoise = NULL, control = NULL, ...) {

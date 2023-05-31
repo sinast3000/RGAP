@@ -11,6 +11,9 @@
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, results are printed.
+}
 \description{
 Prints the model specifications and the estimation results of an object of class \code{TFPfit}.
 }

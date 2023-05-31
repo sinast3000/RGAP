@@ -11,6 +11,9 @@
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, results are printed.
+}
 \description{
 Prints the model specifications of an object of class \code{gap}.
 }

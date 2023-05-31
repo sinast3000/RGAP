@@ -150,3 +150,10 @@ prior <- initializePrior(model = model)
 f <- fit(model = model, method = "bayesian", prior = prior, R = 5000, thin = 2)
 }
 }
+\seealso{
+Other fitting methods: 
+\code{\link{fit.KuttnerModel}()},
+\code{\link{fit.NAWRUmodel}()},
+\code{\link{fit}()}
+}
+\concept{fitting methods}

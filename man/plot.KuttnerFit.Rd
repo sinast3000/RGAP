@@ -45,6 +45,9 @@ or \code{"wmf"}.}
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, plots are printed.
+}
 \description{
 Plots potential growth and the output gap and gives diagnostic plots based on
 standardized residuals for objects of class \code{KuttnerFit}.

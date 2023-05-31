@@ -15,6 +15,9 @@
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, model information is printed.
+}
 \description{
 Prints the model specifications of an object of class \code{NAWRUmodel}.
 }

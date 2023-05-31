@@ -44,14 +44,15 @@
 #' @importFrom stats start end window ts lag frequency time
 #' @examples
 #' # compute the output gap given the previously obtained nawru and trend tfp
-#' \donttest{
+
 #' data("gap")
 #' country <- "Belgium"
 #' tsList <- amecoData2input(gap[[country]])
 #' modelNAWRU <- NAWRUmodel(tsl = tsList)
-#' fittedNAWRU <- fit(model = modelNAWRU)
-#' 
 #' modelTFP <- TFPmodel(tsl = tsList, cycle = "RAR2")
+#' 
+#' \donttest{
+#' fittedNAWRU <- fit(model = modelNAWRU)
 #' fittedTFP <- fit(model = modelTFP)
 #' 
 #' gapProd(tsl = tsList, NAWRUfit = fittedNAWRU, TFPfit = fittedTFP)
@@ -161,6 +162,8 @@ is.gap <- function(object, return.logical = FALSE) {
 #'
 #' @param x An object of class \code{gap}.
 #' @param ... Ignored.
+#' 
+#' @return No return value, results are printed.
 #' @export
 print.gap <- function(x, ...) {
   type <- attr(x, "type")
@@ -241,6 +244,8 @@ gapHP <- function(x, lambda = NULL, end = NULL, start = NULL) {
 #' @param width The plot width in case of printing.
 #' @param height The plot height in case of printing.
 #' @param ... Ignored.
+#' 
+#' @return No return value, plots are printed.
 #'
 #' @export
 plot.gap <- function(x, contribution = FALSE, path = NULL, combine = TRUE,

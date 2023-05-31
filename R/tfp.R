@@ -98,6 +98,7 @@
 #'   \item{signal-to-noise}{Signal-to-noise ratio.}
 #'   
 #' @export
+#' @family fitting methods
 #' @examples
 #' # load data for Italy
 #' data("gap")
@@ -538,6 +539,7 @@ is.TFPfit <- function(object, return.logical = FALSE) {
 #' @param call A logical. If \code{TRUE}, the call will be printed.
 #' @param check A logical. If \code{TRUE}, the model class will be checked.
 #' @param ... Ignored.
+#' @return No return value, model information is printed.
 #' @export
 print.TFPmodel <- function(x, call = TRUE, check = TRUE, ...) {
   .printSSModel(x = x, call = call, check = check)
@@ -551,6 +553,7 @@ print.TFPmodel <- function(x, call = TRUE, check = TRUE, ...) {
 #'
 #' @param x An object of class \code{TFPfit}.
 #' @param ... Ignored.
+#' @return No return value, results are printed.
 #' @export
 print.TFPfit <- function(x, ...) {
   .printSSModelFit(x = x, call = TRUE, check = FALSE, print.model = TRUE)
@@ -574,6 +577,8 @@ print.TFPfit <- function(x, ...) {
 #'   default is \code{FALSE}. Only applied in the case of bayesian estimation.
 #' @inheritParams plot.gap
 #'
+#' @return No return value, plots are printed.
+#' 
 #' @export
 plot.TFPfit <- function(x, alpha = 0.05, bounds = TRUE, path = NULL, combine = TRUE, prefix = NULL,
                         posterior = FALSE, device = "png", width = 10, height = 3, ...) {

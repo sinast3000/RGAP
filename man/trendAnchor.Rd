@@ -19,6 +19,10 @@ If unspecified, \code{h} is taken from the object \code{fit} (if specified).}
 including the anchored trend is returned. If \code{FALSE}, only the anchored trend time
 series is returned.}
 }
+\value{
+A fitted object if \code{returnFit = TRUE} or a time series with the anchored 
+  trend.
+}
 \description{
 Computes the anchored trend given a fitted object of class \code{NAWRUfit},
   \code{TFPfit}, or \code{KuttnerFit}.
