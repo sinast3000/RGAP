@@ -286,11 +286,12 @@ NAWRUmodel <- function(tsl, trend = "RW2", cycle = "AR2", type = "TKP", cycleLag
     varUsed <- c(varUsed, "pcInd", "pcIndl")
     obsNames <- c("ur", "dlogrulc")
     nExo <- 1
-    exoNamesTmp <- c(exoNamesTmp, "pcIndl")
+    if (!any(!is.na(exoType))) {exoNamesTmp <- c(exoNamesTmp, "pcIndl")}
   }
   # assign and compute exogenous variables
-  if (any(!is.na(exoType)) && type == "TKP") {
-    tsl[exoNames[!(substr(exoNames, 1, 5) == "dummy")]] <- lapply(tsl[exoNames[!(substr(exoNames, 1, 5) == "dummy")]], log)
+  # if (any(!is.na(exoType)) && type == "TKP") {
+  if (any(!is.na(exoType))) {
+      tsl[exoNames[!(substr(exoNames, 1, 5) == "dummy")]] <- lapply(tsl[exoNames[!(substr(exoNames, 1, 5) == "dummy")]], log)
     for (jj in (1:dim(exoType)[2])) {
       name <- exoNames[jj]
       for (ii in (1:dim(exoType)[1])) {
@@ -384,9 +385,9 @@ NAWRUmodel <- function(tsl, trend = "RW2", cycle = "AR2", type = "TKP", cycleLag
   attr(model, "anchor") <- lAnchor
   attr(model, "period") <- lPeriod
   loc <- .initializeLoc(model)
-  if (type != "NKP") {
-    loc$variableRow[loc$sysMatrix == "exo"] <- loc$varName[loc$sysMatrix == "exo"]
-  }
+  # if (type != "NKP") {
+    loc$variableRow[loc$sysMatrix == "exo" & loc$varName != "pcPhi"] <- loc$varName[loc$sysMatrix == "exo" & loc$varName != "pcPhi"]
+  # }
   model$loc <- loc
 
   invisible(return(model))
@@ -452,8 +453,8 @@ is.NAWRUmodel <- function(object, return.logical = FALSE) {
       all(obsNames %in% names(object$tsl)) &&
       !(all("NKP" %in% type) && all("AR1" %in% cycle) && max(cycleLag) != 0) &&
       !(all("NKP" %in% type) && all("AR2" %in% cycle) && max(cycleLag) != 1) &&
-      !(!is.null(anchor) && is.null(anchor.h)) &&
-      !(all("NKP" %in% type) && !is.null(exoNames) && length(exoNames) != 0)
+      !(!is.null(anchor) && is.null(anchor.h)) #&&
+      # !(all("NKP" %in% type) && !is.null(exoNames) && length(exoNames) != 0)
     x
   } else {
     if (!inherits(object, "NAWRUmodel")) {
@@ -526,7 +527,8 @@ is.NAWRUmodel <- function(object, return.logical = FALSE) {
       stop("Nawru anchor specified but no anchor horizon specified. ")
     }
     if (all("NKP" %in% type) && !is.null(exoNames) && length(exoNames) != 0) {
-      stop("Exogenous variables are not compatible with the NeW Keynesian Phillip's curve.")
+      # stop("Exogenous variables are not compatible with the NeW Keynesian Phillip's curve.")
+      warning("Exogenous variables are not compatible with the New Keynesian Phillip's curve (according to the EC method).")
     }
   }
 }

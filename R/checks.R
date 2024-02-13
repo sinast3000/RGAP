@@ -268,11 +268,14 @@
       stop("Specified exogneous variables are not part of tsl. Please include all variables in tsl or adjust exoNames and exoType.")
     }
     if (type == "NKP") {
-      warning("Exogenous variables are not compatible with the Ney Keynesian Phillip's curve. They will be dropped.",
-        call. = FALSE
+      # warning("Exogenous variables are not compatible with the Ney Keynesian Phillip's curve. They will be dropped.",
+      #         call. = FALSE
+      # )
+      warning("Exogenous variables are not compatible with the New Keynesian Phillip's curve (according to the EC method).",
+              call. = FALSE
       )
-      exoNames <- NULL
-      exoType <- NULL
+      # exoNames <- NULL
+      # exoType <- NULL
     }
   }
   if (type == "NKP") {
